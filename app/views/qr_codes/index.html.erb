@@ -1,0 +1,10 @@
+<% @files.each do |file| %>
+	<%= link_to file, spreadsheet_path(spreadsheet: file) %>
+<% end %>
+<p></p>
+
+<%= form_tag({ action: :upload }, multipart: true) do %>
+  <%= file_field_tag 'spreadsheet' %>
+  <br />
+  <%= submit_tag 'Upload' %>
+<% end %>

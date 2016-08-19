@@ -53,8 +53,41 @@ Christopher Giese;;', size: 15, level: :q).to_img.resize(375, 375).to_data_url
 	def show
 		workbook = Rails.root.join('public', 'uploads', params[:spreadsheet])
 
+		# Spreadsheet.open(workbook) do |book|
+		#   @rows = book.worksheet(0).map { |row| row.to_a }.drop(1)
+		# end
 		Spreadsheet.open(workbook) do |book|
-		  @rows = book.worksheet(0).map { |row| row }[1]
+		  book.worksheet(0).map { |row| row.to_a }.drop(1).each do |row|
+		  	@qr = RQRCode::QRCode.new("MATMSG:TO:leads@divalsafety.com;SUB:#{row[13]};BODY:
+______________________
+#{row[2]}
+#{row[3]} / #{row[4]}
+#{row[8]}
+#{row[9]}
+#{row[10]}, #{row[11]} #{row[12]}
+P: #{row[7]}
+E: #{row[6]}
+#{row[5]};;", size: 17, level: :h).to_img.resize(375, 375).save("public/events/#{sanitize(row[2])}.png")
+		  end
+		end
+	end
+
+	def generate
+		workbook = Rails.root.join('public', 'uploads', params[:spreadsheet])
+
+		Spreadsheet.open(workbook) do |book|
+		  book.worksheet(0).map { |row| row.to_a }.drop(1).each do |row|
+		  	@qr = RQRCode::QRCode.new("MATMSG:TO:leads@divalsafety.com;SUB:#{row[13]};BODY:
+______________________
+#{row[2]}
+#{row[3]} / #{row[4]}
+#{row[8]}
+#{row[9]}
+#{row[10]}, #{row[11]} #{row[12]}
+P: #{row[7]}
+E: #{row[6]}
+#{row[5]};;", size: 15, level: :h).to_img.resize(375, 375).to_data_url
+		  end
 		end
 	end
 
@@ -67,5 +100,11 @@ Christopher Giese;;', size: 15, level: :q).to_img.resize(375, 375).to_data_url
 		end
 
 		redirect_to root_path
+	end
+
+	private
+
+	def sanitize(filename)
+		filename.gsub(/[\\\/:*"'?<>|]/, '')
 	end
 end

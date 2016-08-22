@@ -3,5 +3,4 @@ Rails.application.routes.draw do
 
   get 'spreadsheet'    => 'qr_codes#show'
   post 'upload-spreadsheet' => 'qr_codes#upload'
-  get 'test'    => 'qr_codes#test'
 end

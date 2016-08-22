@@ -1,1 +1,26 @@
-<%= @qr %>
+<div id="event-title">
+	<h2 class="pull-left"><%= @event_name %></h2>
+	<div class="pull-right top-20">
+		<%= link_to 'Archive', archive_path(name: @event_name),
+			method: 'post', class: "btn btn-sm btn-warning right-10",
+			data: { confirm: "Are you sure you want to ARCHIVE #{@event_name}" } %>
+
+		<%= link_to 'Delete', destroy_path(name: @event_name),
+			method: 'delete', class: "btn btn-sm btn-danger",
+			data: { confirm: "Are you sure you want to DELETE #{@event_name}" } %>
+	</div>
+</div>
+
+
+<!-- <div class="col-md-6">
+	<div class="well">
+		<%#= link_to 'Archives', '#', class: "top-10 pull-right" %>
+		<h2 class="text-center">Events</h2>
+		<hr />
+		<div class="list-group">
+			<%# @events.each do |event| %>
+				<%#= link_to event, event_path(name: event), class: "list-group-item" %>
+			<%# end %>
+		</div>
+	</div>
+</div> -->

@@ -1,72 +1,98 @@
 class QrCodesController < ApplicationController
-
-# 	def test
-# 		@qr = RQRCode::QRCode.new('MATMSG:TO:leads@divalsafety.com;SUB:VENDOR: ;BODY:
-# ______________________
-# Aaron Lund
-# CUTCO CUTLERY CORPORATION / 01-10160
-# 1116 E. STATE STREET
-
-# OLEAN, NY 14760
-# P: (716) 372-3111
-# E: alund@cutco.com
-# Christopher Giese;;', size: 17, level: :h).to_img.resize(375, 375).to_data_url
-# 	end
-
 	def index
-		@files = Dir.entries('projects/active').map { |file| file if file.length > 3 }.compact
+		@events = Dir.entries('events/active').map { |file| file if file.length > 2 }.compact
 	end
 
 	def show
-		workbook = Rails.root.join('projects', 'active', params[:spreadsheet])
-
-		# Spreadsheet.open(workbook) do |book|
-		#   @rows = book.worksheet(0).map { |row| row.to_a }.drop(1)
-		# end
-		Spreadsheet.open(workbook) do |book|
-		  book.worksheet(0).map { |row| row.to_a }.drop(1).each do |row|
-		  	@qr = RQRCode::QRCode.new("MATMSG:TO:leads@divalsafety.com;SUB:#{row[13]};BODY:
-______________________
-#{row[2]}
-#{row[3]} / #{row[4]}
-#{row[8]}
-#{row[9]}
-#{row[10]}, #{row[11]} #{row[12]}
-P: #{row[7]}
-E: #{row[6]}
-#{row[5]};;", size: 17, level: :h).to_img.resize(375, 375).save("projects/active/#{sanitize(row[2])}.png")
-		  end
-		end
+		@event_name = params[:name]
 	end
 
 	def generate
-		workbook = Rails.root.join('projects', 'active', params[:spreadsheet])
+		workbook = Rails.root.join('events', 'active', params[:spreadsheet])
 
 		Spreadsheet.open(workbook) do |book|
 		  book.worksheet(0).map { |row| row.to_a }.drop(1).each do |row|
-		  	@qr = RQRCode::QRCode.new("MATMSG:TO:leads@divalsafety.com;SUB:#{row[13]};BODY:
-______________________
-#{row[2]}
-#{row[3]} / #{row[4]}
-#{row[8]}
-#{row[9]}
-#{row[10]}, #{row[11]} #{row[12]}
-P: #{row[7]}
-E: #{row[6]}
-#{row[5]};;", size: 15, level: :h).to_img.resize(375, 375).to_data_url
+		  	RQRCode::QRCode.new("MATMSG:TO:leads@divalsafety.com;SUB:#{row[13]};BODY:
+					______________________
+					#{row[2]}
+					#{row[3]} / #{row[4]}
+					#{row[8]}
+					#{row[9]}
+					#{row[10]}, #{row[11]} #{row[12]}
+					P: #{row[7]}
+					E: #{row[6]}
+					#{row[5]};;", size: 17, level: :h)
+		  			.to_img.resize(375, 375)
+		  			.save("events/active/#{sanitize(row[2])}.png")
 		  end
 		end
 	end
 
 	def upload
-		if params[:spreadsheet]
-			excel_io = params[:spreadsheet]
-		  File.open(Rails.root.join('projects', 'active', excel_io.original_filename), 'wb') do |file|
-		    file.write(excel_io.read)
-		  end
-		end
+		events = Dir.entries('events/active').map { |file| file if file.length > 2 }.compact
+		archived_events = Dir.entries('events/archive').map { |file| file if file.length > 2 }.compact
+		event_name = sanitize(params[:event_name].strip)
 
+		if event_name.size < 3
+			flash.alert = "Event Name must be at least 3 characters long."
+		elsif events.any? { |event| event.strip.downcase == event_name.downcase }
+			flash.alert = "Already an active event with the name \"#{event_name}\""
+		elsif archived_events.any? { |event| event.strip.downcase == event_name.downcase }
+			flash.alert = "Already an archived event with the name \"#{event_name}\""
+		else
+			if params[:file]
+				file = params[:file]
+				filename = sanitize(file.original_filename)
+				file_extension = filename[-4..-1].downcase
+
+				if file_extension == '.xls'
+					Dir.mkdir(Rails.root.join('events', 'active', event_name))
+
+				  File.open(Rails.root.join('events', 'active', event_name, filename), 'wb') do |f|
+				    f.write(file.read)
+				  end
+				else
+					flash.alert = "File must be <strong>.xls</strong> format."
+			  end
+			else
+				Dir.mkdir(Rails.root.join('events', 'active', event_name))
+			end
+		end
 		redirect_to root_path
+	end
+
+	def archive
+		if params[:name]
+			event_name = params[:name].strip
+			if Dir.exist?(Rails.root.join("events", 'active', event_name))
+      	FileUtils.mv(Rails.root.join("events", 'active', event_name),
+      		Rails.root.join("events", 'archive', event_name))
+
+      	flash.notice = "#{event_name} successfully archived."
+      end
+		end
+		redirect_to root_path
+	end
+
+	def show_archives
+		@archived_events = Dir.entries('events/archive').map { |file| file if file.length > 2 }.compact
+	end
+
+	def activate
+		if params[:name]
+			event_name = params[:name].strip
+			if Dir.exist?(Rails.root.join("events", 'archive', event_name))
+      	FileUtils.mv(Rails.root.join("events", 'archive', event_name),
+      		Rails.root.join("events", 'active', event_name))
+
+      	flash.notice = "#{event_name} successfully activated."
+      end
+		end
+		redirect_to root_path
+	end
+
+	def destroy
+
 	end
 
 	private

@@ -14,11 +14,11 @@ class QrCodesController < ApplicationController
 # 	end
 
 	def index
-		@files = Dir.entries('public/uploads').map { |file| file if file.length > 3 }.compact
+		@files = Dir.entries('projects/active').map { |file| file if file.length > 3 }.compact
 	end
 
 	def show
-		workbook = Rails.root.join('public', 'uploads', params[:spreadsheet])
+		workbook = Rails.root.join('projects', 'active', params[:spreadsheet])
 
 		# Spreadsheet.open(workbook) do |book|
 		#   @rows = book.worksheet(0).map { |row| row.to_a }.drop(1)
@@ -34,13 +34,13 @@ ______________________
 #{row[10]}, #{row[11]} #{row[12]}
 P: #{row[7]}
 E: #{row[6]}
-#{row[5]};;", size: 17, level: :h).to_img.resize(375, 375).save("public/events/#{sanitize(row[2])}.png")
+#{row[5]};;", size: 17, level: :h).to_img.resize(375, 375).save("projects/active/#{sanitize(row[2])}.png")
 		  end
 		end
 	end
 
 	def generate
-		workbook = Rails.root.join('public', 'uploads', params[:spreadsheet])
+		workbook = Rails.root.join('projects', 'active', params[:spreadsheet])
 
 		Spreadsheet.open(workbook) do |book|
 		  book.worksheet(0).map { |row| row.to_a }.drop(1).each do |row|
@@ -61,7 +61,7 @@ E: #{row[6]}
 	def upload
 		if params[:spreadsheet]
 			excel_io = params[:spreadsheet]
-		  File.open(Rails.root.join('public', 'uploads', excel_io.original_filename), 'wb') do |file|
+		  File.open(Rails.root.join('projects', 'active', excel_io.original_filename), 'wb') do |file|
 		    file.write(excel_io.read)
 		  end
 		end

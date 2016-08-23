@@ -1,15 +1,11 @@
 class QrCodesController < ApplicationController
 	def index
-		@events = Dir.entries('events/active').map do |file|
-			file if file.length > 2
-		end.compact
+		@events = directory_listing('events/active')
 	end
 
 	def show
 		@event_name = params[:name]
-		@batches = Dir.entries("events/active/#{@event_name}").map do |file|
-			file if file.length > 2
-		end.compact
+		@batches = directory_listing("events/active/#{@event_name}")
 	end
 
 	def generate
@@ -34,14 +30,8 @@ class QrCodesController < ApplicationController
 	end
 
 	def upload
-		events = Dir.entries('events/active').map do |file|
-			file if file.length > 2
-		end.compact
-
-		archived_events = Dir.entries('events/archive').map do |file|
-			file if file.length > 2
-		end.compact
-
+		events = directory_listing('events/active')
+		archived_events = directory_listing('events/archive')
 		event_name = sanitize(params[:event_name].strip)
 
 		if event_name.size < 3
@@ -87,9 +77,7 @@ class QrCodesController < ApplicationController
 	end
 
 	def show_archives
-		@archived_events = Dir.entries('events/archive').map do |file|
-			file if file.length > 2
-		end.compact
+		@archived_events = directory_listing('events/archive')
 	end
 
 	def activate
@@ -121,5 +109,29 @@ class QrCodesController < ApplicationController
 
 	def sanitize(filename)
 		filename.gsub(/[\\\/:*"'?<>|]/, '')
+	end
+
+	def directory?(a,b,c)
+
+	end
+
+	def directory_list(path)
+		Dir.entries(path).map { |file| file if file.length > 2 }.compact
+	end
+
+	def make_directory(a,b,c)
+
+	end
+
+	def make_directory_full_path(a,b,c)
+
+	end
+
+	def move_directory(a,b,c)
+
+	end
+
+	def remove_directory(a,b,c)
+
 	end
 end

@@ -1,6 +1,8 @@
 class QrCodesController < ApplicationController
 	def index
-		@events = Dir.entries('events/active').map { |file| file if file.length > 2 }.compact
+		@events = Dir.entries('events/active').map do |file|
+			file if file.length > 2
+		end.compact
 	end
 
 	def show
@@ -32,8 +34,14 @@ class QrCodesController < ApplicationController
 	end
 
 	def upload
-		events = Dir.entries('events/active').map { |file| file if file.length > 2 }.compact
-		archived_events = Dir.entries('events/archive').map { |file| file if file.length > 2 }.compact
+		events = Dir.entries('events/active').map do |file|
+			file if file.length > 2
+		end.compact
+
+		archived_events = Dir.entries('events/archive').map do |file|
+			file if file.length > 2
+		end.compact
+
 		event_name = sanitize(params[:event_name].strip)
 
 		if event_name.size < 3
@@ -79,7 +87,9 @@ class QrCodesController < ApplicationController
 	end
 
 	def show_archives
-		@archived_events = Dir.entries('events/archive').map { |file| file if file.length > 2 }.compact
+		@archived_events = Dir.entries('events/archive').map do |file|
+			file if file.length > 2
+		end.compact
 	end
 
 	def activate

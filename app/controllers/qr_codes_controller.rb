@@ -5,6 +5,9 @@ class QrCodesController < ApplicationController
 
 	def show
 		@event_name = params[:name]
+		@batches = Dir.entries("events/active/#{@event_name}").map do |file|
+			file if file.length > 2
+		end.compact
 	end
 
 	def generate
@@ -46,9 +49,10 @@ class QrCodesController < ApplicationController
 				file_extension = filename[-4..-1].downcase
 
 				if file_extension == '.xls'
-					Dir.mkdir(Rails.root.join('events', 'active', event_name))
+					FileUtils.mkdir_p(Rails.root.join('events', 'active', event_name, '1'))
 
-				  File.open(Rails.root.join('events', 'active', event_name, filename), 'wb') do |f|
+				  File.open(Rails.root.join('events', 'active', event_name, '1',
+				  	filename), 'wb') do |f|
 				    f.write(file.read)
 				  end
 				else
@@ -66,7 +70,7 @@ class QrCodesController < ApplicationController
 			event_name = params[:name].strip
 			if Dir.exist?(Rails.root.join("events", 'active', event_name))
       	FileUtils.mv(Rails.root.join("events", 'active', event_name),
-      		Rails.root.join("events", 'archive', event_name))
+      		Rails.root.join("events", 'archive', event_name), force: true)
 
       	flash.notice = "#{event_name} successfully archived."
       end
@@ -83,7 +87,7 @@ class QrCodesController < ApplicationController
 			event_name = params[:name].strip
 			if Dir.exist?(Rails.root.join("events", 'archive', event_name))
       	FileUtils.mv(Rails.root.join("events", 'archive', event_name),
-      		Rails.root.join("events", 'active', event_name))
+      		Rails.root.join("events", 'active', event_name), force: true)
 
       	flash.notice = "#{event_name} successfully activated."
       end
@@ -92,7 +96,15 @@ class QrCodesController < ApplicationController
 	end
 
 	def destroy
+		if params[:name]
+			event_name = params[:name].strip
+			if Dir.exist?(Rails.root.join("events", 'active', event_name))
+      	FileUtils.remove_dir(Rails.root.join("events", 'active', event_name), true)
 
+      	flash.notice = "#{event_name} successfully deleted."
+      end
+		end
+		redirect_to root_path
 	end
 
 	private

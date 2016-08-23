@@ -1,7 +1,6 @@
 <div class="row">
 	<div class="col-md-6">
 		<div class="well">
-			<%= link_to 'Archives', archives_path, class: "top-10 pull-right" %>
 			<h2 class="text-center">Events</h2>
 			<hr />
 			<% if @events.any? %>
@@ -24,14 +23,26 @@
 			<hr />
 			<%= form_tag({ action: :upload }, multipart: true) do %>
 				<div class="form-group">
-					<%= text_field_tag 'event_name', '', placeholder: "Event Name", required: "required",
+					<%= select_tag 'city', options_for_select(@cities), required: "required",
+						prompt: '-- Select Location --', class: "form-control" %>
+				</div>
+
+				<div class="form-group">
+					<%= select_tag 'type', options_for_select(@types), required: "required",
+						prompt: '-- Select Event Type --', class: "form-control" %>
+				</div>
+
+				<div class="form-group">
+					<%= select_tag 'year', options_for_select(@years), required: "required",
 						class: "form-control" %>
 				</div>
+
 				<div class="form-group text-left">
 					<%= file_field_tag 'file', accept: ".xls" %>
 					<span class="font-12 ss-red">Must be <strong>.xls</strong> format</span>
 				</div>
-			  <%= submit_tag 'Upload', class: "btn btn-primary" %>
+
+			  <%= submit_tag 'Create Event', class: "btn btn-primary" %>
 			<% end %>
 		</div>
 	</div>

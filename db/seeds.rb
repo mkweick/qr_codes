@@ -1,7 +1,11 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
-#
-# Examples:
-#
-#   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
-#   Mayor.create(name: 'Emanuel', city: cities.first)
+types = EventType.create([{ name: 'Power Series' }, { name: 'Safety Summit' },
+													{ name: 'Expo' }, { name: 'Fire Expo' }])
+
+cities = Location.create([{ city: 'Buffalo' }, { city: 'Rochester' },
+								 { city: 'Syracuse' }, { city: 'Albany' },
+								 { city: 'Houston' }])
+
+puts '-' * 50
+puts "Event Types created: #{EventType.count}/#{types.count}"
+puts "Cities created: #{Location.count}/#{cities.count}"
+puts '-' * 50

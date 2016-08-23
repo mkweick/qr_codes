@@ -1,4 +1,4 @@
-<div class="col-md-6 col-md-offset-3">
+<div class="col-md-6">
 	<div class="well text-center">
 		<h2 class="bottom-0">Archived Events</h2>
 		<span class="font-12 ss-red">Click an event to re-activate it</span>
@@ -6,7 +6,7 @@
 		<% if @archived_events.any? %>
 			<div class="list-group text-left">
 				<% @archived_events.each do |event| %>
-					<%= link_to event, activate_path(name: event),
+					<%= link_to event, activate_path(name: event, from: 'archive'),
 						method: 'post', class: "list-group-item",
 						data: { confirm: "Are you sure you want to RE-ACTIVATE #{event}" } %>
 				<% end %>
@@ -14,6 +14,29 @@
 		<% else %>
 			<div class="text-center">
 				<h4>No archived events :(</h4>
+			</div>
+		<% end %>
+	</div>
+</div>
+
+<div class="col-md-6">
+	<div class="well text-center">
+		<h2 class="bottom-0">Recently Deleted Events</h2>
+		<strong class="font-12">** Events will permanently delete after 7 days **</strong>
+		<br />
+		<span class="font-12 ss-red">Click an event to re-activate it</span>
+		<hr class="top-10" />
+		<% if @deleted_events.any? %>
+			<div class="list-group text-left">
+				<% @deleted_events.each do |event| %>
+					<%= link_to event, activate_path(name: event, from: 'deleted'),
+						method: 'post', class: "list-group-item",
+						data: { confirm: "Are you sure you want to RE-ACTIVATE #{event}" } %>
+				<% end %>
+			</div>
+		<% else %>
+			<div class="text-center">
+				<h4>No recently deleted events</h4>
 			</div>
 		<% end %>
 	</div>

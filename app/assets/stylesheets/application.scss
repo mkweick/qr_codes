@@ -16,7 +16,10 @@ ul { list-style: none; }
 
 .bottom-0 { margin-bottom: 0; }
 
+.right-5 { margin-right: 5px; }
 .right-10 { margin-right: 10px; }
+
+.left-10 { margin-left: 10px; }
 
 .font-12 { font-size: 12px; }
 
@@ -34,4 +37,16 @@ ul { list-style: none; }
 
 @media (min-width: 992px) {
 	.container { width: 900px; }
+}
+
+@media (max-width: 725px) {
+	#event-name { font-size: 24px; }
+}
+
+@media (max-width: 650px) {
+	#event-controls {
+		clear: both;
+		float: left !important;
+		margin-top: 0;
+	}
 }

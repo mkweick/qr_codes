@@ -1,6 +1,7 @@
 class QrCodesController < ApplicationController
 	def download
-		path = Rails.root.join("events/active/#{params[:name]}/#{params[:batch]}/#{params[:file]}")
+		path = Rails.root.join('events', 'active', params[:name],
+			params[:batch], params[:file])
 	  send_file(path, :filename => params[:file])
 	end
 

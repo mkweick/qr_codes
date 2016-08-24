@@ -14,16 +14,32 @@
 	</div>
 </div>
 
-<%= %>
-	<div class="col-md-6">
-		<div class="well">
-			<%#= link_to 'Archives', '#', class: "top-10 pull-right" %>
-			<h2 class="text-center">Events</h2>
-			<hr />
-			<div class="list-group">
-				<%# @events.each do |event| %>
-					<%#= link_to event, event_path(name: event), class: "list-group-item" %>
-				<%# end %>
+<% if @batches.any? %>
+	<div class="col-sm-6 col-md-6">
+		<%= render 'upload_batch' %>
+	</div>
+
+	<div class="row">
+		<% @batches.each do |batch| %>
+			<div class="col-sm-6 col-md-6">
+				<div class="well text-center">
+					<h2 class="bottom-0">Batch <%= batch %></h2>
+					<span class="font-12"><%= batch_created_date(@event_name, batch) %></span>
+					<hr class="top-10" />
+					<div class="list-group">
+						<%= link_to 'Original Upload',
+							download_path(name: @event_name, batch: batch,
+							file: batch_upload_filename(@event_name, batch)),
+							class: "list-group-item" %>
+					</div>
+				</div>
 			</div>
+		<% end %>
+	</div>
+<% else %>
+	<div class="row">
+		<div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+			<%= render 'upload_batch' %>
 		</div>
 	</div>
+<% end %>

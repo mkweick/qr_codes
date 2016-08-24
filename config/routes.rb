@@ -4,9 +4,11 @@ Rails.application.routes.draw do
   get 'event'							=> 'qr_codes#show'
   get 'archives'					=> 'qr_codes#show_archives'
   get 'edit'							=> 'qr_codes#edit'
+  get 'download'					=> 'qr_codes#download'
 
   post 'update'						=> 'qr_codes#update'
   post 'upload'						=> 'qr_codes#upload'
+  post 'upload-batch'			=> 'qr_codes#upload_batch'
   post 'archive'					=> 'qr_codes#archive'
   post 'activate'					=> 'qr_codes#activate'
 

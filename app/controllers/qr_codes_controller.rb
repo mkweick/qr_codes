@@ -1,4 +1,9 @@
 class QrCodesController < ApplicationController
+	def download
+		path = Rails.root.join("events/active/#{params[:name]}/#{params[:batch]}/#{params[:file]}")
+	  send_file(path, :filename => params[:file])
+	end
+
 	def index
 		@events = dir_list('events/active').sort
 		@cities = Location.sorted_cities
@@ -8,7 +13,7 @@ class QrCodesController < ApplicationController
 
 	def show
 		@event_name = params[:name]
-		@batches = dir_list("events/active/#{@event_name}")
+		@batches = dir_list("events/active/#{@event_name}").sort
 	end
 
 	def edit
@@ -108,6 +113,10 @@ class QrCodesController < ApplicationController
 		redirect_to root_path
 	end
 
+	def upload_batch
+
+	end
+
 	def archive
 		event_name = params[:name].strip if params[:name]
 
@@ -182,7 +191,7 @@ class QrCodesController < ApplicationController
 	end
 
 	def dir_list(path)
-		Dir.entries(path).map { |file| file if file.length > 2 }.compact
+		Dir.entries(path).map { |file| file unless file == '.' || file == '..' }.compact
 	end
 
 	def make_event_dir(event_name)

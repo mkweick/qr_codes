@@ -1,0 +1,12 @@
+<div class="well text-center">
+	<h2>New Batch</h2>
+	<hr />
+	<%= form_tag({ action: :upload_batch }, multipart: true) do %>
+		<div class="form-group text-left">
+			<%= file_field_tag 'file', accept: ".xls" %>
+			<span class="font-12 ss-red">Must be <strong>.xls</strong> format</span>
+		</div>
+
+	  <%= submit_tag 'Create', class: "btn btn-primary" %>
+	<% end %>
+</div>

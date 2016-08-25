@@ -13,4 +13,5 @@ Rails.application.routes.draw do
   post 'activate'					=> 'qr_codes#activate'
 
   delete 'destroy'				=> 'qr_codes#destroy'
+  delete 'destroy-batch'	=> 'qr_codes#destroy_batch'
 end

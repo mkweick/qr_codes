@@ -14,32 +14,48 @@
 	</div>
 </div>
 
-<% if @batches.any? %>
-	<div class="col-sm-6 col-md-6">
-		<%= render 'upload_batch' %>
-	</div>
+<div class="row">
+	<% if @batches.any? %>
+		<div class="col-sm-6 col-md-6">
+			<div class="well text-center batch pad-top-15">
+				<%= render 'upload_batch_form' %>
+			</div>
+		</div>
 
-	<div class="row">
 		<% @batches.each do |batch| %>
 			<div class="col-sm-6 col-md-6">
-				<div class="well text-center">
+				<div class="well text-center batch">
+					<%= link_to 'Delete', destroy_batch_path(name: @event_name, batch: batch),
+						method: 'delete', class: "btn btn-xs btn-danger pull-right" %> 
 					<h2 class="bottom-0">Batch <%= batch %></h2>
 					<span class="font-12"><%= batch_created_date(@event_name, batch) %></span>
 					<hr class="top-10" />
 					<div class="list-group">
 						<%= link_to 'Original Upload',
-							download_path(name: @event_name, batch: batch,
+							download_path(type: 'original', name: @event_name, batch: batch,
 							file: batch_upload_filename(@event_name, batch)),
-							class: "list-group-item" %>
-					</div>
+							data: { turbolinks: false }, class: "list-group-item" %>
+						<% if batch_qr_codes?(@event_name, batch) && batch_export?(@event_name, batch) %>
+								<%= link_to 'QR Codes',
+									download_path(type: 'qr_codes', name: @event_name, batch: batch),
+									data: { turbolinks: false }, class: "list-group-item" %>
+								<%= link_to 'Excel Export',
+									download_path(type: 'export', name: @event_name, batch: batch),
+									data: { turbolinks: false }, class: "list-group-item" %>
+							</div>
+						<% else %>
+							</div>
+							<hr class="top-10 bottom-10"/>
+							<%= link_to 'Generate QR Codes & Export', '#', class: 'btn btn-primary' %>
+						<% end %>
 				</div>
 			</div>
 		<% end %>
-	</div>
-<% else %>
-	<div class="row">
+	<% else %>
 		<div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
-			<%= render 'upload_batch' %>
+			<div class="well text-center">
+				<%= render 'upload_batch_form' %>
+			</div>
 		</div>
-	</div>
-<% end %>
+	<% end %>
+</div>

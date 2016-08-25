@@ -24,10 +24,13 @@
 
 		<% @batches.each do |batch| %>
 			<div class="col-sm-6 col-md-6">
-				<div class="well text-center batch">
-					<%= link_to 'Delete', destroy_batch_path(name: @event_name, batch: batch),
-						method: 'delete', class: "btn btn-xs btn-danger pull-right" %> 
-					<h2 class="bottom-0">Batch <%= batch %></h2>
+				<div class="well text-center batch"> 
+					<h2 class="bottom-0 inline-block">Batch <%= batch %></h2>
+					<%= link_to destroy_batch_path(name: @event_name, batch: batch), method: 'delete',
+						data: { confirm: "Are you sure you want to DELETE Batch #{batch}"} do %>
+						<span class="glyphicon glyphicon-remove font-20 red pull-right top-10"></span>
+					<% end %>
+					<br />
 					<span class="font-12"><%= batch_created_date(@event_name, batch) %></span>
 					<hr class="top-10" />
 					<div class="list-group">
@@ -46,7 +49,9 @@
 						<% else %>
 							</div>
 							<hr class="top-10 bottom-10"/>
-							<%= link_to 'Generate QR Codes & Export', '#', class: 'btn btn-primary' %>
+							<%= link_to 'Generate QR Codes & Export',
+								generate_path(name: @event_name, batch: batch, email: 'mweick@provident.com'),
+								method: 'post', class: 'btn btn-primary' %>
 						<% end %>
 				</div>
 			</div>

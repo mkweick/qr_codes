@@ -9,6 +9,8 @@ input[type="file"] { width: 100%; }
 	padding-top: 0;
 }
 
+.inline-block { display: inline-block; }
+
 .list-group a { color: #337ab7; }
 .list-group a:hover { color: #23527c; }
 
@@ -23,8 +25,13 @@ input[type="file"] { width: 100%; }
 .pad-top-15 { padding-top: 15px; }
 
 .font-12 { font-size: 12px; }
+.font-20 { font-size: 20px; }
 
 .ss-red { color: #b30000; }
+
+.red { color: #d9534f; }
+.red:hover { color: #bd2d29; }
+.red:active { color: #7e1e1b; }
 
 #event-title {
 	padding-bottom: 10px;

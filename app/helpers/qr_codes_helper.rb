@@ -5,9 +5,9 @@ module QrCodesHelper
 	end
 
 	def batch_upload_filename(event_name, batch)
-		Dir.entries("events/active/#{@event_name}/#{batch}").map do |file|
-			file if file[-4..-1] == '.xls'
-		end.compact.first
+		Dir.entries("events/active/#{@event_name}/#{batch}").select do |file|
+			file[-4..-1] == '.xls'
+		end.first
 	end
 
 	def batch_qr_codes?(event_name, batch)

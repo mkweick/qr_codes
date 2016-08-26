@@ -6,8 +6,6 @@ Rails.application.routes.draw do
   get 'edit'							=> 'qr_codes#edit'
   get 'download'					=> 'qr_codes#download'
 
-  get 'email'							=> 'qr_codes#email'
-
   post 'update'						=> 'qr_codes#update'
   post 'upload'						=> 'qr_codes#upload'
   post 'upload-batch'			=> 'qr_codes#upload_batch'

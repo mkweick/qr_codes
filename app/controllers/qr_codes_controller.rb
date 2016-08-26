@@ -132,16 +132,6 @@ class QrCodesController < ApplicationController
 		end
 	end
 
-	def email
-		event_name = params[:name]
-		batch = params[:batch]
-		email = params[:email]
-
-		NotificationMailer.batch_generation_complete_email(event_name, batch, email).deliver_now
-
-		redirect_to event_path(name: event_name)
-	end
-
 	def generate
 		event_name = params[:name] if params[:name]
 		batch = params[:batch] if params[:batch]
@@ -207,17 +197,17 @@ class QrCodesController < ApplicationController
 			when 'original'
 				path = Rails.root.join('events', 'active', name, batch, file)
 		  	send_file(path, type: 'application/vnd.ms-excel',
-		  		:filename => file, disposition: 'attachment')
+		  		filename: file, disposition: 'attachment')
 		  when 'qr_codes'
 				path = Rails.root.join('events', 'active', name, batch, 'qr_codes.zip')
 		  	send_file(path, type: 'application/zip',
-		  		:filename => "QR_CODES_#{name}_BATCH_#{batch}.zip",
+		  		filename: "QR_CODES_#{name}_BATCH_#{batch}.zip",
 		  		disposition: 'attachment')
 		  when 'export'
 				path = Rails.root.join('events', 'active', name, batch,
 					'export', 'export.xls')
 		  	send_file(path, type: 'application/vnd.ms-excel',
-		  		:filename => "FINAL_#{name}_BATCH_#{batch}.xls",
+		  		filename: "FINAL_#{name}_BATCH_#{batch}.xls",
 		  		disposition: 'attachment')
 		  end
 		else
@@ -360,7 +350,7 @@ class QrCodesController < ApplicationController
 	end
 
 	def dir_list(path)
-		Dir.entries(path).select { |file| file != '.' && file != '..' }
+		Dir.entries(path).select { |file| file != '.' && file != '..' && file != '.DS_Store' }
 	end
 
 	def original_upload(event_name, batch)

@@ -83,8 +83,19 @@ class QrCodesController < ApplicationController
 				  File.open(Rails.root.join('events', 'active', event_name, '1',
 				  	filename), 'wb') do |f|
 				    f.write(file.read)
-				  end
-				  flash.notice = "#{event_name} created and file uploaded successfully."
+					end
+
+					workbook = Rails.root.join('events', 'active', event_name, '1', filename)
+					column_count = Spreadsheet.open(workbook).worksheet(0).column_count
+					
+					if column_count == 14
+					  flash.notice = "#{event_name} created and file uploaded successfully."
+					else
+						delete_original_upload(event_name, '1', filename)
+						flash.alert = "Spreadsheet contained #{column_count} columns. " +
+													"Spreadsheet must only have 14 Columns and formatted " +
+													"like the #{link_to 'UPLOAD TEMPLATE', download_path(type: 'template')}"
+					end
 				else
 					flash.alert = "File must be <strong>.xls</strong> format."
 			  end
@@ -138,49 +149,8 @@ class QrCodesController < ApplicationController
 		email = params[:email].strip if params[:email]
 
 		if event_name && batch && email
-			make_qr_codes_dir(event_name, batch) unless qr_codes_dir?(event_name, batch)
-			make_export_dir(event_name, batch) unless export_dir?(event_name, batch)
-
-			export = Spreadsheet::Workbook.new
-			sheet1 = export.create_worksheet
-			if export_file?(event_name, batch)
-				begin
-					delete_export_file(event_name, batch)
-					export.write(export_file_path(event_name, batch))
-				rescue
-					flash.alert = "Export file is in use, couldn't complete processing. " +
-												"Contact IT."
-				end
-			else
-				export.write(export_file_path(event_name, batch))
-			end
-
-			file = original_upload(event_name, batch)
-			workbook = Rails.root.join('events', 'active', event_name, batch, file)
-
-			begin
-				Spreadsheet.open(workbook) do |book|
-				  book.worksheet(0).map { |row| row.to_a }.drop(1).each do |row|
-				  	RQRCode::QRCode.new("MATMSG:TO:leads@divalsafety.com;SUB:#{row[13]};BODY:
-							______________________
-							#{row[2]}
-							#{row[3]} / #{row[4]}
-							#{row[8]}
-							#{row[9]}
-							#{row[10]}, #{row[11]} #{row[12]}
-							P: #{row[7]}
-							E: #{row[6]}
-							#{row[5]};;", size: 20, level: :h).to_img.resize(375, 375)
-				  			.save("events/active/#{event_name}/#{batch}/qr_codes/#{sanitize(row[2])}.png")
-				  end
-				end
-
-				NotificationMailer.batch_generation_complete_email(event_name, batch, email).deliver_now
-				flash.notice = "We'll send you an email once your batch processing is complete."
-			rescue
-				flash.alert = "Original upload spreadsheet is in use for Batch #{batch}, " +
-											"couldn't complete processing. Contact IT."
-			end
+			GenerateQrCodesExportJob.perform_later(event_name, batch, email)
+			flash.notice = "We'll send you an email once Batch #{batch} processing is complete."
 			redirect_to event_path(name: event_name)
 		else
 			redirect_to root_path
@@ -188,7 +158,7 @@ class QrCodesController < ApplicationController
 	end
 
 	def download
-		if %w(original qr_codes export).include? params[:type]
+		if %w(original qr_codes export template).include? params[:type]
 			name = params[:name] if params[:name]
 			batch = params[:batch] if params[:batch]
 			file = params[:file] if params[:file]
@@ -209,6 +179,11 @@ class QrCodesController < ApplicationController
 		  	send_file(path, type: 'application/vnd.ms-excel',
 		  		filename: "FINAL_#{name}_BATCH_#{batch}.xls",
 		  		disposition: 'attachment')
+		  when 'template'
+		  	path = Rails.root.join('events', 'upload_template',
+		  		'QR CODES UPLOAD TEMPLATE.xls')
+		  	send_file(path, type: 'application/vnd.ms-excel',
+		  		filename: "QR CODES UPLOAD TEMPLATE.xls", disposition: 'attachment')
 		  end
 		else
 			redirect_to :back
@@ -315,7 +290,7 @@ class QrCodesController < ApplicationController
 
 		if event_name && batch && batch_dir?(event_name, batch)
 			begin
-      	remove_batch_dir(event_name, batch)
+      	delete_batch_dir(event_name, batch)
       	flash.notice = "Batch #{batch} successfully deleted."
 	    rescue
 	    	flash.alert = "Batch #{batch} has files or folders in use, " +
@@ -341,36 +316,8 @@ class QrCodesController < ApplicationController
 		Dir.exist?(Rails.root.join('events', 'active', event_name, batch))
 	end
 
-	def qr_codes_dir?(event_name, batch)
-		Dir.exist?(Rails.root.join('events', 'active', event_name, batch, 'qr_codes'))
-	end
-
-	def export_dir?(event_name, batch)
-		Dir.exist?(Rails.root.join('events', 'active', event_name, batch, 'export'))
-	end
-
 	def dir_list(path)
 		Dir.entries(path).select { |file| file != '.' && file != '..' && file != '.DS_Store' }
-	end
-
-	def original_upload(event_name, batch)
-		Dir.entries("events/active/#{event_name}/#{batch}").select do |file|
-			file[-4..-1] == '.xls'
-		end.first
-	end
-
-	def export_file?(event_name, batch)
-		File.exist?(Rails.root.join('events', 'active', event_name,
-			batch, 'export', 'export.xls'))
-	end
-
-	def export_file_path(event_name, batch)
-		Rails.root.join('events', 'active', event_name, batch, 'export', 'export.xls')
-	end
-
-	def delete_export_file(event_name, batch)
-		File.delete(Rails.root.join('events', 'active', event_name,
-			batch, 'export', 'export.xls'))
 	end
 
 	def make_event_dir(event_name)
@@ -379,14 +326,6 @@ class QrCodesController < ApplicationController
 
 	def make_batch_dir(event_name, batch)
 		Dir.mkdir(Rails.root.join('events', 'active', event_name, batch))
-	end
-
-	def make_qr_codes_dir(event_name, batch)
-		Dir.mkdir(Rails.root.join('events', 'active', event_name, batch, 'qr_codes'))
-	end
-
-	def make_export_dir(event_name, batch)
-		Dir.mkdir(Rails.root.join('events', 'active', event_name, batch, 'export'))
 	end
 
 	def move_event_dir(from_status, to_status, event_name)
@@ -403,7 +342,12 @@ class QrCodesController < ApplicationController
 		FileUtils.remove_dir(Rails.root.join('events', 'deleted', event_name))
 	end
 
-	def remove_batch_dir(event_name, batch)
+	def delete_batch_dir(event_name, batch)
 		FileUtils.remove_dir(Rails.root.join('events', 'active', event_name, batch))
+	end
+
+	def delete_original_upload(event_name, batch, filename)
+		FileUtils.remove_dir(Rails.root.join('events', 'active', event_name,
+			batch, filename))
 	end
 end

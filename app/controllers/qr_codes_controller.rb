@@ -91,10 +91,11 @@ class QrCodesController < ApplicationController
 					if column_count == 14
 					  flash.notice = "#{event_name} created and file uploaded successfully."
 					else
-						delete_original_upload(event_name, '1', filename)
+						delete_event_dir(event_name)
 						flash.alert = "Spreadsheet contained #{column_count} columns. " +
-													"Spreadsheet must only have 14 Columns and formatted " +
-													"like the #{link_to 'UPLOAD TEMPLATE', download_path(type: 'template')}"
+													"Spreadsheet must only have 14 Columns and formatted like the " +
+													"<a data-turbolinks=\"false\" href='http://webdev.divalsafety.com:3000/download?type=template'>" +
+													"UPLOAD TEMPLATE</a>"
 					end
 				else
 					flash.alert = "File must be <strong>.xls</strong> format."
@@ -342,12 +343,11 @@ class QrCodesController < ApplicationController
 		FileUtils.remove_dir(Rails.root.join('events', 'deleted', event_name))
 	end
 
-	def delete_batch_dir(event_name, batch)
-		FileUtils.remove_dir(Rails.root.join('events', 'active', event_name, batch))
+	def delete_event_dir(event_name)
+		FileUtils.remove_dir(Rails.root.join('events', 'active', event_name))
 	end
 
-	def delete_original_upload(event_name, batch, filename)
-		FileUtils.remove_dir(Rails.root.join('events', 'active', event_name,
-			batch, filename))
+	def delete_batch_dir(event_name, batch)
+		FileUtils.remove_dir(Rails.root.join('events', 'active', event_name, batch))
 	end
 end

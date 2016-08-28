@@ -1,3 +1,4 @@
+
 source 'https://rubygems.org'
 
 gem 'rails', 						'4.2.0'
@@ -13,6 +14,8 @@ gem 'spreadsheet'
 gem 'rubyzip'
 gem 'delayed_job_active_record'
 gem 'daemons'
+gem 'whenever', :require => false
+gem 'rb-readline'
 
 gem 'jquery-rails'
 gem 'turbolinks'

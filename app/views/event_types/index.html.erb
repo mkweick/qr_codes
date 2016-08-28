@@ -1,0 +1,33 @@
+<div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+  <div class="well">
+    <h2 class="text-center">Event Types</h2>
+    <hr />
+    <div class="text-center bottom-10">
+      <%= link_to 'New Event Type', new_event_type_path, class: "btn btn-primary" %>
+    </div>
+    <% if @event_types.any? %>
+      <div class="list-group">
+        <% @event_types.each do |event_type| %>
+          <li class="list-group-item">
+            <%= event_type.name %>
+            <span class="pull-right">
+              <%= link_to edit_event_type_path(event_type.id), title: "Edit" do %>
+                <span class="glyphicon glyphicon-pencil right-10"></span>
+              <% end %>
+
+              <%= link_to event_type_path(event_type.id), method: 'delete',
+                title: "Delete", class: "red",
+                data: { confirm: "Are you sure want to DELETE event type #{event_type.name}?" } do %>
+                  <span class="glyphicon glyphicon-remove-circle"></span>
+              <% end %>
+            </span>
+          </li>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center top-30">
+        <h4>No active event types :(</h4>
+      </div>
+    <% end %>
+  </div>
+</div>

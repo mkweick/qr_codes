@@ -1,26 +1,36 @@
 class QrCodesController < ApplicationController
 	
 	def index
-		@events = dir_list('events/active').sort
+		@events = dir_list('events/active').sort_by(&:downcase)
 		@cities = Location.sorted_cities
 		@types = EventType.sorted_types
 		@years = Time.now.year..(Time.now.year + 2)
 	end
 
 	def show
-		@event_name = params[:name]
-		@batches = dir_list("events/active/#{@event_name}").sort
+		@event_name = params[:name] if params[:name]
+
+		if @event_name
+			@batches = dir_list("events/active/#{@event_name}").sort
+		else
+			redirect_to root_path
+		end
 	end
 
 	def edit
-		@event_name = params[:name].strip
-		event_name = @event_name.split(' ')
-		@city = event_name.shift
-		@year = event_name.pop
-		@type = event_name.join(' ')
-		@cities = Location.sorted_cities
-		@types = EventType.sorted_types
-		@years = Time.now.year..(Time.now.year + 2)
+		@event_name = params[:name] if params[:name]
+
+		if @event_name
+			event_name = @event_name.split(' ')
+			@city = event_name.shift
+			@year = event_name.pop
+			@type = event_name.join(' ')
+			@cities = Location.sorted_cities
+			@types = EventType.sorted_types
+			@years = Time.now.year..(Time.now.year + 2)
+		else
+			redirect_to root_path
+		end
 	end
 
 	def update
@@ -93,9 +103,10 @@ class QrCodesController < ApplicationController
 					else
 						delete_event_dir(event_name)
 						flash.alert = "Spreadsheet contained #{column_count} columns. " +
-													"Spreadsheet must only have 14 Columns and formatted like the " +
-													"<a data-turbolinks=\"false\" href='http://webdev.divalsafety.com:3000/download?type=template'>" +
-													"UPLOAD TEMPLATE</a>"
+													"Spreadsheet must only have 14 Columns. " +
+													"#{view_context.link_to 'DOWNLOAD TEMPLATE',
+														download_path(type: 'template'),
+														data: { turbolinks: false }}"
 					end
 				else
 					flash.alert = "File must be <strong>.xls</strong> format."
@@ -131,7 +142,20 @@ class QrCodesController < ApplicationController
 				  	filename), 'wb') do |f|
 				    f.write(file.read)
 				  end
-				  flash.notice = "Batch #{next_batch} created and file uploaded successfully."
+
+				  workbook = Rails.root.join('events', 'active', event_name, next_batch, filename)
+					column_count = Spreadsheet.open(workbook).worksheet(0).column_count
+					
+					if column_count == 14
+				  	flash.notice = "Batch #{next_batch} created and file uploaded successfully."
+				  else
+				  	delete_batch_dir(event_name, next_batch)
+						flash.alert = "Spreadsheet contained #{column_count} columns. " +
+													"Spreadsheet must only have 14 Columns. " +
+													"#{view_context.link_to 'DOWNLOAD TEMPLATE',
+														download_path(type: 'template'),
+														data: { turbolinks: false }}"
+				  end
 				else
 					flash.alert = "File must be <strong>.xls</strong> format."
 			  end
@@ -210,8 +234,8 @@ class QrCodesController < ApplicationController
 	end
 
 	def show_archives
-		@archived_events = dir_list('events/archive')
-		@deleted_events = dir_list('events/deleted')
+		@archived_events = dir_list('events/archive').sort_by(&:downcase)
+		@deleted_events = dir_list('events/deleted').sort_by(&:downcase)
 	end
 
 	def activate

@@ -39,7 +39,11 @@
 
 				<div class="form-group text-left">
 					<%= file_field_tag 'file', accept: ".xls" %>
-					<span class="font-12 ss-red">Must be <strong>.xls</strong> format</span>
+					<span class="font-12">
+						<span class="ss-red">Must be <strong>.xls</strong> format</span> - 
+						<%= link_to '(Download Template)', download_path(type: 'template'),
+							data: { turbolinks: false } %>
+					</span>
 				</div>
 
 			  <%= submit_tag 'Create Event', class: "btn btn-primary" %>

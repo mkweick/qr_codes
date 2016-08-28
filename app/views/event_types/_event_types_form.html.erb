@@ -1,0 +1,9 @@
+<%= form_for @event_type, html: { class: "text-center" } do |f| %>
+  <div class="form-group">
+    <%= f.text_field 'name', value: @event_type.name, placeholder: "Event Type Name",
+      autofocus: 'autofocus', class: "form-control" %>
+  </div>
+
+  <%= f.submit btn_text, class: "btn btn-primary" %>
+  <%= link_to 'Cancel', event_types_path, class: "btn btn-danger left-10" %>
+<% end %>

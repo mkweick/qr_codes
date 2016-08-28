@@ -9,7 +9,7 @@
             <span class="icon-bar"></span>
           </button>
         <%# end %>
-        <%= link_to "DiVal Safety - Events QR Code Tool", root_path, class: "navbar-brand" %>
+        <%= link_to "DiVal Safety - Event QR Codes", root_path, class: "navbar-brand" %>
       </div>
 
       <%# if logged_in? %>
@@ -30,6 +30,19 @@
                   <%= link_to archives_path do %>
                     <span class="glyphicon glyphicon-time right-5"></span>
                     Archives
+                  <% end %>
+                </li>
+                <li role="separator" class="divider"></li>
+                <li>
+                  <%= link_to locations_path do %>
+                    <span class="glyphicon glyphicon-globe right-5"></span>
+                    Locations
+                  <% end %>
+                </li>
+                <li>
+                  <%= link_to event_types_path do %>
+                    <span class="glyphicon glyphicon-th right-5"></span>
+                    Event Types
                   <% end %>
                 </li>
               </ul>

@@ -64,16 +64,16 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
   config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address:              'smtp.gmail.com',
-    port:                 587,
-    user_name:            'mkweick@gmail.com',
-    password:             'Hockey18',
-    authentication:       'plain',
-    enable_starttls_auto: true  }
-  config.action_mailer.perform_deliveries = true
+  config.action_mailer.default_url_options = { host: 'qr.divalsafety.com' }
   config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default_options = { from: 'qr-codes@divalsafety.com' }
+  config.action_mailer.smtp_settings = { address: 'mail-rails.divalsafety.com',
+                                         port: '25',
+                                         authentication: :login,
+                                         user_name: 'rails-mailer',
+                                         password: 'Tdot1721#',
+                                         domain: 'mainoffice.dival.com',
+                                         enable_starttls_auto: true,
+                                         openssl_verify_mode: 'none' }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

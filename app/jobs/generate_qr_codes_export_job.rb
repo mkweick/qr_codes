@@ -4,7 +4,7 @@ class GenerateQrCodesExportJob < ActiveJob::Base
   def perform(event_name, batch, email)
     event_name = event_name
 		batch = batch
-		email = email
+		email = email.strip
 
 		make_qr_codes_dir(event_name, batch) unless qr_codes_dir?(event_name, batch)
 		make_export_dir(event_name, batch) unless export_dir?(event_name, batch)
@@ -28,7 +28,6 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 		file = original_upload(event_name, batch)
 		workbook = Rails.root.join('events', 'active', event_name, batch, file)
 
-		start = Time.now
 		Spreadsheet.open(workbook) do |book|
 		  book.worksheet(0).map { |row| row.to_a }.drop(1).each do |row|
 		  	next if row[2].blank?
@@ -51,7 +50,6 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 		  	sheet.insert_row(new_row_index, attendee_row)
 		  end
 		end
-		finish = Time.now
 
 		export.write(export_file_path(event_name, batch))
 
@@ -66,9 +64,7 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 		end
 
 		delete_qr_codes_dir(event_name, batch)
-
-		execution_time = finish - start
-		NotificationMailer.batch_generation_complete_email(event_name, batch, email, execution_time).deliver_now
+		NotificationMailer.batch_generation_complete_email(event_name, batch, email).deliver_now
   end
 
   private

@@ -95,12 +95,12 @@ class QrCodesController < ApplicationController
 				    f.write(file.read)
 					end
 
+					duplicates = []
+					column_count = 0
 					workbook = Rails.root.join('events', 'active', event_name, '1', filename)
-					sheet = Spreadsheet.open(workbook).worksheet(0)
-					column_count = sheet.column_count
-					
-					if column_count == 14
-						duplicates = []
+					Spreadsheet.open(workbook) do |book|
+						sheet = book.worksheet(0)
+						column_count = sheet.column_count
 
 						attendees_with_row = sheet.map.with_index do |row, idx|
 						  next if row[2].blank?
@@ -111,9 +111,13 @@ class QrCodesController < ApplicationController
 						attendees_no_row = attendees_with_row.map { |row| row.take(2) }
 						dups = attendees_no_row.select { |row| attendees_no_row.count(row) > 1 }.uniq
 						dups.each do |dup|
-						  duplicates << attendees_no_row.each_index.select { |idx| attendees_no_row[idx] == dup }
+						  duplicates << attendees_with_row.each_index.map do |idx|
+						  								attendees_with_row[idx][2] if attendees_with_row[idx][0..1] == dup
+						  							end.compact
 						end
+					end
 
+					if column_count == 14
 						if duplicates.any?
 							delete_event_dir(event_name)
 

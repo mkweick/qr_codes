@@ -96,10 +96,46 @@ class QrCodesController < ApplicationController
 					end
 
 					workbook = Rails.root.join('events', 'active', event_name, '1', filename)
-					column_count = Spreadsheet.open(workbook).worksheet(0).column_count
+					sheet = Spreadsheet.open(workbook).worksheet(0)
+					column_count = sheet.column_count
 					
 					if column_count == 14
-					  flash.notice = "#{event_name} created and file uploaded successfully."
+						duplicates = []
+
+						attendees_with_row = sheet.map.with_index do |row, idx|
+						  next if row[2].blank?
+						  row = row.to_a
+						  [row[2], row[3], idx + 1]
+						end.compact
+
+						attendees_no_row = attendees_with_row.map { |row| row.take(2) }
+						dups = attendees_no_row.select { |row| attendees_no_row.count(row) > 1 }.uniq
+						dups.each do |dup|
+						  duplicates << attendees_no_row.each_index.select { |idx| attendees_no_row[idx] == dup }
+						end
+
+						if duplicates.any?
+							delete_event_dir(event_name)
+
+					  	error_msg = "Upload failed. Duplicates exist at rows:<br /><ul>"
+					  	duplicates.each do |dup|
+					  		last_index = dup.size - 1
+					  		increment = 1
+					  		lines = "<li>#{dup[0]}"
+
+					  		while increment <= last_index
+					  			lines += " / #{dup[increment]}"
+					  			increment += 1
+					  		end
+					  		lines += "</li>"
+					  		error_msg += lines
+					  	end
+					  	error_msg += "</ul>"
+
+					  	flash.alert = error_msg
+					  else
+					  	flash.notice = "#{event_name} created and file uploaded successfully."
+					  end
 					else
 						delete_event_dir(event_name)
 						flash.alert = "Spreadsheet contained #{column_count} columns. " +

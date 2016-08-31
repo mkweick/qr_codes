@@ -16,7 +16,7 @@ Rails.application.configure do
   # Email Settings
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.raise_delivery_errors = true
-  
+
   # Exchange Settings
   # config.action_mailer.default_url_options = {
   #   host: 'webdev.divalsafety.com',

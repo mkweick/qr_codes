@@ -382,7 +382,7 @@ class QrCodesController < ApplicationController
 	end
 
 	def dir_list(path)
-		Dir.entries(path).select { |file| file != '.' && file != '..' && file != '.DS_Store' }
+		Dir.entries(path).select { |file| file != '.' && file != '..' && file != '.gitignore' }
 	end
 
 	def make_event_dir(event_name)

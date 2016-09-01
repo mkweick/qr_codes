@@ -14,7 +14,10 @@ class ApplicationController < ActionController::Base
   end
 
   def require_user
-    log_in_message unless logged_in?
+    unless logged_in?
+      session[:return_to] = request.url
+      log_in_message
+    end
   end
 
   def log_in_message

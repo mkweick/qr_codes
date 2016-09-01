@@ -2,21 +2,25 @@
 Rails.application.routes.draw do
   root 'qr_codes#index'
 
+  get '/login',           to: 'sessions#new'
+  post '/login',          to: 'sessions#create'
+  delete '/logout',       to: 'sessions#destroy'
+
   resources :locations,   except: [:show]
   resources :event_types, except: [:show], path: 'event-types'
 
-  get 'event'							=> 'qr_codes#show'
-  get 'archives'					=> 'qr_codes#show_archives'
-  get 'edit'							=> 'qr_codes#edit'
-  get 'download'					=> 'qr_codes#download'
+  get 'event',						to: 'qr_codes#show'
+  get 'archives',					to: 'qr_codes#show_archives'
+  get 'edit',							to: 'qr_codes#edit'
+  get 'download',					to: 'qr_codes#download'
 
-  post 'update'						=> 'qr_codes#update'
-  post 'upload'						=> 'qr_codes#upload'
-  post 'upload-batch'			=> 'qr_codes#upload_batch'
-  post 'archive'					=> 'qr_codes#archive'
-  post 'activate'					=> 'qr_codes#activate'
-  post 'generate'					=> 'qr_codes#generate'
+  post 'update',					to: 'qr_codes#update'
+  post 'upload',					to: 'qr_codes#upload'
+  post 'upload-batch',		to: 'qr_codes#upload_batch'
+  post 'archive',					to: 'qr_codes#archive'
+  post 'activate',				to: 'qr_codes#activate'
+  post 'generate',				to: 'qr_codes#generate'
 
-  delete 'destroy'				=> 'qr_codes#destroy'
-  delete 'destroy-batch'	=> 'qr_codes#destroy_batch'
+  delete 'destroy',       to: 'qr_codes#destroy'
+  delete 'destroy-batch', to: 'qr_codes#destroy_batch'
 end

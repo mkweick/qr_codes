@@ -7,6 +7,7 @@ gem 'uglifier',         '>= 3.0.2'
 gem 'coffee-rails', 		'~> 4.1.1'
 
 gem 'bootstrap-sass',		'3.3.6'
+gem 'adauth',           '2.0.5'
 gem 'rqrcode'
 gem 'rqrcode_png'
 gem 'spreadsheet'

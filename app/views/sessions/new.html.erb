@@ -1,0 +1,21 @@
+<% @page_title = 'Login' %>
+
+<div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+  <div class="well text-center">
+    <h2 class="bottom-0">Login</h2>
+    <span class="font-12 ss-red">Use windows credntials</span>
+    <hr class="top-10" />
+    <%= form_tag login_path, method: 'post' do %>
+      <div class="form-group">
+        <%= text_field_tag 'username', nil, class: 'form-control',
+          placeholder: 'Username', autofocus: 'autofocus' %>
+      </div>
+
+      <div class="form-group">
+        <%= password_field_tag 'password', nil, class: 'form-control',
+          placeholder: 'Password' %>
+      </div>
+      <%= submit_tag 'Login', class: 'btn btn-primary' %>
+    <% end %>
+  </div>
+</div>

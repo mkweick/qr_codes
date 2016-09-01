@@ -1,6 +1,12 @@
 class QrCodesController < ApplicationController
-	
+	before_action :require_user, only: [:show, :edit, :update, :upload,
+																			:upload_batch, :generate, :download,
+																			:archive, :show_archives, :activate,
+																			:destroy, :destroy_batch]
+
 	def index
+		redirect_to login_path unless logged_in?
+
 		@events = dir_list('events/active').sort_by(&:downcase)
 		@cities = Location.sorted_cities
 		@types = EventType.sorted_types
@@ -10,9 +16,10 @@ class QrCodesController < ApplicationController
 	def show
 		@event_name = params[:name] if params[:name]
 
-		if @event_name
+		if @event_name && event_dir?('active', @event_name)
 			@batches = dir_list("events/active/#{@event_name}").sort
 		else
+			flash.alert = "No active event found, check the archives."
 			redirect_to root_path
 		end
 	end

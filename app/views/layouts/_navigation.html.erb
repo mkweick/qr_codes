@@ -2,17 +2,17 @@
   <div class="container">
     <div class="row">
       <div class="navbar-header">
-        <%# if logged_in? %>
+        <% if logged_in? %>
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-        <%# end %>
+        <% end %>
         <%= link_to "DiVal Safety - Event QR Codes", root_path, class: "navbar-brand" %>
       </div>
 
-      <%# if logged_in? %>
+      <% if logged_in? %>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
@@ -48,14 +48,14 @@
               </ul>
             </li>
             <li class="right-20">
-              <%= link_to '#' do %>
+              <%= link_to logout_path, method: 'delete' do %>
                 <span class="glyphicon glyphicon-log-out right-5"></span>
                 Logout
               <% end %>
             </li>
           </ul>
         </div>
-      <%# end %>
+      <% end %>
     </div>
   </div>
 </nav>

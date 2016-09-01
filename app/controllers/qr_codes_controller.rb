@@ -95,59 +95,7 @@ class QrCodesController < ApplicationController
 				    f.write(file.read)
 					end
 
-					duplicates = []
-					column_count = 0
-					workbook = Rails.root.join('events', 'active', event_name, '1', filename)
-					Spreadsheet.open(workbook) do |book|
-						sheet = book.worksheet(0)
-						column_count = sheet.column_count
-
-						attendees_with_row = sheet.map.with_index do |row, idx|
-						  next if row[2].blank?
-						  row = row.to_a
-						  [row[2], row[3], idx + 1]
-						end.compact
-
-						attendees_no_row = attendees_with_row.map { |row| row.take(2) }
-						dups = attendees_no_row.select { |row| attendees_no_row.count(row) > 1 }.uniq
-						dups.each do |dup|
-						  duplicates << attendees_with_row.each_index.map do |idx|
-						  								attendees_with_row[idx][2] if attendees_with_row[idx][0..1] == dup
-						  							end.compact
-						end
-					end
-
-					if column_count == 14
-						if duplicates.any?
-							delete_event_dir(event_name)
-
-					  	error_msg = "Upload failed. Duplicates exist at rows:<br /><ul>"
-					  	duplicates.each do |dup|
-					  		last_index = dup.size - 1
-					  		increment = 1
-					  		lines = "<li>#{dup[0]}"
-
-					  		while increment <= last_index
-					  			lines += " / #{dup[increment]}"
-					  			increment += 1
-					  		end
-					  		lines += "</li>"
-					  		error_msg += lines
-					  	end
-					  	error_msg += "</ul>"
-
-					  	flash.alert = error_msg
-					  else
-					  	flash.notice = "#{event_name} created and file uploaded successfully."
-					  end
-					else
-						delete_event_dir(event_name)
-						flash.alert = "Spreadsheet contained #{column_count} columns. " +
-													"Spreadsheet must only have 14 Columns. " +
-													"#{view_context.link_to 'DOWNLOAD TEMPLATE',
-														download_path(type: 'template'),
-														data: { turbolinks: false }}"
-					end
+					file_error_check(event_name, '1', filename)
 				else
 					flash.alert = "File must be <strong>.xls</strong> format."
 			  end
@@ -170,12 +118,7 @@ class QrCodesController < ApplicationController
 
 				if file_extension == '.xls'
 					batches = dir_list("events/active/#{event_name}")
-					
-					if batches.any?
-						next_batch = batches.map(&:to_i).sort.last.next.to_s
-					else
-						next_batch = '1'
-					end 
+					next_batch = batches.any? ? batches.map(&:to_i).sort.last.next.to_s : '1'
 					make_batch_dir(event_name, next_batch)
 
 				  File.open(Rails.root.join('events', 'active', event_name, next_batch,
@@ -183,19 +126,7 @@ class QrCodesController < ApplicationController
 				    f.write(file.read)
 				  end
 
-				  workbook = Rails.root.join('events', 'active', event_name, next_batch, filename)
-					column_count = Spreadsheet.open(workbook).worksheet(0).column_count
-					
-					if column_count == 14
-				  	flash.notice = "Batch #{next_batch} created and file uploaded successfully."
-				  else
-				  	delete_batch_dir(event_name, next_batch)
-						flash.alert = "Spreadsheet contained #{column_count} columns. " +
-													"Spreadsheet must only have 14 Columns. " +
-													"#{view_context.link_to 'DOWNLOAD TEMPLATE',
-														download_path(type: 'template'),
-														data: { turbolinks: false }}"
-				  end
+				  file_error_check(event_name, next_batch, filename, false)
 				else
 					flash.alert = "File must be <strong>.xls</strong> format."
 			  end
@@ -413,5 +344,62 @@ class QrCodesController < ApplicationController
 
 	def delete_batch_dir(event_name, batch)
 		FileUtils.remove_dir(Rails.root.join('events', 'active', event_name, batch))
+	end
+
+	def file_error_check(event_name, batch, filename, first_upload = true)
+		duplicates = []
+		column_count = 0
+		workbook = Rails.root.join('events', 'active', event_name, batch, filename)
+
+		Spreadsheet.open(workbook) do |book|
+			sheet = book.worksheet(0)
+			column_count = sheet.column_count
+
+			attendees_with_row = sheet.map.with_index do |row, idx|
+			  next if row[2].blank?
+			  row = row.to_a
+			  [row[2], row[3], idx + 1]
+			end.compact
+
+			attendees_no_row = attendees_with_row.map { |row| row.take(2) }
+			dups = attendees_no_row.select { |row| attendees_no_row.count(row) > 1 }.uniq
+			dups.each do |dup|
+			  duplicates << attendees_with_row.each_index.map do |idx|
+			  								attendees_with_row[idx][2] if attendees_with_row[idx][0..1] == dup
+			  							end.compact
+			end
+		end
+
+		if column_count == 14
+			if duplicates.any?
+				first_upload ? delete_event_dir(event_name) : delete_batch_dir(event_name, batch)
+		  	error_msg = "Upload failed. Duplicates exist at rows:<br /><ul>"
+		  	
+		  	duplicates.each do |dup|
+		  		last_index = dup.size - 1
+		  		increment = 1
+		  		lines = "<li>#{dup[0]}"
+
+		  		while increment <= last_index
+		  			lines += " / #{dup[increment]}"
+		  			increment += 1
+		  		end
+		  		lines += "</li>"
+		  		error_msg += lines
+		  	end
+		  	error_msg += "</ul>"
+
+		  	flash.alert = error_msg
+		  else
+		  	flash.notice = "#{event_name} created and file uploaded successfully."
+		  end
+		else
+			first_upload ? delete_event_dir(event_name) : delete_batch_dir(event_name, batch)
+			flash.alert = "Spreadsheet contained #{column_count} columns. " +
+										"Spreadsheet must only have 14 Columns. " +
+										"#{view_context.link_to 'DOWNLOAD TEMPLATE',
+											download_path(type: 'template'),
+											data: { turbolinks: false }}"
+		end
 	end
 end

@@ -311,22 +311,41 @@ class QrCodesController < ApplicationController
 			password: 'CRMadmin#'
 		)
 
-		@result = db.execute(
-			"SELECT FullName, ParentCustomerIdName FROM ContactBase
-			 WHERE FirstName = 'john'
-			 	 AND LastName = 'smith'
-			 	 AND StateCode = '0'"
-		)
+		@results = []
 
-		binding.pry
+		sql = db.execute(
+			"SELECT a.FullName, a.ParentCustomerIdName, b.FullName AS \"SalesRep\" FROM ContactBase AS a
+			 JOIN SystemUserBase AS b ON a.OwnerId = b.SystemUserId
+			 WHERE a.FirstName = 'john'
+			 	 AND a.LastName = 'smith'
+			 	 AND a.StateCode = '0'"
+		)
+		sql.each(symbolize_keys: true) { |row| @results << row }
 	end
 
 	def walk_in
 
 	end
 
-	def crm_contact
+	def find_crm_contact
 
+	end
+
+	def crm_contact
+		db = TinyTds::Client.new(
+			host: 		'10.220.0.252',
+			database: 'DiValSafety1_MSCRM',
+			username: 'sa',
+			password: 'CRMadmin#'
+		)
+
+		@results = db.execute(
+			"SELECT a.FullName, a.ParentCustomerIdName, b.FullName AS \"SalesRep\" FROM ContactBase AS a
+			 JOIN SystemUserBase AS b ON a.OwnerId = b.SystemUserId
+			 WHERE a.FirstName = 'john'
+			 	 AND a.LastName = 'smith'
+			 	 AND a.StateCode = '0'"
+		)
 	end
 
 	private

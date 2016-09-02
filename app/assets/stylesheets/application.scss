@@ -5,6 +5,15 @@ a { text-decoration: none !important; }
 ul { list-style: none; }
 input[type="file"] { width: 100%; }
 
+.table > tbody > tr > td { padding: 0; }
+
+td a {
+	display: block;
+	padding: 8px;
+}
+
+td a:hover { color: #337ab7; }
+
 .well {
 	padding-top: 0;
 }

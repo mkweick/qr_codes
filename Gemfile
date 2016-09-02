@@ -16,6 +16,7 @@ gem 'delayed_job_active_record'
 gem 'daemons'
 gem 'whenever',         :require => false
 gem 'rb-readline'
+gem 'tiny_tds'
 
 gem 'jquery-rails'
 gem 'turbolinks'

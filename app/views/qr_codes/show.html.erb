@@ -18,14 +18,14 @@
 
 <div class="row">
 	<% if @batches.any? %>
-		<div class="col-sm-6 col-md-6">
+		<div class="col-xs-12 col-sm-6 col-md-6">
 			<div class="well text-center batch pad-top-15">
 				<%= render 'upload_batch_form' %>
 			</div>
 		</div>
 
 		<% @batches.each do |batch| %>
-			<div class="col-sm-6 col-md-6">
+			<div class="col-xs-12 col-sm-6 col-md-6">
 				<div class="well text-center batch"> 
 					<h2 class="bottom-0 inline-block">Batch <%= batch %></h2>
 					<%= link_to destroy_batch_path(name: @event_name, batch: batch), method: 'delete',

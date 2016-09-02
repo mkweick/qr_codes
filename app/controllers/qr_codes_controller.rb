@@ -1,8 +1,6 @@
 class QrCodesController < ApplicationController
-	before_action :require_user, only: [:show, :edit, :update, :upload,
-																			:upload_batch, :generate, :download,
-																			:archive, :show_archives, :activate,
-																			:destroy, :destroy_batch]
+	before_action :require_user, except: [:index]
+	before_action :require_admin, except: [:index, :on_site_badge, :walk_in, :crm_contact]
 
 	def index
 		redirect_to login_path unless logged_in?
@@ -303,6 +301,32 @@ class QrCodesController < ApplicationController
 		else
 			redirect_to root_path
 		end
+	end
+
+	def on_site_badge
+		db = TinyTds::Client.new(
+			host: 		'10.220.0.252',
+			database: 'DiValSafety1_MSCRM',
+			username: 'sa',
+			password: 'CRMadmin#'
+		)
+
+		@result = db.execute(
+			"SELECT FullName, ParentCustomerIdName FROM ContactBase
+			 WHERE FirstName = 'john'
+			 	 AND LastName = 'smith'
+			 	 AND StateCode = '0'"
+		)
+
+		binding.pry
+	end
+
+	def walk_in
+
+	end
+
+	def crm_contact
+
 	end
 
 	private

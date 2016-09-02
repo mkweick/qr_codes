@@ -14,6 +14,8 @@ Rails.application.routes.draw do
   get 'edit',							to: 'qr_codes#edit'
   get 'download',					to: 'qr_codes#download'
 
+  get 'on-site-badge',     to: 'qr_codes#on_site_badge'
+
   post 'update',					to: 'qr_codes#update'
   post 'upload',					to: 'qr_codes#upload'
   post 'upload-batch',		to: 'qr_codes#upload_batch'

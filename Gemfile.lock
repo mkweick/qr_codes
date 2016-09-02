@@ -42,7 +42,7 @@ GEM
       expects (~> 0.0.2)
       net-ldap
     arel (7.1.1)
-    autoprefixer-rails (6.4.0.3)
+    autoprefixer-rails (6.4.1)
       execjs
     bootstrap-sass (3.3.6)
       autoprefixer-rails (>= 5.2.1)
@@ -169,6 +169,10 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (2.0.5)
+    tiny_tds (1.0.4)
+      mini_portile2 (~> 2.0)
+    tiny_tds (1.0.4-x86-mingw32)
+      mini_portile2 (~> 2.0)
     turbolinks (5.0.1)
       turbolinks-source (~> 5)
     turbolinks-source (5.0.0)
@@ -206,6 +210,7 @@ DEPENDENCIES
   sdoc (~> 0.4.1)
   spreadsheet
   sqlite3
+  tiny_tds
   turbolinks
   uglifier (>= 3.0.2)
   whenever

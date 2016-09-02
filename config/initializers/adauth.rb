@@ -5,7 +5,7 @@ Adauth.configure do |c|
   # c.query_password = "!printers!"
   # c.server = "10.220.0.230"
   # c.base = "dc=mainoffice, dc=dival, dc=com"
-  # c.allowed_groups = ["DiVal Safety Events", Domain Admins"]
+  # c.allowed_groups = ["DiVal Safety Events", "Domain Admins"]
 
   # Provident AD Config
   c.domain = "provident.local"

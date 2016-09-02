@@ -1,5 +1,6 @@
 class EventTypesController < ApplicationController
   before_action :require_user
+  before_action :require_admin
   before_action :set_event_type, except: [:index, :new, :create]
 
   def index

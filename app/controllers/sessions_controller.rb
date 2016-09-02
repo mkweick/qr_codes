@@ -8,16 +8,30 @@ class SessionsController < ApplicationController
   def create
     redirect_to login_path unless params[:username] && params[:password]
 
-    ldap_user = Adauth.authenticate(params[:username], params[:password])
+    username, password = params[:username], params[:password]
 
-    if ldap_user
-      session[:email] = ldap_user.ldap_object[:userprincipalname].first
-      session[:first_name] = ldap_user.ldap_object[:givenname].first
-      redirect_to(session[:return_to] || root_path)
-      session.delete(:return_to)
+    if username == 'checkin'
+      if password == 'checkin!!'
+        session[:email] = 'check-in@divalsafety.com'
+        session[:first_name] = 'Check-In'
+        redirect_to(session[:return_to] || root_path)
+        session.delete(:return_to)
+      else
+        flash.now.alert = 'Authentication failed'
+        render 'new'
+      end
     else
-      flash.now.alert = 'Authentication failed'
-      render 'new'
+      ldap_user = Adauth.authenticate(username, password)
+
+      if ldap_user
+        session[:email] = ldap_user.ldap_object[:userprincipalname].first
+        session[:first_name] = ldap_user.ldap_object[:givenname].first
+        redirect_to(session[:return_to] || root_path)
+        session.delete(:return_to)
+      elsif 
+        flash.now.alert = 'Authentication failed'
+        render 'new'
+      end
     end
   end
 

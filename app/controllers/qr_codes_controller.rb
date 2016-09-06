@@ -392,6 +392,8 @@ class QrCodesController < ApplicationController
 
 		if @event_name && event_dir?('active', @event_name)
 			if contact_id
+				make_walk_in_crm_dir(@event_name) unless walk_in_crm_dir?(@event_name)
+
 				db = TinyTds::Client.new( host: '10.220.0.252', database: 'DiValSafety1_MSCRM',
 					username: 'sa', password: 'CRMadmin#')
 
@@ -466,6 +468,10 @@ class QrCodesController < ApplicationController
 		Dir.exist?(Rails.root.join('events', 'active', event_name, batch))
 	end
 
+	def walk_in_crm_dir?(event_name)
+		Dir.exist?(Rails.root.join('events', 'active', event_name, 'Walk In CRM'))
+	end
+
 	def dir_list(path)
 		Dir.entries(path).select { |file| file != '.' && file != '..' && file != '.gitignore' }
 	end
@@ -478,6 +484,10 @@ class QrCodesController < ApplicationController
 
 	def make_batch_dir(event_name, batch)
 		Dir.mkdir(Rails.root.join('events', 'active', event_name, batch))
+	end
+
+	def make_walk_in_crm_dir(event_name)
+		Dir.mkdir(Rails.root.join('events', 'active', event_name, 'Walk In CRM'))
 	end
 
 	def move_event_dir(from_status, to_status, event_name)

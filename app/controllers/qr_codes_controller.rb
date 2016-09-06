@@ -1,6 +1,9 @@
 class QrCodesController < ApplicationController
-	before_action :require_user, except: [:index]
-	before_action :require_admin, except: [:index, :on_site_badge, :walk_in, :crm_contact]
+	before_action :require_user, except: [:index, :upload, :upload_batch, :download]
+	before_action :require_admin, except: [:index, :upload, :upload_batch,
+		:download, :on_site_badge, :crm_contact, :on_demand, :generate_crm]
+	before_action :set_event_name, except: [:update, :upload, :archives]
+	skip_before_action :verify_authenticity_token, only: [:upload, :upload_batch]
 
 	def index
 		redirect_to login_path unless logged_in?
@@ -12,19 +15,18 @@ class QrCodesController < ApplicationController
 	end
 
 	def show
-		@event_name = params[:name] if params[:name]
-
 		if @event_name && event_dir?('active', @event_name)
-			@batches = dir_list("events/active/#{@event_name}").sort
+			batches = dir_list("events/active/#{@event_name}")
+			batches.delete('Walk In')
+			batches.delete('Walk In CRM')
+			@batches = batches.sort
 		else
-			flash.alert = "No active event found, check the archives."
+			flash.alert = "Event not found."
 			redirect_to root_path
 		end
 	end
 
 	def edit
-		@event_name = params[:name] if params[:name]
-
 		if @event_name
 			event_name = @event_name.split(' ')
 			@city = event_name.shift
@@ -39,7 +41,7 @@ class QrCodesController < ApplicationController
 	end
 
 	def update
-		original_event_name = params[:name].strip if params[:name]
+		original_event_name = params[:name] if params[:name]
 		new_event_name = params[:city] + ' ' + params[:type] + ' ' + params[:year]
 
 		if params[:city].blank? || params[:type].blank? || params[:year].blank?
@@ -75,166 +77,193 @@ class QrCodesController < ApplicationController
 	end
 
 	def upload
-		events = dir_list('events/active')
-		archives = dir_list('events/archive')
-		event_name = params[:city] + ' ' + params[:type] + ' ' + params[:year]
+		if logged_in?
+			if admin?
+				events = dir_list('events/active')
+				archives = dir_list('events/archive')
+				event_name = params[:city] + ' ' + params[:type] + ' ' + params[:year]
 
-		if params[:city].blank? || params[:type].blank? || params[:year].blank?
-			flash.alert = "Location, Event Type and Year are all <strong>required</strong>."
-		elsif events.any? { |event| event.strip.downcase == event_name.downcase }
-			flash.alert = "Already an active event with the name \"#{event_name}\""
-		elsif archives.any? { |event| event.strip.downcase == event_name.downcase }
-			flash.alert = "Already an archived event with the name \"#{event_name}\""
-		else
-			if params[:file]
-				file = params[:file]
-				filename = sanitize(file.original_filename)
-				file_extension = filename[-4..-1].downcase
-
-				if file_extension == '.xls'
-					make_event_dir(event_name)
-					make_batch_dir(event_name, '1')
-
-				  File.open(Rails.root.join('events', 'active', event_name, '1',
-				  	filename), 'wb') do |f|
-				    f.write(file.read)
-					end
-
-					file_error_check(event_name, '1', filename)
+				if params[:city].blank? || params[:type].blank? || params[:year].blank?
+					flash.alert = "Location, Event Type and Year are all <strong>required</strong>."
+				elsif events.any? { |event| event.strip.downcase == event_name.downcase }
+					flash.alert = "Already an active event with the name \"#{event_name}\""
+				elsif archives.any? { |event| event.strip.downcase == event_name.downcase }
+					flash.alert = "Already an archived event with the name \"#{event_name}\""
 				else
-					flash.alert = "File must be <strong>.xls</strong> format."
-			  end
+					if params[:file]
+						file = params[:file]
+						filename = sanitize(file.original_filename)
+						file_extension = filename[-4..-1].downcase
+
+						if file_extension == '.xls'
+							make_event_dir(event_name)
+							make_batch_dir(event_name, '1')
+
+						  File.open(Rails.root.join('events', 'active', event_name, '1',
+						  	filename), 'wb') do |f|
+						    f.write(file.read)
+							end
+
+							file_error_check(event_name, '1', filename)
+						else
+							flash.alert = "File must be <strong>.xls</strong> format."
+					  end
+					else
+						make_event_dir(event_name)
+						flash.notice = "#{event_name} created successfully."
+					end
+				end
+				redirect_to root_path
 			else
-				make_event_dir(event_name)
-				flash.notice = "#{event_name} created successfully."
+				flash.alert = "Admin access is required to do that."
+				redirect_to root_path
 			end
+		else
+			flash.alert = "Please log in."
+			redirect_to login_path
 		end
-		redirect_to root_path
 	end
 
 	def upload_batch
-		event_name = params[:name] if params[:name]
+		if logged_in?
+			if admin?
+				if @event_name
+					if params[:file]
+						file = params[:file]
+						filename = sanitize(file.original_filename)
+						file_extension = filename[-4..-1].downcase
 
-		if event_name
-			if params[:file]
-				file = params[:file]
-				filename = sanitize(file.original_filename)
-				file_extension = filename[-4..-1].downcase
+						if file_extension == '.xls'
+							batches = dir_list("events/active/#{@event_name}")
+							batches.delete('Walk In')
+							batches.delete('Walk In CRM')
+							next_batch = batches.any? ? batches.map(&:to_i).sort.last.next.to_s : '1'
+							make_batch_dir(@event_name, next_batch)
 
-				if file_extension == '.xls'
-					batches = dir_list("events/active/#{event_name}")
-					next_batch = batches.any? ? batches.map(&:to_i).sort.last.next.to_s : '1'
-					make_batch_dir(event_name, next_batch)
+						  File.open(Rails.root.join('events', 'active', @event_name, next_batch,
+						  	filename), 'wb') do |f|
+						    f.write(file.read)
+						  end
 
-				  File.open(Rails.root.join('events', 'active', event_name, next_batch,
-				  	filename), 'wb') do |f|
-				    f.write(file.read)
-				  end
-
-				  file_error_check(event_name, next_batch, filename, false)
+						  file_error_check(@event_name, next_batch, filename, false)
+						else
+							flash.alert = "File must be <strong>.xls</strong> format."
+					  end
+					else
+						flash.alert = "No file was selected for upload."
+					end
+					redirect_to event_path(name: @event_name)
 				else
-					flash.alert = "File must be <strong>.xls</strong> format."
-			  end
+					redirect_to root_path
+				end
 			else
-				flash.alert = "No file was selected for upload."
+				flash.alert = "Admin access is required to do that."
+				redirect_to root_path
 			end
-			redirect_to event_path(name: event_name)
 		else
-			redirect_to root_path
+			flash.alert = "Please log in."
+			session[:return_to] = event_path(name: @event_name)
+			redirect_to login_path
 		end
 	end
 
 	def generate
-		event_name = params[:name] if params[:name]
 		batch = params[:batch] if params[:batch]
 		email = params[:email].strip if params[:email]
 
-		if event_name && batch && email
-			GenerateQrCodesExportJob.perform_later(event_name, batch, email)
+		if @event_name && batch && email
+			GenerateQrCodesExportJob.perform_later(@event_name, batch, email)
 			flash.notice = "We'll send you an email once Batch #{batch} processing is complete."
-			redirect_to event_path(name: event_name)
+			redirect_to event_path(name: @event_name)
 		else
 			redirect_to root_path
 		end
 	end
 
 	def download
-		if %w(original qr_codes export template).include? params[:type]
-			name = params[:name] if params[:name]
-			batch = params[:batch] if params[:batch]
-			file = params[:file] if params[:file]
+		if logged_in?
+			if admin?
+				if %w(original qr_codes export template).include? params[:type]
+					batch = params[:batch] if params[:batch]
+					file = params[:file] if params[:file]
 
-			case params[:type]
-			when 'original'
-				path = Rails.root.join('events', 'active', name, batch, file)
-		  	send_file(path, type: 'application/vnd.ms-excel',
-		  		filename: file, disposition: 'attachment')
-		  when 'qr_codes'
-				path = Rails.root.join('events', 'active', name, batch, 'qr_codes.zip')
-		  	send_file(path, type: 'application/zip',
-		  		filename: "QR_CODES_#{name}_BATCH_#{batch}.zip",
-		  		disposition: 'attachment')
-		  when 'export'
-				path = Rails.root.join('events', 'active', name, batch,
-					'export', 'export.xls')
-		  	send_file(path, type: 'application/vnd.ms-excel',
-		  		filename: "FINAL_#{name}_BATCH_#{batch}.xls",
-		  		disposition: 'attachment')
-		  when 'template'
-		  	path = Rails.root.join('events', 'upload_template',
-		  		'QR CODES UPLOAD TEMPLATE.xls')
-		  	send_file(path, type: 'application/vnd.ms-excel',
-		  		filename: "QR CODES UPLOAD TEMPLATE.xls", disposition: 'attachment')
-		  end
+					case params[:type]
+					when 'original'
+						path = Rails.root.join('events', 'active', @event_name, batch, file)
+				  	send_file(path, type: 'application/vnd.ms-excel',
+				  		filename: file, disposition: 'attachment')
+				  when 'qr_codes'
+						path = Rails.root.join('events', 'active', @event_name, batch, 'qr_codes.zip')
+				  	send_file(path, type: 'application/zip',
+				  		filename: "QR_CODES_#{@event_name}_BATCH_#{batch}.zip",
+				  		disposition: 'attachment')
+				  when 'export'
+						path = Rails.root.join('events', 'active', @event_name, batch,
+							'export', 'export.xls')
+				  	send_file(path, type: 'application/vnd.ms-excel',
+				  		filename: "FINAL_#{@event_name}_BATCH_#{batch}.xls",
+				  		disposition: 'attachment')
+				  when 'template'
+				  	path = Rails.root.join('events', 'upload_template',
+				  		'QR CODES UPLOAD TEMPLATE.xls')
+				  	send_file(path, type: 'application/vnd.ms-excel',
+				  		filename: "QR CODES UPLOAD TEMPLATE.xls", disposition: 'attachment')
+				  end
+				else
+					redirect_to :back
+				end
+			else
+				flash.alert = "Admin access is required to do that."
+				redirect_to root_path
+			end
 		else
-			redirect_to :back
+			flash.alert = "Please log in."
+			session[:return_to] = request.referer
+			redirect_to login_path
 		end
 	end
 
-	def archive
-		event_name = params[:name].strip if params[:name]
-
-		if event_name && event_dir?('active', event_name)
+	def archive_event
+		if @event_name && event_dir?('active', @event_name)
 			begin
-      	move_event_dir('active', 'archive', event_name)
-      	flash.notice = "#{event_name} successfully archived."
+      	move_event_dir('active', 'archive', @event_name)
+      	flash.notice = "#{@event_name} successfully archived."
       	redirect_to root_path
       rescue
 				flash.alert = "Files or folders for this event are in use, " +
 											"couldn't archive event. Contact IT."
-      	redirect_to event_path(name: event_name)
+      	redirect_to event_path(name: @event_name)
       end
     else
     	redirect_to root_path
 		end
 	end
 
-	def show_archives
+	def archives
 		@archived_events = dir_list('events/archive').sort_by(&:downcase)
 		@deleted_events = dir_list('events/deleted').sort_by(&:downcase)
 	end
 
 	def activate
-		event_name = params[:name].strip if params[:name]
-		from_status = params[:from].strip if params[:from]
+		from_status = params[:from] if params[:from]
 
-		if event_name && from_status && event_dir?(from_status, event_name)
+		if @event_name && from_status && event_dir?(from_status, @event_name)
       if from_status == 'deleted'
 	      events = dir_list('events/active')
 				archives = dir_list('events/archive')
 
-	      if events.any? { |event| event.strip.downcase == event_name.downcase }
+	      if events.any? { |event| event.strip.downcase == @event_name.downcase }
 					flash.alert = "Failed to re-activate because an active event " +
-												"with the name \"#{event_name}\" exists."
+												"with the name \"#{@event_name}\" exists."
 					redirect_to archives_path
-				elsif archives.any? { |event| event.strip.downcase == event_name.downcase }
+				elsif archives.any? { |event| event.strip.downcase == @event_name.downcase }
 					flash.alert = "Failed to re-activate because an archived event " +
-												"with the name \"#{event_name}\" exists."
+												"with the name \"#{@event_name}\" exists."
 					redirect_to archives_path
 				else
 	      	begin
-	      		move_event_dir(from_status, 'active', event_name)
-	      		flash.notice = "#{event_name} successfully activated."
+	      		move_event_dir(from_status, 'active', @event_name)
+	      		flash.notice = "#{@event_name} successfully activated."
 	      		redirect_to root_path
 	      	rescue
 	      		flash.alert = "Files or folders for this event are in use, " +
@@ -244,8 +273,8 @@ class QrCodesController < ApplicationController
 	      end
 	    else
 	    	begin
-	    		move_event_dir(from_status, 'active', event_name)
-	      	flash.notice = "#{event_name} successfully activated."
+	    		move_event_dir(from_status, 'active', @event_name)
+	      	flash.notice = "#{@event_name} successfully activated."
 	      	redirect_to root_path
 	      rescue
 	      	flash.alert = "Files or folders for this event are in use, " +
@@ -259,26 +288,24 @@ class QrCodesController < ApplicationController
 	end
 
 	def destroy
-		event_name = params[:name].strip if params[:name]
-
-		if event_name && event_dir?('active', event_name)
+		if @event_name && event_dir?('active', @event_name)
 			begin
-				remove_deleted_event_dir(event_name) if event_dir?('deleted', event_name)
+				remove_deleted_event_dir(@event_name) if event_dir?('deleted', @event_name)
       	begin
-      		move_event_dir('active', 'deleted', event_name)
-      		flash.notice = "#{event_name} successfully deleted. Events are " +
+      		move_event_dir('active', 'deleted', @event_name)
+      		flash.notice = "#{@event_name} successfully deleted. Events are " +
 	      							 	 "permanently deleted after 7 days. Go to Archives " +
 	      							 	 "to re-activate if this was a mistake."
 	      	redirect_to root_path
 	      rescue
-	      	flash.alert = "#{event_name} has files or folders in use, " +
+	      	flash.alert = "#{@event_name} has files or folders in use, " +
 	    									"couldn't delete event. Contact IT."
-	    		redirect_to event_path(name: event_name)
+	    		redirect_to event_path(name: @event_name)
 	      end
 	    rescue
-	    	flash.alert = "Deleted event #{event_name} has files or folders in use, " +
+	    	flash.alert = "Deleted event #{@event_name} has files or folders in use, " +
 	    								"couldn't remove event. Contact IT."
-	    	redirect_to event_path(name: event_name)
+	    	redirect_to event_path(name: @event_name)
 	    end
 		else
 			redirect_to root_path
@@ -286,69 +313,146 @@ class QrCodesController < ApplicationController
 	end
 
 	def destroy_batch
-		event_name = params[:name].strip if params[:name]
 		batch = params[:batch] if params[:batch]
 
-		if event_name && batch && batch_dir?(event_name, batch)
+		if @event_name && batch && batch_dir?(@event_name, batch)
 			begin
-      	delete_batch_dir(event_name, batch)
+      	delete_batch_dir(@event_name, batch)
       	flash.notice = "Batch #{batch} successfully deleted."
 	    rescue
 	    	flash.alert = "Batch #{batch} has files or folders in use, " +
 	    								"couldn't delete batch. Contact IT."
 	    end
-	    redirect_to event_path(name: event_name)
+	    redirect_to event_path(name: @event_name)
 		else
 			redirect_to root_path
 		end
 	end
 
 	def on_site_badge
-		db = TinyTds::Client.new(
-			host: 		'10.220.0.252',
-			database: 'DiValSafety1_MSCRM',
-			username: 'sa',
-			password: 'CRMadmin#'
-		)
-
-		@results = []
-
-		sql = db.execute(
-			"SELECT a.FullName, a.ParentCustomerIdName, b.FullName AS \"SalesRep\" FROM ContactBase AS a
-			 JOIN SystemUserBase AS b ON a.OwnerId = b.SystemUserId
-			 WHERE a.FirstName = 'john'
-			 	 AND a.LastName = 'smith'
-			 	 AND a.StateCode = '0'"
-		)
-		sql.each(symbolize_keys: true) { |row| @results << row }
-	end
-
-	def walk_in
-
-	end
-
-	def find_crm_contact
-
+		unless @event_name && event_dir?('active', @event_name)
+			flash.alert = "Event not found."
+			redirect_to root_path
+		end
 	end
 
 	def crm_contact
-		db = TinyTds::Client.new(
-			host: 		'10.220.0.252',
-			database: 'DiValSafety1_MSCRM',
-			username: 'sa',
-			password: 'CRMadmin#'
-		)
+		if @event_name && event_dir?('active', @event_name)
+			last_name = params[:last_name].strip unless params[:last_name].blank?
+			account_name = params[:account_name].strip unless params[:account_name].blank?
 
-		@results = db.execute(
-			"SELECT a.FullName, a.ParentCustomerIdName, b.FullName AS \"SalesRep\" FROM ContactBase AS a
-			 JOIN SystemUserBase AS b ON a.OwnerId = b.SystemUserId
-			 WHERE a.FirstName = 'john'
-			 	 AND a.LastName = 'smith'
-			 	 AND a.StateCode = '0'"
-		)
+			db = TinyTds::Client.new( host: '10.220.0.252', database: 'DiValSafety1_MSCRM',
+				username: 'sa', password: 'CRMadmin#')
+
+			@results = []
+
+			if last_name
+				if last_name.size > 2
+					params.delete(:account_name)
+
+					last_name = db.escape(last_name)
+					query = db.execute(
+						"SELECT a.ContactId, a.FullName, a.ParentCustomerIdName, b.FullName AS \"SalesRep\"
+						 FROM ContactBase AS a
+					 	 JOIN SystemUserBase AS b ON a.OwnerId = b.SystemUserId
+					 	 WHERE a.LastName = '#{last_name}'
+					 	 	 AND a.StateCode = '0'
+					 	 ORDER BY a.FullName"
+					)
+					query.each(symbolize_keys: true) { |row| @results << row }
+				else
+					flash.now.alert = "Minimum of 3 characters required for last name search."
+				end
+			elsif account_name 
+				if account_name.size > 2
+					params.delete(:last_name)
+
+					account_name = db.escape(account_name)
+					query = db.execute(
+						"SELECT a.ContactId, a.FullName, a.ParentCustomerIdName, b.FullName AS \"SalesRep\"
+						 FROM ContactBase AS a
+					 	 JOIN SystemUserBase AS b ON a.OwnerId = b.SystemUserId
+					 	 WHERE a.ParentCustomerIdName LIKE '%#{account_name}%'
+					 	 	 AND a.StateCode = '0'
+					 	 ORDER BY a.ParentCustomerIdName, a.FullName"
+					)
+					query.each(symbolize_keys: true) { |row| @results << row }
+				else
+					flash.now.alert = "Minimum of 3 characters required for account search."
+				end
+			end
+		else
+			flash.alert = "Event not found."
+			redirect_to root_path
+		end
+	end
+
+	def generate_crm
+		contact_id = params[:contact_id] if params[:contact_id]
+
+		if @event_name && event_dir?('active', @event_name)
+			if contact_id
+				db = TinyTds::Client.new( host: '10.220.0.252', database: 'DiValSafety1_MSCRM',
+					username: 'sa', password: 'CRMadmin#')
+
+				query = db.execute(
+					"SELECT a.FullName, b.Name AS \"AccountName\",
+						b.icbcore_ExtAccountID AS \"AccountNumber\",
+						c.FullName AS \"SalesRep\", a.EMailAddress1  AS \"Email\",
+						a.Telephone1  AS \"Phone\", d.Line1 AS \"Street1\",
+						d.Line2 AS \"Street2\", d.City, d.StateOrProvince AS \"State\",
+						d.PostalCode AS \"Zip\", 'VENDOR: ' AS \"EmailSubject\"
+					 FROM ContactBase AS a
+					 JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId
+					 JOIN SystemUserBase AS c ON a.OwnerId = c.SystemUserId
+					 JOIN CustomerAddressBase AS d ON a.ContactId = d.ParentId
+				 	 WHERE a.ContactId = '#{contact_id}'
+				 	 	 AND d.AddressNumber = '1'"
+				)
+				contact = query.each(as: :array).first
+
+				if contact
+					qr_code_path = Rails.root.join('events', 'active', @event_name, 'Walk In CRM')
+					qr_code_filename = "#{sanitize(contact[0])}.png"
+
+			  	@qr = RQRCode::QRCode.new("MATMSG:TO:leads@divalsafety.com;SUB:#{contact[11]};BODY:" +
+						"\n______________________" +
+						"#{"\n" + contact[0]}" +
+						"#{"\n" + contact[1]}#{' / ' + contact[2] if contact[2]}" +
+						"#{"\n" + contact[6] if contact[6]}" +
+						"#{"\n" + contact[7] if contact[7]}" +
+						"#{"\n" + contact[8] if contact[8]}" +
+						"#{"\n" if !contact[8] && (contact[9] || contact[10])}" +
+						"#{', ' if contact[8] && contact[9]}" +
+						"#{contact[9] if contact[9]} #{contact[10]  if contact[10]}" +
+						"#{"\n" + 'E: ' + contact[4] if contact[4]}" +
+						"#{"\n" + 'P: ' + contact[5] if contact[5]}" +
+						"#{"\n" + contact[3] if contact[3]};;", size: 20, level: :h).to_img.resize(375, 375)
+
+			  	@qr.save("#{qr_code_path}/#{qr_code_filename}")
+				else
+					flash.alert = "No contact found."
+					redirect_to crm_contact_path(name: @event_name)
+				end
+			else
+				flash.alert = "Contact ID missing."
+				redirect_to crm_contact_path(name: @event_name)
+			end
+		else
+			flash.alert = "Event not found."
+			redirect_to root_path
+		end
+	end
+
+	def on_demand
+
 	end
 
 	private
+
+	def set_event_name
+		@event_name = params[:name] if params[:name]
+	end
 
 	def sanitize(filename)
 		filename.gsub(/[\\\/:*"'?<>|]/, '')
@@ -368,6 +472,8 @@ class QrCodesController < ApplicationController
 
 	def make_event_dir(event_name)
 		Dir.mkdir(Rails.root.join('events', 'active', event_name))
+		Dir.mkdir(Rails.root.join('events', 'active', event_name, 'Walk In'))
+		Dir.mkdir(Rails.root.join('events', 'active', event_name, 'Walk In CRM'))
 	end
 
 	def make_batch_dir(event_name, batch)

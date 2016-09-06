@@ -33,17 +33,21 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 		  	next if row[2].blank?
 		  	qr_code_filename = "#{sanitize(row[2])}.png"
 
-		  	RQRCode::QRCode.new("MATMSG:TO:leads@divalsafety.com;SUB:#{row[13]};BODY:
-					______________________
-					#{row[2]}
-					#{row[3]} / #{row[4]}
-					#{row[8]}
-					#{row[9]}
-					#{row[10]}, #{row[11]} #{row[12]}
-					P: #{row[7]}
-					E: #{row[6]}
-					#{row[5]};;", size: 20, level: :h).to_img.resize(375, 375)
-		  		.save("#{qr_codes_path}/#{qr_code_filename}")
+		  	RQRCode::QRCode.new("MATMSG:TO:leads@divalsafety.com;SUB:#{row[13]};BODY:" +
+					"\n______________________" +
+					"#{"\n" + row[2]}" +
+					"#{"\n" + row[3]}#{' / ' + row[4] if row[4]}" +
+					"#{"\n" + row[8] if row[8]}" +
+					"#{"\n" + row[9] if row[9]}" +
+					"#{"\n" + row[10] if row[10]}" +
+					"#{"\n" if !row[10] && (row[11] || row[12])}" +
+					"#{', ' if row[10] && row[11]}" +
+					"#{row[11] if row[11]} #{row[12]  if row[12]}" +
+					"#{"\n" + 'E: ' + row[6] if row[6]}" +
+					"#{"\n" + 'P: ' + row[7] if row[7]}" +
+					"#{"\n" + row[5] if row[5]};;" , size: 20, level: :h)
+		  		.to_img.resize(375, 375).save("#{qr_codes_path}/#{qr_code_filename}"
+		  	)
 
 		  	new_row_index = sheet.last_row_index + 1
 		  	attendee_row = [row[0], row[1], row[2], row[3], row[5], qr_code_filename]

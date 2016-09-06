@@ -34,7 +34,10 @@ Rails.application.configure do
   # }
 
   # Gmail Settings
-  config.action_mailer.default_url_options = { host: 'webdev.com', port: 3000 }
+  config.action_mailer.default_url_options = {
+    host: 'webdev.divalsafety.com',
+    port: 3000
+  }
   config.action_mailer.smtp_settings = {
     address: 'smtp.gmail.com',
     port: 587,

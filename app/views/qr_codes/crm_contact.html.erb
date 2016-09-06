@@ -1,0 +1,73 @@
+<% @page_title = 'Search CRM Contacts' %>
+
+<div class="row"> 
+  <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+    <div class="well text-center">
+      <h2>Search CRM Contacts</h2>
+      <span class="font-20"><%= @event_name %></span>
+      <hr class="top-10" />
+      <%= form_tag crm_contact_path(name: @event_name), method: 'get' do %>
+        <div class="form-group">
+          <%= hidden_field_tag 'name', @event_name %>
+          <%= text_field_tag 'last_name', params[:last_name],
+            placeholder: "Last Name (Min of 3 characters)",
+            class: "form-control" %>
+        </div>
+
+        <h4>OR</h4>
+
+        <div class="form-group">
+          <%= text_field_tag 'account_name', params[:account_name],
+            placeholder: "Account Name (Min of 3 characters)",
+            class: "form-control", maxlength: 30 %>
+        </div>
+
+        <%= submit_tag 'Search', class: "btn btn-primary" %>
+        <%= link_to 'Cancel', on_site_badge_path(name: @event_name),
+          class: "btn btn-danger left-10" %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% if @results && @results.any? %>
+  <div class="row">
+    <table class="table table-hover top-table-border">
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>Account Name</th>
+          <th>Sales Rep</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @results.each do |row| %>
+          <tr>
+            <td>
+              <%= link_to row[:FullName],
+                generate_crm_path(name: @event_name,
+                  contact_id: row[:ContactId]) %>
+            </td>
+            <td>
+              <%= link_to row[:ParentCustomerIdName],
+                generate_crm_path(name: @event_name,
+                  contact_id: row[:ContactId]) %>
+            </td>
+            <td>
+              <%= link_to row[:SalesRep],
+                generate_crm_path(name: @event_name,
+                  contact_id: row[:ContactId]) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
+<script>
+  $(document).ready(function() {
+    $('#last_name').focus(function() { $('#account_name').val(""); });
+    $('#account_name').focus(function() { $('#last_name').val(""); });
+  });
+</script>

@@ -30,39 +30,46 @@
   </div>
 </div>
 
-<% if @results && @results.any? %>
-  <div class="row">
-    <table class="table table-hover top-table-border">
-      <thead>
-        <tr>
-          <th>Full Name</th>
-          <th>Account Name</th>
-          <th>Sales Rep</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @results.each do |row| %>
+<% if @results %>
+  <% if @results.any? %>
+    <div class="row">
+      <table class="table table-hover top-table-border">
+        <thead>
           <tr>
-            <td>
-              <%= link_to row[:FullName],
-                generate_crm_path(name: @event_name,
-                  contact_id: row[:ContactId]) %>
-            </td>
-            <td>
-              <%= link_to row[:ParentCustomerIdName],
-                generate_crm_path(name: @event_name,
-                  contact_id: row[:ContactId]) %>
-            </td>
-            <td>
-              <%= link_to row[:SalesRep],
-                generate_crm_path(name: @event_name,
-                  contact_id: row[:ContactId]) %>
-            </td>
+            <th>Full Name</th>
+            <th>Account Name</th>
+            <th>Sales Rep</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          <% @results.each do |row| %>
+            <tr>
+              <td>
+                <%= link_to row[:FullName],
+                  generate_crm_path(name: @event_name,
+                    contact_id: row[:ContactId]) %>
+              </td>
+              <td>
+                <%= link_to row[:ParentCustomerIdName],
+                  generate_crm_path(name: @event_name,
+                    contact_id: row[:ContactId]) %>
+              </td>
+              <td>
+                <%= link_to row[:SalesRep],
+                  generate_crm_path(name: @event_name,
+                    contact_id: row[:ContactId]) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <h3 class="text-center">
+      No results found for
+      <%= params[:last_name] ? params[:last_name] : params[:account_name] %>
+    </h3>
+  <% end %>
 <% end %>
 
 <script>

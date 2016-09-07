@@ -341,28 +341,26 @@ class QrCodesController < ApplicationController
 			last_name = params[:last_name].strip unless params[:last_name].blank?
 			account_name = params[:account_name].strip unless params[:account_name].blank?
 
-			db = TinyTds::Client.new( host: '10.220.0.252', database: 'DiValSafety1_MSCRM',
-				username: 'sa', password: 'CRMadmin#')
+			if last_name || account_name
+				db = TinyTds::Client.new( host: '10.220.0.252', database: 'DiValSafety1_MSCRM',
+					username: 'sa', password: 'CRMadmin#')
 
-			@results = []
+				@results = []
+			end
 
 			if last_name
-				if last_name.size > 2
-					params.delete(:account_name)
+				params.delete(:account_name)
 
-					last_name = db.escape(last_name)
-					query = db.execute(
-						"SELECT a.ContactId, a.FullName, a.ParentCustomerIdName, b.FullName AS \"SalesRep\"
-						 FROM ContactBase AS a
-					 	 JOIN SystemUserBase AS b ON a.OwnerId = b.SystemUserId
-					 	 WHERE a.LastName = '#{last_name}'
-					 	 	 AND a.StateCode = '0'
-					 	 ORDER BY a.FullName"
-					)
-					query.each(symbolize_keys: true) { |row| @results << row }
-				else
-					flash.now.alert = "Minimum of 3 characters required for last name search."
-				end
+				last_name = db.escape(last_name)
+				query = db.execute(
+					"SELECT a.ContactId, a.FullName, a.ParentCustomerIdName, b.FullName AS \"SalesRep\"
+					 FROM ContactBase AS a
+				 	 JOIN SystemUserBase AS b ON a.OwnerId = b.SystemUserId
+				 	 WHERE a.LastName = '#{last_name}'
+				 	 	 AND a.StateCode = '0'
+				 	 ORDER BY a.FullName"
+				)
+				query.each(symbolize_keys: true) { |row| @results << row }
 			elsif account_name 
 				if account_name.size > 2
 					params.delete(:last_name)

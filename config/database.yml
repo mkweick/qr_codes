@@ -15,5 +15,11 @@ test:
   database: db/test.sqlite3
 
 production:
-  <<: *default
-  database: db/production.sqlite3
+  adapter: postgresql
+  encoding: unicode
+  database: event_qr_codes
+  pool: 5
+  username: dival
+  password: Tdot1721#
+  host: localhost
+  port: 5432

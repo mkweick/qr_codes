@@ -102,6 +102,8 @@ GEM
     nokogiri (1.6.8-x86-mingw32)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
+    pg (0.18.4)
+    pg (0.18.4-x86-mingw32)
     pkg-config (1.1.7)
     pry (0.10.4)
       coderay (~> 1.1.0)
@@ -200,6 +202,7 @@ DEPENDENCIES
   jbuilder (~> 2.6.0)
   jquery-rails
   jquery-turbolinks
+  pg
   pry
   rails (= 5.0.0.1)
   rb-readline

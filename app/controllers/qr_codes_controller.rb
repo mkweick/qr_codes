@@ -8,9 +8,11 @@ class QrCodesController < ApplicationController
 	def index
 		redirect_to login_path unless logged_in?
 
-		@events = dir_list('events/active').sort_by(&:downcase)
+		@event = Event.new
+
+		@events = Event.sorted_active_events
 		@cities = Location.sorted_cities
-		@types = EventType.sorted_types
+		@types = Type.sorted_types
 		@years = Time.now.year..(Time.now.year + 2)
 	end
 
@@ -33,7 +35,7 @@ class QrCodesController < ApplicationController
 			@year = event_name.pop
 			@type = event_name.join(' ')
 			@cities = Location.sorted_cities
-			@types = EventType.sorted_types
+			@types = Type.sorted_types
 			@years = Time.now.year..(Time.now.year + 2)
 		else
 			redirect_to root_path
@@ -169,7 +171,8 @@ class QrCodesController < ApplicationController
 
 	def generate
 		batch = params[:batch] if params[:batch]
-		email = params[:email].strip if params[:email]
+		# email = session[:email]
+		email = 'mweick@provident.com'
 
 		if @event_name && batch && email
 			GenerateQrCodesExportJob.perform_later(@event_name, batch, email)
@@ -427,7 +430,7 @@ class QrCodesController < ApplicationController
 						"#{contact[9] if contact[9]} #{contact[10]  if contact[10]}" +
 						"#{"\n" + 'E: ' + contact[4] if contact[4]}" +
 						"#{"\n" + 'P: ' + contact[5] if contact[5]}" +
-						"#{"\n" + contact[3] if contact[3]};;", size: 20, level: :h).to_img.resize(375, 375)
+						"#{"\n" + contact[3] if contact[3]};;", level: :q).to_img.resize(375, 375)
 
 			  	@qr.save("#{qr_code_path}/#{qr_code_filename}")
 				else

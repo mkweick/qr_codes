@@ -20,9 +20,10 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 		sheet.column(0).width = 35
 		sheet.column(1).width = 19
 		sheet.column(2).width = 26
-		sheet.column(3).width = 38
-		sheet.column(4).width = 20
-		sheet.column(5).width = 34
+		sheet.column(3).width = 30
+		sheet.column(4).width = 38
+		sheet.column(5).width = 20
+		sheet.column(6).width = 34
 
 		qr_codes_path = qr_codes_file_path(event_name, batch)
 		file = original_upload(event_name, batch)
@@ -45,12 +46,15 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 					"#{row[11] if row[11]} #{row[12]  if row[12]}" +
 					"#{"\n" + 'E: ' + row[6] if row[6]}" +
 					"#{"\n" + 'P: ' + row[7] if row[7]}" +
-					"#{"\n" + row[5] if row[5]};;" , size: 20, level: :h)
+					"#{"\n" + row[5] if row[5]};;", level: :q)
 		  		.to_img.resize(375, 375).save("#{qr_codes_path}/#{qr_code_filename}"
 		  	)
 
+		  	full_name = row[2].split(' ', 2)
+		  	attendee_row = [row[0], row[1], full_name[0], full_name[1],
+		  									row[3], row[5], qr_code_filename]						
 		  	new_row_index = sheet.last_row_index + 1
-		  	attendee_row = [row[0], row[1], row[2], row[3], row[5], qr_code_filename]
+		  	
 		  	sheet.insert_row(new_row_index, attendee_row)
 		  end
 		end

@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160826163806) do
+ActiveRecord::Schema.define(version: 20160908145559) do
+
+  create_table "batches", force: :cascade do |t|
+    t.string   "event_id",         null: false
+    t.string   "number",           null: false
+    t.string   "description",      null: false
+    t.string   "uploaded_file_id"
+    t.string   "qr_codes_id"
+    t.string   "final_export_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -27,14 +38,21 @@ ActiveRecord::Schema.define(version: 20160826163806) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "event_types", force: :cascade do |t|
-    t.string   "name",       null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table "events", force: :cascade do |t|
+    t.string   "name",                     null: false
+    t.string   "status",     default: "1", null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
   create_table "locations", force: :cascade do |t|
     t.string   "city",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "types", force: :cascade do |t|
+    t.string   "name",       null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -4,7 +4,7 @@ class LocationsController < ApplicationController
   before_action :set_location, except: [:index, :new, :create]
 
   def index
-    @locations = Location.order('lower(city)')
+    @locations = Location.sorted_cities
   end
 
   def new

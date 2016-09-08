@@ -6,6 +6,6 @@ class Location < ActiveRecord::Base
   end
 
 	def self.sorted_cities
-		self.pluck(:city).sort
+		self.order('lower(city)')
 	end
 end

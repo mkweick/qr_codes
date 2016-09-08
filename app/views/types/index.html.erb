@@ -5,21 +5,21 @@
     <h2 class="text-center">Event Types</h2>
     <hr />
     <div class="text-center bottom-10">
-      <%= link_to 'New Event Type', new_event_type_path, class: "btn btn-primary" %>
+      <%= link_to 'New Event Type', new_type_path, class: "btn btn-primary" %>
     </div>
-    <% if @event_types.any? %>
+    <% if @types.any? %>
       <div class="list-group">
-        <% @event_types.each do |event_type| %>
+        <% @types.each do |type| %>
           <li class="list-group-item">
-            <%= event_type.name %>
+            <%= type.name %>
             <span class="pull-right">
-              <%= link_to edit_event_type_path(event_type.id), title: "Edit" do %>
+              <%= link_to edit_type_path(type), title: "Edit" do %>
                 <span class="glyphicon glyphicon-pencil right-10"></span>
               <% end %>
 
-              <%= link_to event_type_path(event_type.id), method: 'delete',
+              <%= link_to type_path(type), method: 'delete',
                 title: "Delete", class: "red",
-                data: { confirm: "Are you sure want to DELETE event type #{event_type.name}?" } do %>
+                data: { confirm: "Are you sure want to DELETE event type #{type.name}?" } do %>
                   <span class="glyphicon glyphicon-remove-circle"></span>
               <% end %>
             </span>

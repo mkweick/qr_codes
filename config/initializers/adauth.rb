@@ -1,18 +1,18 @@
 Adauth.configure do |c|
   # DiVal AD Config
-  c.domain = "mainoffice.dival.com"
-  c.query_user = "printers"
-  c.query_password = "!printers!"
-  c.server = "10.220.0.230"
-  c.base = "dc=mainoffice, dc=dival, dc=com"
-  c.allowed_groups = ["DiVal Safety Events", "Domain Admins"]
+  # c.domain = "mainoffice.dival.com"
+  # c.query_user = "printers"
+  # c.query_password = "!printers!"
+  # c.server = "10.220.0.230"
+  # c.base = "dc=mainoffice, dc=dival, dc=com"
+  # c.allowed_groups = ["DiVal Safety Events", "Domain Admins"]
 
   # Provident AD Config
-  # c.domain = "provident.local"
-  # c.query_user = "mweick"
-  # c.query_password = "HHockey1818"
-  # c.server = "10.2.10.2"
-  # c.base = "ou=Administrators, dc=provident, dc=local"
+  c.domain = "provident.local"
+  c.query_user = "mweick"
+  c.query_password = "HHockey1818"
+  c.server = "10.2.10.2"
+  c.base = "ou=Administrators, dc=provident, dc=local"
 
   # The LDAP base of your domain/intended users
   # For all users in your domain the base would be: dc=example, dc=com

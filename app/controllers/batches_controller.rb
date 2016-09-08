@@ -1,0 +1,3 @@
+class BatchesController < ApplicationController
+
+end

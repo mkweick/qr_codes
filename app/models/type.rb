@@ -1,4 +1,4 @@
-class EventType < ActiveRecord::Base
+class Type < ActiveRecord::Base
 	validates :name, presence: true, uniqueness: { case_sensitive: false }
 
   def name=(fn)
@@ -6,6 +6,6 @@ class EventType < ActiveRecord::Base
   end
 
 	def self.sorted_types
-		self.pluck(:name).sort
+		self.order('lower(name)')
 	end
 end

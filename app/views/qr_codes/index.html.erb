@@ -1,3 +1,5 @@
+<%= render 'shared/errors', obj: @event %>
+
 <div class="row">
 	<% if admin? %>
 		<div class="col-xs-12 col-sm-6 col-md-6">
@@ -11,10 +13,10 @@
 				<div class="list-group">
 					<% @events.each do |event| %>
 						<% if admin? %>
-							<%= link_to event, event_path(name: event),
+							<%= link_to event.name, event_path(event),
 								class: "list-group-item" %>
 						<% else %>
-							<%= link_to event, on_site_badge_path(name: event),
+							<%= link_to event, on_site_badge_path(name: event.id),
 								class: "list-group-item" %>
 						<% end %>
 					<% end %>

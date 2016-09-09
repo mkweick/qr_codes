@@ -1,0 +1,26 @@
+<h2 class="margin-0">New Batch</h2>
+<hr class="top-10 bottom-10" />
+<%= form_tag [@event, @batch], multipart: true do %>
+  <%= hidden_field_tag 'name', @event.name %>
+  <div class="form-group text-left">
+    <div class="form-group">
+      <%= select_tag 'city', options_for_select(@locations), required: "required",
+        prompt: '-- Select Location --', class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= text_field_tag 'description', nil, required: "required",
+        placeholder: "Batch Description...", class: "form-control" %>
+    </div>
+
+    <%= file_field_tag 'file', accept: ".xls", required: "required" %>
+
+    <span class="font-12">
+      <span class="ss-red">Must be <strong>.xls</strong> format</span> - 
+      <%= link_to '(Download Template)', download_path(type: 'template'),
+        data: { turbolinks: false } %>
+    </span>
+  </div>
+
+  <%= submit_tag 'Create', class: "btn btn-primary" %>
+<% end %>

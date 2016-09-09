@@ -24,6 +24,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def require_user_no_redirect
+    log_in_message unless logged_in?
+  end
+
   def require_admin
     access_denied_message unless admin?
   end
@@ -36,5 +40,9 @@ class ApplicationController < ActionController::Base
   def access_denied_message
     flash.alert = "Admin access is required to do that."
     redirect_to root_path
+  end
+
+  def sanitize(filename)
+    filename.gsub(/[\\\/:*"'?<>|]/, '')
   end
 end

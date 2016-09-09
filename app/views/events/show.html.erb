@@ -1,0 +1,72 @@
+<% @page_title = @event.name %>
+
+<div id="event-title">
+  <h2 id="event-name" class="pull-left"><%= @event.name %></h2>
+  <div id="event-controls" class="pull-right top-20">
+    <%= link_to 'Edit', edit_event_path(@event),
+      class: "btn btn-sm btn-primary right-5" %>
+
+    <%= link_to 'Archive', archive_event_path(name: @event_name),
+      method: 'post', class: "btn btn-sm btn-warning right-5",
+      data: { confirm: "Are you sure you want to ARCHIVE #{@event_name}" } %>
+
+    <%= link_to 'Delete', destroy_path(name: @event_name),
+      method: 'delete', class: "btn btn-sm btn-danger",
+      data: { confirm: "Are you sure you want to DELETE #{@event_name}" } %>
+  </div>
+</div>
+
+<div class="row">
+  <% if @batches.any? %>
+    <div class="col-xs-12 col-sm-6 col-md-6">
+      <div class="well text-center batch pad-top-15">
+        <%= render 'batches/upload_batch_form' %>
+      </div>
+    </div>
+
+    <% @batches.each do |batch| %>
+      <div class="col-xs-12 col-sm-6 col-md-6">
+        <div class="well text-center batch">
+          <%= link_to [:edit, @event, batch], class: "batch edit" do %>
+            <span class="glyphicon glyphicon-pencil font-17 top-12"></span>
+          <% end %>
+          <%= link_to [@event, batch], method: 'delete', class: "batch delete",
+            data: { confirm: "Are you sure you want to DELETE Batch #{batch.number}"} do %>
+            <span class="glyphicon glyphicon-remove font-20 red top-10"></span>
+          <% end %>
+          <h2 class="bottom-0 inline-block">Batch <%= batch.number %></h2>
+          <h4 class="bottom-0"><%= batch.location %></h4>
+          <span class="font-12">
+            <%= batch.created_at.strftime('%b %d, %Y -%l:%M %p') %>
+          </span>
+          <hr class="top-10" />
+          <div class="list-group">
+            <%= link_to 'Original Upload',
+              download_path(type: 'original', name: @event.name, batch: batch.number),
+              data: { turbolinks: false }, class: "list-group-item" %>
+            <% if batch.qr_codes_id && batch.final_export_id %>
+                <%= link_to 'QR Codes',
+                  download_path(type: 'qr_codes', name: @event.name, batch: batch.number),
+                  data: { turbolinks: false }, class: "list-group-item" %>
+                <%= link_to 'Excel Export',
+                  download_path(type: 'export', name: @event.name, batch: batch.number),
+                  data: { turbolinks: false }, class: "list-group-item" %>
+              </div>
+            <% else %>
+              </div>
+              <hr class="top-10 bottom-10"/>
+              <%= link_to 'Generate QR Codes & Export',
+                generate_path(name: @event.name, batch: batch.number),
+                method: 'post', class: 'btn btn-primary' %>
+            <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+      <div class="well text-center">
+        <%= render 'batches/upload_batch_form' %>
+      </div>
+    </div>
+  <% end %>
+</div>

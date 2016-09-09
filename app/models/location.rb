@@ -5,7 +5,7 @@ class Location < ActiveRecord::Base
     write_attribute(:city, fn.strip)
   end
 
-	def self.sorted_cities
+	def self.sorted_locations
 		self.order('lower(city)')
 	end
 end

@@ -5,17 +5,6 @@ class QrCodesController < ApplicationController
 	before_action :set_event_name, except: [:update, :upload, :archives]
 	skip_before_action :verify_authenticity_token, only: [:upload, :upload_batch]
 
-	def index
-		redirect_to login_path unless logged_in?
-
-		@event = Event.new
-
-		@events = Event.sorted_active_events
-		@cities = Location.sorted_cities
-		@types = Type.sorted_types
-		@years = Time.now.year..(Time.now.year + 2)
-	end
-
 	def show
 		if @event_name && event_dir?('active', @event_name)
 			batches = dir_list("events/active/#{@event_name}")
@@ -78,7 +67,7 @@ class QrCodesController < ApplicationController
 		end
 	end
 
-	def upload
+	def create
 		if logged_in?
 			if admin?
 				events = dir_list('events/active')
@@ -455,10 +444,6 @@ class QrCodesController < ApplicationController
 
 	def set_event_name
 		@event_name = params[:name] if params[:name]
-	end
-
-	def sanitize(filename)
-		filename.gsub(/[\\\/:*"'?<>|]/, '')
 	end
 
 	def event_dir?(status, event_name)

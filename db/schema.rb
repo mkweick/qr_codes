@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20160908145559) do
   create_table "batches", force: :cascade do |t|
     t.string   "event_id",         null: false
     t.string   "number",           null: false
+    t.string   "location",         null: false
     t.string   "description",      null: false
     t.string   "uploaded_file_id"
     t.string   "qr_codes_id"

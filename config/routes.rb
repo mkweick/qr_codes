@@ -1,13 +1,13 @@
 
 Rails.application.routes.draw do
-  root 'qr_codes#index'
+  root 'events#index'
 
   get '/login',     to: 'sessions#new'
   post '/login',    to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
 
   resources :events, except: [] do
-    resources :event_batches, except: []
+    resources :batches, except: []
   end
 
   resources :locations, except: [:show]

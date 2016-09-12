@@ -9,14 +9,4 @@ module QrCodesHelper
 			file[-4..-1] == '.xls'
 		end.first
 	end
-
-	def batch_qr_codes?(event_name, batch)
-		File.exist?(Rails.root.join('events', 'active', event_name, batch,
-			'qr_codes.zip'))
-	end
-
-	def batch_export?(event_name, batch)
-		File.exist?(Rails.root.join('events', 'active', event_name, batch,
-			'export', 'export.xls'))
-	end
 end

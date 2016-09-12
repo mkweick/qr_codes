@@ -42,7 +42,7 @@ GEM
       expects (~> 0.0.2)
       net-ldap
     arel (7.1.1)
-    autoprefixer-rails (6.4.1)
+    autoprefixer-rails (6.4.1.1)
       execjs
     bootstrap-sass (3.3.6)
       autoprefixer-rails (>= 5.2.1)

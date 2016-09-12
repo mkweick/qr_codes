@@ -6,15 +6,14 @@ Rails.application.routes.draw do
   post '/login',    to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
 
-  resources :events, except: [] do
-    resources :batches, except: []
+  resources :events, except: [:new] do
+    resources :batches, except: [:index, :new, :show]
   end
 
   resources :locations, except: [:show]
   resources :types,     except: [:show]
 
   get 'archives',					  to: 'qr_codes#archives'
-  get 'edit',							  to: 'qr_codes#edit'
   get 'download',					  to: 'qr_codes#download'
 
   get 'on-site-badge',      to: 'qr_codes#on_site_badge'
@@ -22,9 +21,6 @@ Rails.application.routes.draw do
   get 'on-demand',          to: 'qr_codes#on_demand'
   get 'generate-crm',       to: 'qr_codes#generate_crm'
 
-  post 'update',					  to: 'qr_codes#update'
-  post 'upload',				  	to: 'qr_codes#upload'
-  post 'upload-batch',		  to: 'qr_codes#upload_batch'
   post 'archive-event',			to: 'qr_codes#archive_event'
   post 'activate',				  to: 'qr_codes#activate'
   post 'generate',				  to: 'qr_codes#generate'

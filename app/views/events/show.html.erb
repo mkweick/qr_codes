@@ -2,25 +2,27 @@
 
 <%= render 'shared/errors', obj: @batch, show_attr: true %>
 
-<div id="event-title">
-  <h2 id="event-name" class="pull-left"><%= @event.name %></h2>
-  <div id="event-controls" class="pull-right top-20">
-    <%= link_to edit_event_path(@event), title: "Edit",
-      class: "btn btn-sm btn-primary right-5" do %>
-        <span class="glyphicon glyphicon-pencil"></span>
-    <% end %>
+<div class="row">
+  <div id="event-title" class="col-xs-12 col-sm-12 col-md-12">
+    <h2 id="event-name" class="pull-left"><%= @event.name %></h2>
+    <div id="event-controls" class="pull-right top-20">
+      <%= link_to edit_event_path(@event), title: "Edit Event",
+        class: "btn btn-sm btn-primary right-5" do %>
+          <span class="glyphicon glyphicon-pencil"></span>
+      <% end %>
 
-    <%= link_to archive_event_path(name: @event_name), method: 'post',
-      title: "Archive", class: "btn btn-sm btn-warning right-5",
-      data: { confirm: "Are you sure you want to ARCHIVE #{@event_name}" } do %>
-        <span class="glyphicon glyphicon-save-file"></span>
-    <% end %>
+      <%= link_to archive_event_path(name: @event_name), method: 'post',
+        title: "Archive Event", class: "btn btn-sm btn-warning right-5",
+        data: { confirm: "Are you sure you want to ARCHIVE #{@event.name}" } do %>
+          <span class="glyphicon glyphicon-save-file"></span>
+      <% end %>
 
-    <%= link_to destroy_path(name: @event_name), method: 'delete',
-      title: "Delete", class: "btn btn-sm btn-danger",
-      data: { confirm: "Are you sure you want to DELETE #{@event_name}" } do %>
-        <span class="glyphicon glyphicon-remove"></span>
-    <% end %>
+      <%= link_to destroy_path(name: @event_name), method: 'delete',
+        title: "Delete Event", class: "btn btn-sm btn-danger",
+        data: { confirm: "Are you sure you want to DELETE #{@event.name}" } do %>
+          <span class="glyphicon glyphicon-remove"></span>
+      <% end %>
+    </div>
   </div>
 </div>
 
@@ -33,12 +35,12 @@
     <% @batches.each do |batch| %>
       <div class="col-xs-12 col-sm-6 col-md-6">
         <div class="well text-center batch">
-          <%= link_to [:edit, @event, batch], title: 'Edit', 
+          <%= link_to [:edit, @event, batch], title: 'Edit Batch', 
             class: "batch edit" do %>
               <span class="glyphicon glyphicon-pencil font-17 top-12"></span>
           <% end %>
           <%= link_to [@event, batch], method: 'delete',
-            title: "Delete", class: "batch delete",
+            title: "Delete Batch", class: "batch delete",
             data: { confirm: "Are you sure you want to DELETE Batch #{batch.number}"} do %>
               <span class="glyphicon glyphicon-remove font-20 red top-10"></span>
           <% end %>
@@ -65,7 +67,8 @@
             <%= link_to 'Original Upload',
               download_path(type: 'original', name: @event.name, batch: batch.number),
               data: { turbolinks: false }, class: "list-group-item" %>
-            <% if batch.qr_codes_id && batch.final_export_id %>
+
+            <% if batch_qr_codes_and_export?(@event.id, batch.id) %>
                 <%= link_to 'QR Codes',
                   download_path(type: 'qr_codes', name: @event.name, batch: batch.number),
                   data: { turbolinks: false }, class: "list-group-item" %>

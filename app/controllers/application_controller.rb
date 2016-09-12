@@ -28,6 +28,13 @@ class ApplicationController < ActionController::Base
     log_in_message unless logged_in?
   end
 
+  def require_user_batch_upload
+    unless logged_in?
+      session[:return_to] = event_path(@event)
+      log_in_message
+    end
+  end
+
   def require_admin
     access_denied_message unless admin?
   end

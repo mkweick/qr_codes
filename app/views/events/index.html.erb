@@ -34,7 +34,7 @@
       <div class="well text-center">
         <h2>New Event</h2>
         <hr />
-        <%= form_tag @event, multipart: true do %>
+        <%= form_tag @event do %>
           <div class="form-group">
             <%= select_tag 'type', options_for_select(@types), required: true,
               prompt: '-- Select Event Type --', class: "form-control" %>

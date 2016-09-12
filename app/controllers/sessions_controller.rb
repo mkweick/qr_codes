@@ -16,7 +16,7 @@ class SessionsController < ApplicationController
       redirect_to(session[:return_to] || root_path)
       session.delete(:return_to)
     elsif username == "test" && password == "test"
-      session[:email] = 'no-reply@divalsafety.com'
+      session[:email] = 'mweick@provident.com'
       session[:first_name] = 'Test'
       redirect_to(session[:return_to] || root_path)
       session.delete(:return_to)

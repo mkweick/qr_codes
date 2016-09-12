@@ -13,11 +13,11 @@
           <li class="list-group-item">
             <%= location.city %>
             <span class="pull-right">
-              <%= link_to edit_location_path(location.id), title: "Edit" do %>
+              <%= link_to [:edit, location], title: "Edit" do %>
                 <span class="glyphicon glyphicon-pencil right-10"></span>
               <% end %>
 
-              <%= link_to location_path(location.id), method: 'delete',
+              <%= link_to location, method: 'delete',
                 title: "Delete", class: "red",
                 data: { confirm: "Are you sure want to DELETE location #{location.city}?" } do %>
                   <span class="glyphicon glyphicon-remove-circle"></span>

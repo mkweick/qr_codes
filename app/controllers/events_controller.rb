@@ -18,10 +18,11 @@ class EventsController < ApplicationController
 
   def create
     event_name = params[:type] + ' ' + params[:year]
-    @event = Event.create(name: event_name)
+    multi_type = Type.find_by(name: params[:type]).multiple_locations
+    @event = Event.create(name: event_name, multiple_locations: multi_type)
 
     if @event.save
-      flash.notice = "#{event_name} created successfully."
+      flash.notice = "Event created successfully."
       redirect_to root_path
     else
       @events = Event.sorted_active_events
@@ -33,8 +34,9 @@ class EventsController < ApplicationController
 
   def show
     if @event
+      @batch = @event.batches.new
       @batches = @event.batches.order(:number)
-      @locations = Location.sorted_locations.pluck(:city)
+      @locations = Location.sorted_locations.pluck(:city) if @event.multiple_locations
     else
       flash.alert = "Event not found."
       redirect_to root_path

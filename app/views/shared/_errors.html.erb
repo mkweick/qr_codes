@@ -1,11 +1,17 @@
+<% show_attr ||= false %>
+
 <% if obj.errors.any? %>
   <div class="row">
     <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
-      <div class="alert alert-danger text-center">
+      <div class="alert alert-danger alert-dismissible text-center" role="alert">
+        <button type="button" class="close" data-dismiss="alert">
+          <span aria-hidden="true">&times;</span>
+        </button>
         <ul>
-          <% obj.errors.messages.values.each do |attr_msg| %>
-            <% attr_msg.each do |msg| %>
-              <li><%= msg %></li>
+          <% obj.errors.messages.each do |field, messages| %>
+            <% field = field.to_s.capitalize %>
+            <% messages.each do |msg| %>
+              <li><%= show_attr ? field + ' ' + msg : msg %></li>
             <% end %>
           <% end %>
         </ul>

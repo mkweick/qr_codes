@@ -15,7 +15,7 @@ class TypesController < ApplicationController
     @type = Type.new(type_params)
 
     if @type.save
-      flash.notice = "Event type #{@type.name} created."
+      flash.notice = "Event type created."
       redirect_to types_path
     else
       render :new
@@ -42,9 +42,9 @@ class TypesController < ApplicationController
   def destroy
     if @type
       if @type.destroy
-        flash.notice = "Event type #{@type.name} deleted."
+        flash.notice = "Event type deleted."
       else
-        flash.alert = "Event type #{@type.name} can't be deleted. Contact IT."
+        flash.alert = "Event type can't be deleted. Contact IT."
       end
     else
       flash.alert = "That event type doesn't exist."
@@ -59,6 +59,6 @@ class TypesController < ApplicationController
   end
 
   def type_params
-    params.require(:type).permit(:name)
+    params.require(:type).permit(:name, :multiple_locations)
   end
 end

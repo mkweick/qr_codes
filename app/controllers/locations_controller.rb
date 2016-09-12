@@ -4,7 +4,7 @@ class LocationsController < ApplicationController
   before_action :set_location, except: [:index, :new, :create]
 
   def index
-    @locations = Location.sorted_cities
+    @locations = Location.sorted_locations
   end
 
   def new
@@ -15,7 +15,7 @@ class LocationsController < ApplicationController
     @location = Location.new(location_params)
 
     if @location.save
-      flash.notice = "Location #{@location.city} created."
+      flash.notice = "Location created."
       redirect_to locations_path
     else
       render :new
@@ -42,9 +42,9 @@ class LocationsController < ApplicationController
   def destroy
     if @location
       if @location.destroy
-        flash.notice = "Location #{@location.city} deleted."
+        flash.notice = "Location deleted."
       else
-        flash.alert = "Location #{@location.city} can't be deleted. Contact IT."
+        flash.alert = "Location can't be deleted. Contact IT."
       end
     else
       flash.alert = "That location doesn't exist."

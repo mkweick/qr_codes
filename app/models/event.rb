@@ -6,6 +6,8 @@ class Event < ActiveRecord::Base
     conditions: -> { where("status != '3'")},
     message: 'Event already active or archived.'
   }
+  validates_inclusion_of :multiple_locations, in: [true, false], 
+    message: 'Multiple locations must be set to Yes or No.'
 
   def self.sorted_active_events
     self.where(status: '1').order('lower(name)')

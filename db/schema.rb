@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(version: 20160908145559) do
   create_table "batches", force: :cascade do |t|
     t.string   "event_id",         null: false
     t.string   "number",           null: false
-    t.string   "location",         null: false
+    t.string   "location"
     t.string   "description",      null: false
     t.string   "uploaded_file_id"
     t.string   "qr_codes_id"
@@ -40,10 +40,11 @@ ActiveRecord::Schema.define(version: 20160908145559) do
   end
 
   create_table "events", force: :cascade do |t|
-    t.string   "name",                     null: false
-    t.string   "status",     default: "1", null: false
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.string   "name",                             null: false
+    t.boolean  "multiple_locations",               null: false
+    t.string   "status",             default: "1", null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
   end
 
   create_table "locations", force: :cascade do |t|
@@ -53,9 +54,10 @@ ActiveRecord::Schema.define(version: 20160908145559) do
   end
 
   create_table "types", force: :cascade do |t|
-    t.string   "name",       null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "name",               null: false
+    t.boolean  "multiple_locations", null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
   end
 
 end

@@ -1,21 +1,9 @@
 class QrCodesController < ApplicationController
-	before_action :require_user, except: [:index, :upload, :upload_batch, :download]
-	before_action :require_admin, except: [:index, :upload, :upload_batch,
+	before_action :require_user, except: [:index, :create, :upload_batch, :download]
+	before_action :require_admin, except: [:index, :create, :upload_batch,
 		:download, :on_site_badge, :crm_contact, :on_demand, :generate_crm]
-	before_action :set_event_name, except: [:update, :upload, :archives]
-	skip_before_action :verify_authenticity_token, only: [:upload, :upload_batch]
-
-	def show
-		if @event_name && event_dir?('active', @event_name)
-			batches = dir_list("events/active/#{@event_name}")
-			batches.delete('Walk In')
-			batches.delete('Walk In CRM')
-			@batches = batches.sort
-		else
-			flash.alert = "Event not found."
-			redirect_to root_path
-		end
-	end
+	before_action :set_event_name, except: [:update, :create, :archives]
+	skip_before_action :verify_authenticity_token, only: [:create, :upload_batch]
 
 	def edit
 		if @event_name

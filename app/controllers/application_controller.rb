@@ -18,19 +18,12 @@ class ApplicationController < ActionController::Base
   end
 
   def require_user
-    unless logged_in?
-      session[:return_to] = request.url
-      log_in_message
-    end
-  end
-
-  def require_user_no_redirect
     log_in_message unless logged_in?
   end
 
-  def require_user_batch_upload
+  def require_user_event_redirect
     unless logged_in?
-      session[:return_to] = event_path(@event)
+      session[:return_to] = request.url
       log_in_message
     end
   end

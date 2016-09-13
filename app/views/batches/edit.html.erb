@@ -1,0 +1,13 @@
+<% @page_title = "Edit Batch #{@batch.number} - #{@event.name}" %>
+<% multi = @event.multiple_locations %>
+
+<%= render 'shared/errors', obj: @batch %>
+
+<div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+  <div class="well text-center <%= multi ? 'batch-multiple' : 'batch' %>">
+    <h2 id="edit">Edit Batch <%= @batch.number %></h2>
+    <div class="font-17"><%= @event.name %> - <%= @batch.location %></div>
+    <hr class="top-10" />
+    <%= render 'batches/form', multi: multi, btn_text: 'Update', show_cancel_btn: true %>
+  </div>
+</div>

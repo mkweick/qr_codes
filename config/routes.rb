@@ -18,7 +18,11 @@ Rails.application.routes.draw do
       patch 'activate'
     end
 
-    resources :batches, except: [:index, :new, :show]
+    resources :batches, except: [:index, :new, :show] do
+      member do
+        get 'download'
+      end
+    end
   end
 
 # ------------------------------------------------------

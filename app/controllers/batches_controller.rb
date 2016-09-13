@@ -1,10 +1,9 @@
 class BatchesController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [:create]
-  before_action :set_event
-  before_action :set_batch, except: [:create]
-  before_action :require_user, except: [:create]
-  before_action :require_user_batch_upload, only: [:create]
+  skip_before_action :verify_authenticity_token, only: [:create, :update, :destroy]
+  before_action :require_user
   before_action :require_admin
+  before_action :set_event, only: [:create]
+  before_action :set_event_and_batch, except: [:create]
 
   def create
     file = params[:batch][:file] if params[:batch][:file]
@@ -40,28 +39,67 @@ class BatchesController < ApplicationController
   end
 
   def edit
-
+    set_batch_form_info
   end
 
   def update
-
+    if @batch.update(batch_params)
+      flash.notice = "Batch #{@batch.number} updated."
+      redirect_to event_path(@event)
+    else
+      @event.reload
+      @batch.reload
+      set_batch_form_info
+      render 'edit'
+    end
   end
 
   def destroy
-    if @event && @batch
-      if @batch.destroy
-        delete_batch_dir(@event.id, @batch.number)
-        flash.notice = "Batch deleted."
-        redirect_to event_path(@event)
+    if @batch.destroy
+      delete_batch_dir(@event.id, @batch.number)
+      flash.notice = "Batch deleted."
+      redirect_to event_path(@event)
+    else
+      @batch = @event.batches.new
+      set_event_info
+      flash.now.alert = "Unable to delete batch. Contact IT."
+      render 'events/show'
+    end
+  end
+
+  def download
+    type = params[:type] if params[:type]
+    if type
+      batch_path = Rails.root.join('events', @event.id.to_s, @batch.number.to_s)
+
+      case type
+      when 'original'
+        file = Dir.entries(batch_path).select { |f| f[-4..-1] == '.xls' }.first
+        if file
+          filepath = Rails.root.join(batch_path, file)
+          send_file(filepath, type: 'application/vnd.ms-excel', filename: file)
+        else
+          flash.alert = "Original file can't be found."
+          redirect_to :back
+        end
+      when 'qr_codes'
+        path = Rails.root.join('events', 'active', @event_name, batch, 'qr_codes.zip')
+        send_file(path, type: 'application/zip',
+          filename: "QR_CODES_#{@event_name}_BATCH_#{batch}.zip",
+          disposition: 'attachment')
+      when 'export'
+        path = Rails.root.join('events', 'active', @event_name, batch,
+          'export', 'export.xls')
+        send_file(path, type: 'application/vnd.ms-excel',
+          filename: "FINAL_#{@event_name}_BATCH_#{batch}.xls",
+          disposition: 'attachment')
       else
-        @batch = @event.batches.new
-        set_event_info
-        flash.now.alert = "Unable to delete batch. Contact IT."
-        render 'events/show'
+        flash.alert = "Invalid download type."
+        redirect_to :back
       end
     else
-      flash.alert = 'Batch not found.'
-      redirect_to root_path
+      flash.alert = "Invalid download link."
+      redirect_to :back
     end
   end
 
@@ -75,8 +113,13 @@ class BatchesController < ApplicationController
     @event = Event.find(params[:event_id]) if params[:event_id]
   end
 
-  def set_batch
+  def set_event_and_batch
+    @event = Event.find(params[:event_id]) if params[:event_id]
     @batch = Batch.find(params[:id]) if params[:id]
+  end
+
+  def set_batch_form_info
+    @locations = Location.sorted_locations.pluck(:name) if @event.multiple_locations
   end
 
   def set_event_info
@@ -87,9 +130,7 @@ class BatchesController < ApplicationController
   def make_batch_dir(event, batch)
     batch_path = Rails.root.join('events', event.to_s, batch.to_s)
     export_path = Rails.root.join('events', event.to_s, batch.to_s, 'export')
-
     FileUtils.remove_dir(batch_path) if Dir.exist?(batch_path)
-
     FileUtils.mkdir_p(batch_path)
     FileUtils.mkdir(export_path)
   end

@@ -1,7 +1,7 @@
 <% @page_title = @event.name %>
 <% multi = @event.multiple_locations %>
 
-<%= render 'shared/errors', obj: @batch, show_attr: true %>
+<%= render 'shared/errors', obj: @batch %>
 
 <div class="row">
   <div id="event-title" class="col-xs-12 col-sm-12 col-md-12">
@@ -30,7 +30,11 @@
 <div class="row">
   <% if @batches.any? %>
     <div class="col-xs-12 col-sm-6 col-md-6">
-      <%= render 'batches/form', multi: multi %>
+      <div class="well text-center pad-top-15 <%= multi ? 'batch-multiple' : 'batch' %>">
+        <h3 class="margin-0">New Batch</h3>
+        <hr class="top-10" />
+        <%= render 'batches/form', multi: multi, upload: true, btn_text: 'Create' %>
+      </div>
     </div>
 
     <% @batches.each do |batch| %>
@@ -59,15 +63,15 @@
           <hr class="top-10" />
           <div class="list-group">
             <%= link_to 'Original Upload',
-              download_path(type: 'original', name: @event.name, batch: batch.number),
+              download_event_batch_path(@event, batch, type: 'original'),
               data: { turbolinks: false }, class: "list-group-item" %>
-
-            <% if batch_qr_codes_and_export?(@event.id, batch.id) %>
+              <% binding.pry %>
+            <% if generation_complete?(@event.id, batch.number) %>
                 <%= link_to 'QR Codes',
-                  download_path(type: 'qr_codes', name: @event.name, batch: batch.number),
+                  download_event_batch_path([@event, batch], type: 'qr_codes'),
                   data: { turbolinks: false }, class: "list-group-item" %>
                 <%= link_to 'Excel Export',
-                  download_path(type: 'export', name: @event.name, batch: batch.number),
+                  download_event_batch_path([@event, batch], type: 'export'),
                   data: { turbolinks: false }, class: "list-group-item" %>
               </div>
             <% else %>
@@ -81,7 +85,11 @@
     <% end %>
   <% else %>
     <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
-      <%= render 'batches/form', multi: multi %>
+      <div class="well text-center pad-top-15 <%= multi ? 'batch-multiple' : 'batch' %>">
+        <h3 class="margin-0">New Batch</h3>
+        <hr class="top-10" />
+        <%= render 'batches/form', multi: multi, upload: true, btn_text: 'Create' %>
+      </div>
     </div>
   <% end %>
 </div>

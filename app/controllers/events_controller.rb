@@ -1,9 +1,10 @@
 class EventsController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [:create]
-  before_action :set_event, except: [:index, :create, :archives]
-  before_action :require_user, except: [:index, :create]
-  before_action :require_user_no_redirect, only: [:create]
+  skip_before_action :verify_authenticity_token, only: [:create, :update,
+    :destroy, :archive, :activate]
+  before_action :require_user, except: [:index, :show]
+  before_action :require_user_event_redirect, only: [:show]
   before_action :require_admin, except: [:index]
+  before_action :set_event, except: [:index, :create, :archives]
 
   def index
     redirect_to login_path unless logged_in?
@@ -32,21 +33,11 @@ class EventsController < ApplicationController
   end
 
   def show
-    if @event
-      set_event_info
-    else
-      flash.alert = "Event not found."
-      redirect_to root_path
-    end
+    set_event_info
   end
 
   def edit
-    if @event
-      set_event_form_info
-    else
-      flash.alert = "Event not found."
-      redirect_to root_path
-    end
+    set_event_form_info
   end
 
   def update
@@ -64,32 +55,22 @@ class EventsController < ApplicationController
   end
 
   def destroy
-    if @event
-      if @event.update(status: '3')
-        flash.notice = 'Event deleted. Permanently deleted after 3 days.'
-        redirect_to root_path
-      else
-        set_event_info
-        render 'show'
-      end
-    else
-      flash.alert = 'Event not found.'
+    if @event.update(status: '3')
+      flash.notice = 'Event deleted. Permanently deleted after 3 days.'
       redirect_to root_path
+    else
+      set_event_info
+      render 'show'
     end
   end
 
   def archive
-    if @event
-      if @event.update(status: '2')
-        flash.notice = "Event archived."
-        redirect_to root_path
-      else
-        set_event_info
-        render 'show'
-      end
-    else
-      flash.alert = "Event not found."
+   if @event.update(status: '2')
+      flash.notice = "Event archived."
       redirect_to root_path
+    else
+      set_event_info
+      render 'show'
     end
   end
 
@@ -98,21 +79,16 @@ class EventsController < ApplicationController
   end
 
   def activate
-    if @event
-      if @event.status == '2' || @event.status == '3'
-        if @event.update(status: '1')
-          flash.notice = "Event activated."
-          redirect_to root_path
-        else
-          set_archives_info
-          render 'archives'
-        end
-      else
-        flash.alert = 'Event is already activated.'
+    if @event.status == '2' || @event.status == '3'
+      if @event.update(status: '1')
+        flash.notice = "Event activated."
         redirect_to root_path
+      else
+        set_archives_info
+        render 'archives'
       end
     else
-      flash.alert = 'Event not found.'
+      flash.alert = 'Event is already activated.'
       redirect_to root_path
     end
   end

@@ -12,7 +12,7 @@
         <% @locations.each do |location| %>
           <li class="list-group-item">
             <%= location.name %>
-            <span class="pull-right">
+            <div class="pull-right">
               <%= link_to [:edit, location], title: "Edit" do %>
                 <span class="glyphicon glyphicon-pencil right-10"></span>
               <% end %>
@@ -21,7 +21,7 @@
                 data: { confirm: "Are you sure want to DELETE location #{location.name}?" } do %>
                   <span class="glyphicon glyphicon-remove-circle"></span>
               <% end %>
-            </span>
+            </div>
           </li>
         <% end %>
       </div>

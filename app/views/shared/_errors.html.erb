@@ -1,4 +1,4 @@
-<% show_attr ||= false %>
+<% hide_attr ||= false %>
 
 <% if obj.errors.any? %>
   <div class="row">
@@ -11,7 +11,13 @@
           <% obj.errors.messages.each do |field, messages| %>
             <% field = field.to_s.capitalize %>
             <% messages.each do |msg| %>
-              <li><%= show_attr ? field + ' ' + msg : msg %></li>
+              <li>
+                <% if !hide_attr %>
+                  <%= field + ' ' + msg %>
+                <% else %>
+                  <%= msg %>
+                <% end %>
+              </li>
             <% end %>
           <% end %>
         </ul>

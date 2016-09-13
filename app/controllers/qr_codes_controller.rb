@@ -18,45 +18,34 @@ class QrCodesController < ApplicationController
 	end
 
 	def download
-		if logged_in?
-			if admin?
-				if %w(original qr_codes export template).include? params[:type]
-					batch = params[:batch] if params[:batch]
-					file = params[:file] if params[:file]
+		if %w(original qr_codes export template).include? params[:type]
+			batch = params[:batch] if params[:batch]
+			file = params[:file] if params[:file]
 
-					case params[:type]
-					when 'original'
-						path = Rails.root.join('events', 'active', @event_name, batch, file)
-				  	send_file(path, type: 'application/vnd.ms-excel',
-				  		filename: file, disposition: 'attachment')
-				  when 'qr_codes'
-						path = Rails.root.join('events', 'active', @event_name, batch, 'qr_codes.zip')
-				  	send_file(path, type: 'application/zip',
-				  		filename: "QR_CODES_#{@event_name}_BATCH_#{batch}.zip",
-				  		disposition: 'attachment')
-				  when 'export'
-						path = Rails.root.join('events', 'active', @event_name, batch,
-							'export', 'export.xls')
-				  	send_file(path, type: 'application/vnd.ms-excel',
-				  		filename: "FINAL_#{@event_name}_BATCH_#{batch}.xls",
-				  		disposition: 'attachment')
-				  when 'template'
-				  	path = Rails.root.join('events', 'upload_template',
-				  		'QR CODES UPLOAD TEMPLATE.xls')
-				  	send_file(path, type: 'application/vnd.ms-excel',
-				  		filename: "QR CODES UPLOAD TEMPLATE.xls", disposition: 'attachment')
-				  end
-				else
-					redirect_to :back
-				end
-			else
-				flash.alert = "Admin access is required to do that."
-				redirect_to root_path
-			end
+			case params[:type]
+			when 'original'
+				path = Rails.root.join('events', 'active', @event_name, batch, file)
+		  	send_file(path, type: 'application/vnd.ms-excel',
+		  		filename: file, disposition: 'attachment')
+		  when 'qr_codes'
+				path = Rails.root.join('events', 'active', @event_name, batch, 'qr_codes.zip')
+		  	send_file(path, type: 'application/zip',
+		  		filename: "QR_CODES_#{@event_name}_BATCH_#{batch}.zip",
+		  		disposition: 'attachment')
+		  when 'export'
+				path = Rails.root.join('events', 'active', @event_name, batch,
+					'export', 'export.xls')
+		  	send_file(path, type: 'application/vnd.ms-excel',
+		  		filename: "FINAL_#{@event_name}_BATCH_#{batch}.xls",
+		  		disposition: 'attachment')
+		  when 'template'
+		  	path = Rails.root.join('events', 'upload_template',
+		  		'QR CODES UPLOAD TEMPLATE.xls')
+		  	send_file(path, type: 'application/vnd.ms-excel',
+		  		filename: "QR CODES UPLOAD TEMPLATE.xls", disposition: 'attachment')
+		  end
 		else
-			flash.alert = "Please log in."
-			session[:return_to] = request.referer
-			redirect_to login_path
+			redirect_to :back
 		end
 	end
 
@@ -189,108 +178,15 @@ class QrCodesController < ApplicationController
 		Dir.exist?(Rails.root.join('events', status, event_name))
 	end
 
-	def batch_dir?(event_name, batch)
-		Dir.exist?(Rails.root.join('events', 'active', event_name, batch))
+	def dir_list(path)
+		Dir.entries(path).select { |file| file != '.' && file != '..' && file != '.gitignore' }
 	end
 
 	def walk_in_crm_dir?(event_name)
 		Dir.exist?(Rails.root.join('events', 'active', event_name, 'Walk In CRM'))
 	end
 
-	def dir_list(path)
-		Dir.entries(path).select { |file| file != '.' && file != '..' && file != '.gitignore' }
-	end
-
-	def make_event_dir(event_name)
-		Dir.mkdir(Rails.root.join('events', 'active', event_name))
-		Dir.mkdir(Rails.root.join('events', 'active', event_name, 'Walk In'))
-		Dir.mkdir(Rails.root.join('events', 'active', event_name, 'Walk In CRM'))
-	end
-
-	def make_batch_dir(event_name, batch)
-		Dir.mkdir(Rails.root.join('events', 'active', event_name, batch))
-	end
-
 	def make_walk_in_crm_dir(event_name)
 		Dir.mkdir(Rails.root.join('events', 'active', event_name, 'Walk In CRM'))
-	end
-
-	def move_event_dir(from_status, to_status, event_name)
-		FileUtils.mv(Rails.root.join('events', from_status, event_name),
-    	Rails.root.join('events', to_status, event_name))
-	end
-
-	def update_event_dir(old_event_name, new_event_name)
-		FileUtils.mv(Rails.root.join('events', 'active', old_event_name),
-    	Rails.root.join('events', 'active', new_event_name))
-	end
-
-	def remove_deleted_event_dir(event_name)
-		FileUtils.remove_dir(Rails.root.join('events', 'deleted', event_name))
-	end
-
-	def delete_event_dir(event_name)
-		FileUtils.remove_dir(Rails.root.join('events', 'active', event_name))
-	end
-
-	def delete_batch_dir(event_name, batch)
-		FileUtils.remove_dir(Rails.root.join('events', 'active', event_name, batch))
-	end
-
-	def file_error_check(event_name, batch, filename, first_upload = true)
-		duplicates = []
-		column_count = 0
-		workbook = Rails.root.join('events', 'active', event_name, batch, filename)
-
-		Spreadsheet.open(workbook) do |book|
-			sheet = book.worksheet(0)
-			column_count = sheet.column_count
-
-			attendees_with_row = sheet.map.with_index do |row, idx|
-			  next if row[2].blank?
-			  row = row.to_a
-			  [row[2], row[3], idx + 1]
-			end.compact
-
-			attendees_no_row = attendees_with_row.map { |row| row.take(2) }
-			dups = attendees_no_row.select { |row| attendees_no_row.count(row) > 1 }.uniq
-			dups.each do |dup|
-			  duplicates << attendees_with_row.each_index.map do |idx|
-			  								attendees_with_row[idx][2] if attendees_with_row[idx][0..1] == dup
-			  							end.compact
-			end
-		end
-
-		if column_count == 14
-			if duplicates.any?
-				first_upload ? delete_event_dir(event_name) : delete_batch_dir(event_name, batch)
-		  	error_msg = "Upload failed. Duplicates exist at rows:<br /><ul>"
-		  	
-		  	duplicates.each do |dup|
-		  		last_index = dup.size - 1
-		  		increment = 1
-		  		lines = "<li>#{dup[0]}"
-
-		  		while increment <= last_index
-		  			lines += " / #{dup[increment]}"
-		  			increment += 1
-		  		end
-		  		lines += "</li>"
-		  		error_msg += lines
-		  	end
-		  	error_msg += "</ul>"
-
-		  	flash.alert = error_msg
-		  else
-		  	flash.notice = "#{event_name} created and file uploaded successfully."
-		  end
-		else
-			first_upload ? delete_event_dir(event_name) : delete_batch_dir(event_name, batch)
-			flash.alert = "Spreadsheet contained #{column_count} columns. " +
-										"Spreadsheet must only have 14 Columns. " +
-										"#{view_context.link_to 'DOWNLOAD TEMPLATE',
-											download_path(type: 'template'),
-											data: { turbolinks: false }}"
-		end
 	end
 end

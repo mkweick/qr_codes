@@ -62,8 +62,6 @@ td a:hover { color: #337ab7; }
 .list-group a.red:hover { color: #bd2d29; }
 .list-group a.red:active { color: #7e1e1b; }
 
-.list-group-item { padding: 7px 15px; }
-
 #event-title {
 	padding-bottom: 10px;
 	margin-bottom: 20px;
@@ -98,8 +96,15 @@ td a:hover { color: #337ab7; }
 
 .batch-desc { word-wrap: break-word; }
 
+.batch .list-group-item, .batch-multiple .list-group-item { padding: 7px 15px; }
+
 .batch .submit-btn { margin-top: 15px; }
 .batch-multiple .submit-btn { margin-top: 10px; }
+
+.batch-multiple h2#edit {
+	margin-top: 15px;
+	margin-bottom: 5px;
+}
 
 .alert ul { 
 	padding: 0;

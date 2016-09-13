@@ -1,30 +1,34 @@
-<div class="well text-center pad-top-15 <%= multi ? 'batch-multiple' : 'batch' %>">
-  <h3 class="margin-0">New Batch</h3>
-  <hr class="top-10" />
-  <%= form_for [@event, @batch], multipart: true do |f| %>
-    <div class="text-left">
-      <% if multi %>
-        <div class="form-group">
-          <%= f.select 'location', options_for_select(@locations),
-            { prompt: '-- Select Location --' },
-            { required: true, class: "form-control" } %>
-        </div>
-      <% end %>
+<% upload ||= false %>
+<% show_cancel_btn ||= false %>
 
+<%= form_for [@event, @batch], multipart: true do |f| %>
+  <div class="text-left">
+    <% if multi %>
       <div class="form-group">
-        <%= f.text_field 'description', required: true,
-          placeholder: "Batch Description...", class: "form-control" %>
+        <%= f.select 'location', options_for_select(@locations),
+          { prompt: '-- Select Location --' },
+          { required: true, class: "form-control" } %>
       </div>
+    <% end %>
 
+    <div class="form-group">
+      <%= f.text_field 'description', required: true,
+        placeholder: "Batch Description...", class: "form-control" %>
+    </div>
+
+    <% if upload %>
       <%= f.file_field 'file', accept: ".xls", required: true %>
-
-      <span class="font-12">
+      <div class="font-12">
         <span class="ss-red">Must be <strong>.xls</strong> format</span> - 
         <%= link_to '(Download Template)', download_path(type: 'template'),
           data: { turbolinks: false } %>
-      </span>
-    </div>
+      </div>
+    <% end %>
+  </div>
 
-    <%= f.submit 'Create', class: "btn btn-primary submit-btn" %>
+  <%= f.submit btn_text, class: "btn btn-primary submit-btn" %>
+  <% if show_cancel_btn %>
+    <%= link_to 'Cancel', event_path(@event),
+      class: "btn btn-danger submit-btn left-10" %>
   <% end %>
-</div>
+<% end %>

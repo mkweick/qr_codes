@@ -1,12 +1,12 @@
 <% @page_title = 'Edit Location' %>
 
-<%= render 'shared/errors', obj: @location, show_attr: true %>
+<%= render 'shared/errors', obj: @location %>
 
 <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
   <div class="well">
     <div class="text-center">
       <h2>Edit Location</h2>
-      <span class="font-20"><%= @location.name %></span>
+      <div class="font-20"><%= @location.name %></div>
     </div>
     <hr />
     <%= render 'form', btn_text: 'Update' %>

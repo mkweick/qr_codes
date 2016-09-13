@@ -12,4 +12,12 @@ class Event < ActiveRecord::Base
   def self.sorted_active_events
     self.where(status: '1').order('lower(name)')
   end
+
+  def self.sorted_archives
+    self.where(status: '2').order('lower(name)')
+  end
+
+  def self.sorted_deleted
+    self.where(status: '3').order('lower(name)')
+  end
 end

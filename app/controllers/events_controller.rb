@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:create]
-  before_action :set_event, except: [:index, :create]
+  before_action :set_event, except: [:index, :create, :archives]
   before_action :require_user, except: [:index, :create]
   before_action :require_user_no_redirect, only: [:create]
   before_action :require_admin, except: [:index]
@@ -27,7 +27,7 @@ class EventsController < ApplicationController
       @events = Event.sorted_active_events
       @types = Type.sorted_types.pluck(:name)
       @years = Time.now.year..(Time.now.year + 2)
-      render :index
+      render 'index'
     end
   end
 
@@ -63,7 +63,7 @@ class EventsController < ApplicationController
 
     if @event.update(name: event_name, multiple_locations: multi_type)
       flash.notice = "Event name updated to #{@event.name}."
-      redirect_to root_path
+      redirect_to event_path(@event)
     else
       @event.reload
       event_name = @event.name.split(' ')
@@ -74,12 +74,68 @@ class EventsController < ApplicationController
       @type = event_name.join(' ')
       @types = Type.sorted_types.pluck(:name)
       
-      render :edit
+      render 'edit'
     end
   end
 
   def destroy
+    if @event
+      if @event.update(status: '3')
+        flash.notice = 'Event deleted. Permanently deleted after 3 days.'
+        redirect_to root_path
+      else
+        @batch = @event.batches.new
+        @batches = @event.batches.order(:number)
+        @locations = Location.sorted_locations.pluck(:city) if @event.multiple_locations
+        render 'show'
+      end
+    else
+      flash.alert = 'Event not found.'
+      redirect_to root_path
+    end
+  end
 
+  def archive
+    if @event
+      if @event.update(status: '2')
+        flash.notice = "Event archived."
+        redirect_to root_path
+      else
+        @batch = @event.batches.new
+        @batches = @event.batches.order(:number)
+        @locations = Location.sorted_locations.pluck(:city) if @event.multiple_locations
+        render 'show'
+      end
+    else
+      flash.alert = "Event not found."
+      redirect_to root_path
+    end
+  end
+
+  def archives
+    @archives = Event.sorted_archives
+    @deleted = Event.sorted_deleted
+  end
+
+  def activate
+    if @event
+      if @event.status == '2' || @event.status == '3'
+        if @event.update(status: '1')
+          flash.notice = "Event activated."
+          redirect_to root_path
+        else
+          @archives = Event.sorted_archives
+          @deleted = Event.sorted_deleted
+          render 'archives'
+        end
+      else
+        flash.alert = 'Event is already activated.'
+        redirect_to root_path
+      end
+    else
+      flash.alert = 'Event not found.'
+      redirect_to root_path
+    end
   end
 
   private

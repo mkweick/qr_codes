@@ -1,6 +1,7 @@
 class BatchesController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:create]
   before_action :set_event
+  before_action :set_batch, except: [:create]
   before_action :require_user, except: [:create]
   before_action :require_user_batch_upload, only: [:create]
   before_action :require_admin
@@ -50,7 +51,21 @@ class BatchesController < ApplicationController
   end
 
   def destroy
-
+    if @event && @batch
+      if @batch.destroy
+        flash.notice = "Batch deleted."
+        redirect_to event_path(@event)
+      else
+        @batch = @event.batches.new
+        @batches = @event.batches.order(:number)
+        @locations = Location.sorted_locations.pluck(:city) if @event.multiple_locations
+        flash.now.alert = "Unable to delete batch. Contact IT."
+        render 'events/show'
+      end
+    else
+      flash.alert = 'Batch not found.'
+      redirect_to root_path
+    end
   end
 
   private
@@ -61,6 +76,10 @@ class BatchesController < ApplicationController
 
   def set_event
     @event = Event.find(params[:event_id]) if params[:event_id]
+  end
+
+  def set_batch
+    @batch = Batch.find(params[:id]) if params[:id]
   end
 
   def make_batch_dir(event, batch)

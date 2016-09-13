@@ -11,13 +11,13 @@
           <span class="glyphicon glyphicon-pencil"></span>
       <% end %>
 
-      <%= link_to archive_event_path(name: @event_name), method: 'post',
+      <%= link_to archive_event_path(@event), method: 'patch',
         title: "Archive Event", class: "btn btn-sm btn-warning right-5",
         data: { confirm: "Are you sure you want to ARCHIVE #{@event.name}" } do %>
           <span class="glyphicon glyphicon-save-file"></span>
       <% end %>
 
-      <%= link_to destroy_path(name: @event_name), method: 'delete',
+      <%= link_to event_path(@event), method: 'delete',
         title: "Delete Event", class: "btn btn-sm btn-danger",
         data: { confirm: "Are you sure you want to DELETE #{@event.name}" } do %>
           <span class="glyphicon glyphicon-remove"></span>

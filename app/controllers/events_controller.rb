@@ -33,9 +33,7 @@ class EventsController < ApplicationController
 
   def show
     if @event
-      @batch = @event.batches.new
-      @batches = @event.batches.order(:number)
-      @locations = Location.sorted_locations.pluck(:city) if @event.multiple_locations
+      set_event_info
     else
       flash.alert = "Event not found."
       redirect_to root_path
@@ -44,13 +42,7 @@ class EventsController < ApplicationController
 
   def edit
     if @event
-      event_name = @event.name.split(' ')
-
-      @year = event_name.pop
-      @years = Time.now.year..(Time.now.year + 2)
-
-      @type = event_name.join(' ')
-      @types = Type.sorted_types.pluck(:name)
+      set_event_form_info
     else
       flash.alert = "Event not found."
       redirect_to root_path
@@ -66,14 +58,7 @@ class EventsController < ApplicationController
       redirect_to event_path(@event)
     else
       @event.reload
-      event_name = @event.name.split(' ')
-      
-      @year = event_name.pop
-      @years = Time.now.year..(Time.now.year + 2)
-
-      @type = event_name.join(' ')
-      @types = Type.sorted_types.pluck(:name)
-      
+      set_event_form_info
       render 'edit'
     end
   end
@@ -84,9 +69,7 @@ class EventsController < ApplicationController
         flash.notice = 'Event deleted. Permanently deleted after 3 days.'
         redirect_to root_path
       else
-        @batch = @event.batches.new
-        @batches = @event.batches.order(:number)
-        @locations = Location.sorted_locations.pluck(:city) if @event.multiple_locations
+        set_event_info
         render 'show'
       end
     else
@@ -101,9 +84,7 @@ class EventsController < ApplicationController
         flash.notice = "Event archived."
         redirect_to root_path
       else
-        @batch = @event.batches.new
-        @batches = @event.batches.order(:number)
-        @locations = Location.sorted_locations.pluck(:city) if @event.multiple_locations
+        set_event_info
         render 'show'
       end
     else
@@ -113,8 +94,7 @@ class EventsController < ApplicationController
   end
 
   def archives
-    @archives = Event.sorted_archives
-    @deleted = Event.sorted_deleted
+    set_archives_info
   end
 
   def activate
@@ -124,8 +104,7 @@ class EventsController < ApplicationController
           flash.notice = "Event activated."
           redirect_to root_path
         else
-          @archives = Event.sorted_archives
-          @deleted = Event.sorted_deleted
+          set_archives_info
           render 'archives'
         end
       else
@@ -145,6 +124,27 @@ class EventsController < ApplicationController
   end
 
   def make_event_dir(event)
-    FileUtils.mkdir(Rails.root.join('events', event.to_s))
+    event_path = Rails.root.join('events', event.to_s)
+    FileUtils.remove_dir(event_path) if Dir.exist?(event_path)
+    FileUtils.mkdir(event_path)
+  end
+
+  def set_event_info
+    @batch = @event.batches.new
+    @batches = @event.batches.order(:created_at)
+    @locations = Location.sorted_locations.pluck(:name) if @event.multiple_locations
+  end
+
+  def set_event_form_info
+    event_name = @event.name.split(' ')
+    @year = event_name.pop
+    @years = Time.now.year..(Time.now.year + 2)
+    @type = event_name.join(' ')
+    @types = Type.sorted_types.pluck(:name)
+  end
+
+  def set_archives_info
+    @archives = Event.sorted_archives
+    @deleted = Event.sorted_deleted
   end
 end

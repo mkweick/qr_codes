@@ -1,6 +1,6 @@
 <% show_cancel_btn ||= false %>
 
-<%= form_tag @event, method: 'patch' do %>
+<%= form_tag @event, method: method do %>
   <div class="form-group">
     <%= select_tag 'type', options_for_select(@types, @type), required: true,
       prompt: '-- Select Event Type --', class: "form-control" %>

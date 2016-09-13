@@ -8,7 +8,8 @@
       <h2>Update Event Name</h2>
       <span class="font-20"><%= @event.name %></span>
       <hr class="top-10" />
-      <%= render 'event_form', btn_text: "Update", show_cancel_btn: true %>
+      <%= render 'form', method: 'patch', btn_text: "Update",
+        show_cancel_btn: true %>
     </div>
   </div>
 </div>

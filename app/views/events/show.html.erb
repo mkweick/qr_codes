@@ -1,11 +1,12 @@
 <% @page_title = @event.name %>
+<% multi = @event.multiple_locations %>
 
 <%= render 'shared/errors', obj: @batch, show_attr: true %>
 
 <div class="row">
   <div id="event-title" class="col-xs-12 col-sm-12 col-md-12">
-    <h2 id="event-name" class="pull-left"><%= @event.name %></h2>
-    <div id="event-controls" class="pull-right top-20">
+    <h2 id="event-name" class="top-10 bottom-0 pull-left"><%= @event.name %></h2>
+    <div id="event-controls" class="pull-right top-10">
       <%= link_to edit_event_path(@event), title: "Edit Event",
         class: "btn btn-sm btn-primary right-5" do %>
           <span class="glyphicon glyphicon-pencil"></span>
@@ -29,12 +30,12 @@
 <div class="row">
   <% if @batches.any? %>
     <div class="col-xs-12 col-sm-6 col-md-6">
-      <%= render 'batches/upload_batch_form' %>
+      <%= render 'batches/form', multi: multi %>
     </div>
 
     <% @batches.each do |batch| %>
       <div class="col-xs-12 col-sm-6 col-md-6">
-        <div class="well text-center batch">
+        <div class="well text-center <%= multi ? 'batch-multiple' : 'batch' %>">
           <%= link_to [:edit, @event, batch], title: 'Edit Batch', 
             class: "batch edit" do %>
               <span class="glyphicon glyphicon-pencil font-17 top-12"></span>
@@ -45,24 +46,17 @@
               <span class="glyphicon glyphicon-remove font-20 red top-10"></span>
           <% end %>
 
-          <h2 class="top-10 bottom-0 inline-block">
-            Batch <%= batch.number %>
-          </h2>
-
-          <% if batch.location %>
-            <h4 class="top-5 bottom-0 location"><%= batch.location %></h4>
-          <% else %>
-            <br />
+          <h3 class="batch-title inline-block">Batch <%= batch.number %></h3>
+          <% if multi %>
+            <h4 class="top-2 bottom-0 location"><%= batch.location %></h4>
           <% end %>
-
-          <span class="font-12">
+          <div class="batch-date font-12">
             <%= batch.created_at.strftime('%b %d, %Y -%l:%M %p') %>
-          </span>
-
-          <br />
-          <span class="font-12"><%= batch.description %></span>
+          </div>
+          <div class="batch-desc font-12">
+            <%= batch.description %>
+          </div>
           <hr class="top-10" />
-
           <div class="list-group">
             <%= link_to 'Original Upload',
               download_path(type: 'original', name: @event.name, batch: batch.number),
@@ -78,7 +72,6 @@
               </div>
             <% else %>
               </div>
-              <hr class="top-10 bottom-10"/>
               <%= link_to 'Generate QR Codes & Export',
                 generate_path(name: @event.name, batch: batch.number),
                 method: 'post', class: 'btn btn-primary' %>
@@ -88,7 +81,7 @@
     <% end %>
   <% else %>
     <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
-      <%= render 'batches/upload_batch_form' %>
+      <%= render 'batches/form', multi: multi %>
     </div>
   <% end %>
 </div>

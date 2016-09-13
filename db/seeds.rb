@@ -8,8 +8,8 @@ types = Type.create([
 ])
 
 locations = Location.create([
-  { city: 'Buffalo' }, { city: 'Rochester' }, { city: 'Syracuse' },
-  { city: 'Albany' }, { city: 'Houston' }
+  { name: 'Buffalo' }, { name: 'Rochester' }, { name: 'Syracuse' },
+  { name: 'Albany' }, { name: 'Houston' }
 ])
 
 puts '-' * 50

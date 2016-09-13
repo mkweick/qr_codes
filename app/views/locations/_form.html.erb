@@ -1,6 +1,6 @@
 <%= form_for @location, html: { class: "text-center" } do |f| %>
   <div class="form-group">
-    <%= f.text_field 'city', value: @location.city, placeholder: "City Name",
+    <%= f.text_field 'name', value: @location.name, placeholder: "Location Name...",
       autofocus: 'autofocus', required: true, class: "form-control" %>
   </div>
 

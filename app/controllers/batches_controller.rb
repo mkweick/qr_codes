@@ -12,28 +12,25 @@ class BatchesController < ApplicationController
     if file && file.original_filename[-4..-1].downcase == '.xls'
       batches = @event.batches.pluck(:number)
       next_batch = batches.any? ? batches.map(&:to_i).sort.last.next.to_s : '1'
-
       @batch = @event.batches.create(batch_params.merge(number: next_batch))
 
       if @batch.save
-        make_batch_dir(@event.id, @batch.id)
+        make_batch_dir(@event.id, @batch.number)
 
         filename = sanitize(file.original_filename)
-        File.open(Rails.root.join('events', @event.id.to_s, @batch.id.to_s, filename), 'wb') do |f|
+        File.open(Rails.root.join('events', @event.id.to_s, @batch.number.to_s, filename), 'wb') do |f|
           f.write(file.read)
         end
 
-        if upload_has_errors?(@event.id.to_s, @batch.id.to_s, filename)
-          delete_batch_dir(@event.id, @batch.id)
+        if upload_has_errors?(@event.id.to_s, @batch.number.to_s, filename)
+          delete_batch_dir(@event.id, @batch.number)
           @batch.destroy
         else
           flash.notice = "Batch created."
         end
-
         redirect_to event_path(@event)
       else
-        @batches = @event.batches.order(:number)
-        @locations = Location.sorted_locations.pluck(:city) if @event.multiple_locations
+        set_event_info
         render 'events/show'
       end
     else
@@ -53,12 +50,12 @@ class BatchesController < ApplicationController
   def destroy
     if @event && @batch
       if @batch.destroy
+        delete_batch_dir(@event.id, @batch.number)
         flash.notice = "Batch deleted."
         redirect_to event_path(@event)
       else
         @batch = @event.batches.new
-        @batches = @event.batches.order(:number)
-        @locations = Location.sorted_locations.pluck(:city) if @event.multiple_locations
+        set_event_info
         flash.now.alert = "Unable to delete batch. Contact IT."
         render 'events/show'
       end
@@ -82,13 +79,24 @@ class BatchesController < ApplicationController
     @batch = Batch.find(params[:id]) if params[:id]
   end
 
+  def set_event_info
+    @batches = @event.batches.order(:created_at)
+    @locations = Location.sorted_locations.pluck(:name) if @event.multiple_locations
+  end
+
   def make_batch_dir(event, batch)
-    FileUtils.mkdir_p(Rails.root.join('events', event.to_s, batch.to_s))
-    FileUtils.mkdir(Rails.root.join('events', event.to_s, batch.to_s, 'export'))
+    batch_path = Rails.root.join('events', event.to_s, batch.to_s)
+    export_path = Rails.root.join('events', event.to_s, batch.to_s, 'export')
+
+    FileUtils.remove_dir(batch_path) if Dir.exist?(batch_path)
+
+    FileUtils.mkdir_p(batch_path)
+    FileUtils.mkdir(export_path)
   end
 
   def delete_batch_dir(event, batch)
-    FileUtils.remove_dir(Rails.root.join('events', event.to_s, batch.to_s))
+    batch_path = Rails.root.join('events', event.to_s, batch.to_s)
+    FileUtils.remove_dir(batch_path) if Dir.exist?(batch_path)
   end
 
   def upload_has_errors?(event, batch, filename)
@@ -139,9 +147,8 @@ class BatchesController < ApplicationController
         return false
       end
     else
-      flash.alert = "Spreadsheet contained #{column_count} columns. " +
-                    "Spreadsheet must only have 14 Columns. " +
-                    "#{view_context.link_to 'DOWNLOAD TEMPLATE',
+      flash.alert = "Spreadsheet has #{column_count} columns. Must have 14 Columns." +
+                    "<br />#{view_context.link_to 'Download Template',
                       download_path(type: 'template'),
                       data: { turbolinks: false }}"
       return true

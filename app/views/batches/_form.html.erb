@@ -1,11 +1,9 @@
-<% multiple_locations = @event.multiple_locations %>
-
-<div class="well text-center batch pad-top-15">
-  <h2 class="margin-0">New Batch</h2>
-  <hr class="top-10 bottom-10" />
+<div class="well text-center pad-top-15 <%= multi ? 'batch-multiple' : 'batch' %>">
+  <h3 class="margin-0">New Batch</h3>
+  <hr class="top-10" />
   <%= form_for [@event, @batch], multipart: true do |f| %>
     <div class="text-left">
-      <% if multiple_locations %>
+      <% if multi %>
         <div class="form-group">
           <%= f.select 'location', options_for_select(@locations),
             { prompt: '-- Select Location --' },
@@ -13,7 +11,7 @@
         </div>
       <% end %>
 
-      <div class="form-group <%= 'top-40' unless multiple_locations %>">
+      <div class="form-group">
         <%= f.text_field 'description', required: true,
           placeholder: "Batch Description...", class: "form-control" %>
       </div>
@@ -27,6 +25,6 @@
       </span>
     </div>
 
-    <%= f.submit 'Create', class: "btn btn-primary top-15" %>
+    <%= f.submit 'Create', class: "btn btn-primary submit-btn" %>
   <% end %>
 </div>

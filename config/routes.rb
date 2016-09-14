@@ -15,6 +15,10 @@ Rails.application.routes.draw do
 
     member do 
       get 'download-template'
+      get 'on-site-badge'
+      get 'crm-contact'
+      get 'on-demand'
+      get 'generate-crm'
 
       patch 'archive'
       patch 'activate'
@@ -28,11 +32,4 @@ Rails.application.routes.draw do
       end
     end
   end
-
-# ------------------------------------------------------
-
-  get 'on-site-badge',      to: 'qr_codes#on_site_badge'
-  get 'crm-contact',        to: 'qr_codes#crm_contact'
-  get 'on-demand',          to: 'qr_codes#on_demand'
-  get 'generate-crm',       to: 'qr_codes#generate_crm'
 end

@@ -1,6 +1,10 @@
 namespace :events do
   desc "Permanently remove deleted events"
 
+  def event_dir?(event_id)
+    Dir.exist?(Rails.root.join('events', event_id.to_s))
+  end
+
   def delete_event_dir(event_id)
     FileUtils.remove_dir(Rails.root.join('events', event_id.to_s))
   end
@@ -11,7 +15,7 @@ namespace :events do
     deleted_events.each do |event|
       if event.updated_at < 5.minutes.ago
         if event.destroy
-          delete_event_dir(event.id)
+          delete_event_dir(event.id) if event_dir?(event.id)
         end
       end
     end
@@ -23,7 +27,7 @@ namespace :events do
     deleted_events.each do |event|
       if event.updated_at < 7.days.ago
         if event.destroy
-          delete_event_dir(event.id)
+          delete_event_dir(event.id) if event_dir?(event.id)
         end
       end
     end

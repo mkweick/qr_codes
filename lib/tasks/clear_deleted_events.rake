@@ -1,31 +1,30 @@
 namespace :events do
-  desc "Clear deleted events"
+  desc "Permanently remove deleted events"
 
-  def deleted_events
-    path = Rails.root.join('events', 'deleted')
-    Dir.entries(path).select { |file| file != '.' && file != '..' && file != '.gitignore' }
-  end
-
-  def event_deleted_time(event_name)
-    Rails.root.join('events', 'deleted', event_name).ctime
-  end
-
-  def permanently_delete(event_name)
-    FileUtils.remove_dir(Rails.root.join('events', 'deleted', event_name))
+  def delete_event_dir(event_id)
+    FileUtils.remove_dir(Rails.root.join('events', event_id.to_s))
   end
 
   task clear_deleted_dev: :environment do
-    deleted_events.each do |event_name|
-      if event_deleted_time(event_name) < 1.minutes.ago
-        permanently_delete(event_name)
+    deleted_events = Event.where(status: '3')
+
+    deleted_events.each do |event|
+      if event.updated_at < 5.minutes.ago
+        if event.destroy
+          delete_event_dir(event.id)
+        end
       end
     end
   end
 
   task clear_deleted_prod: :environment do
-    deleted_events.each do |event_name|
-      if event_deleted_time(event_name) < 7.days.ago
-        permanently_delete(event_name)
+    deleted_events = Event.where(status: '3')
+
+    deleted_events.each do |event|
+      if event.updated_at < 7.days.ago
+        if event.destroy
+          delete_event_dir(event.id)
+        end
       end
     end
   end

@@ -1,53 +1,7 @@
 class QrCodesController < ApplicationController
-	before_action :require_user, except: [:download]
-	before_action :require_admin, except: [:download, :on_site_badge,
-		:crm_contact, :on_demand, :generate_crm]
-
-	def generate
-		batch = params[:batch] if params[:batch]
-		# email = session[:email]
-		email = 'mweick@provident.com'
-
-		if @event_name && batch && email
-			GenerateQrCodesExportJob.perform_later(@event_name, batch, email)
-			flash.notice = "We'll send you an email once Batch #{batch} processing is complete."
-			redirect_to event_path(name: @event_name)
-		else
-			redirect_to root_path
-		end
-	end
-
-	def download
-		if %w(original qr_codes export template).include? params[:type]
-			batch = params[:batch] if params[:batch]
-			file = params[:file] if params[:file]
-
-			case params[:type]
-			when 'original'
-				path = Rails.root.join('events', 'active', @event_name, batch, file)
-		  	send_file(path, type: 'application/vnd.ms-excel',
-		  		filename: file, disposition: 'attachment')
-		  when 'qr_codes'
-				path = Rails.root.join('events', 'active', @event_name, batch, 'qr_codes.zip')
-		  	send_file(path, type: 'application/zip',
-		  		filename: "QR_CODES_#{@event_name}_BATCH_#{batch}.zip",
-		  		disposition: 'attachment')
-		  when 'export'
-				path = Rails.root.join('events', 'active', @event_name, batch,
-					'export', 'export.xls')
-		  	send_file(path, type: 'application/vnd.ms-excel',
-		  		filename: "FINAL_#{@event_name}_BATCH_#{batch}.xls",
-		  		disposition: 'attachment')
-		  when 'template'
-		  	path = Rails.root.join('events', 'upload_template',
-		  		'QR CODES UPLOAD TEMPLATE.xls')
-		  	send_file(path, type: 'application/vnd.ms-excel',
-		  		filename: "QR CODES UPLOAD TEMPLATE.xls", disposition: 'attachment')
-		  end
-		else
-			redirect_to :back
-		end
-	end
+	before_action :require_admin, except: [
+		:on_site_badge, :crm_contact, :on_demand, :generate_crm
+	]
 
 	def on_site_badge
 		unless @event_name && event_dir?('active', @event_name)

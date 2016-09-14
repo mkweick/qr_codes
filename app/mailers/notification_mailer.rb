@@ -1,8 +1,8 @@
 class NotificationMailer < ApplicationMailer
 
-	def batch_generation_complete_email(event_name, batch, email)
-		@event_name = event_name
+	def batch_generation_complete_email(event, batch, email)
+		@event = event
 		@batch = batch
-		mail(to: email, subject: "#{event_name} - Batch #{batch} is Ready!")
+		mail(to: email, subject: "#{@event.name} - Batch #{@batch.number} is Ready!")
 	end
 end

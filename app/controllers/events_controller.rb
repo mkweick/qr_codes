@@ -93,6 +93,19 @@ class EventsController < ApplicationController
     end
   end
 
+  def download_template
+    upload_template = Rails.root.join('events', 'upload_template',
+      'QR CODES UPLOAD TEMPLATE.xls')
+
+    if File.exist?(upload_template)
+      send_file(upload_template, type: 'application/vnd.ms-excel',
+        filename: 'QR CODES UPLOAD TEMPLATE.xls')
+    else
+      flash.alert = "Template file could not be found."
+      redirect_to event_path(@event)
+    end
+  end
+
   private
 
   def set_event

@@ -1,20 +1,18 @@
 class GenerateQrCodesExportJob < ActiveJob::Base
   queue_as :default
 
-  def perform(event_name, batch, email)
-    event_name = event_name
-		batch = batch
-		email = email.strip
+  def perform(event, batch, email)
+  	batch_path = Rails.root.join('events', event.id.to_s, batch.number.to_s)
 
-		make_qr_codes_dir(event_name, batch) unless qr_codes_dir?(event_name, batch)
-		make_export_dir(event_name, batch) unless export_dir?(event_name, batch)
-		delete_export_file(event_name, batch) if export_file?(event_name, batch)
+		make_batch_dir(batch_path, 'qr_codes') unless batch_dir?(batch_path, 'qr_codes')
+		make_batch_dir(batch_path, 'export') unless batch_dir?(batch_path, 'export')
+		delete_export_file(batch_path) if export_file?(batch_path)
 
 		bold_format = Spreadsheet::Format.new :weight => :bold
-		header_row = ['Event', 'Registration Type', 'Attendee', 'Company',
-									'Sales Rep', 'QR Code']
+		header_row = ['Event', 'Registration Type', 'First Name', 'Last Name',
+			'Company', 'Sales Rep', 'QR Code']
 		export = Spreadsheet::Workbook.new
-		sheet = export.create_worksheet name: event_name
+		sheet = export.create_worksheet name: event.name
 		sheet.insert_row(0, header_row)
 		sheet.row(0).default_format = bold_format
 		sheet.column(0).width = 35
@@ -25,9 +23,10 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 		sheet.column(5).width = 20
 		sheet.column(6).width = 34
 
-		qr_codes_path = qr_codes_file_path(event_name, batch)
-		file = original_upload(event_name, batch)
-		workbook = Rails.root.join('events', 'active', event_name, batch, file)
+		qr_codes_path = qr_codes_file_path(batch_path)
+
+		upload_file = original_upload(batch_path)
+		workbook = Rails.root.join(batch_path, upload_file)
 
 		Spreadsheet.open(workbook) do |book|
 		  book.worksheet(0).map { |row| row.to_a }.drop(1).each do |row|
@@ -59,10 +58,10 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 		  end
 		end
 
-		export.write(export_file_path(event_name, batch))
+		export.write(export_file_path(batch_path))
 
-		input_filenames = dir_list(qr_codes_path)
-		zip_path_filename = qr_codes_zip_path(event_name, batch)
+		input_filenames = qr_code_filenames(qr_codes_path)
+		zip_path_filename = qr_codes_zip_path(batch_path)
 
 		Zip::File.open(zip_path_filename, Zip::File::CREATE) do |zipfile|
 		  input_filenames.each do |filename|
@@ -71,8 +70,9 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 		  zipfile.get_output_stream('') { |batch_dir| batch_dir.write '' }
 		end
 
-		delete_qr_codes_dir(event_name, batch)
-		NotificationMailer.batch_generation_complete_email(event_name, batch, email).deliver_now
+		delete_qr_codes_dir(batch_path)
+
+		NotificationMailer.batch_generation_complete_email(event, batch, email).deliver_now
   end
 
   private
@@ -81,55 +81,43 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 		filename.gsub(/[\\\/:*"'?<>|]/, '')
 	end
 
-  def dir_list(path)
-		Dir.entries(path).select { |file| file != '.' && file != '..' && file != '.DS_Store' }
+	def batch_dir?(batch_path, folder)
+		Dir.exist?(Rails.root.join(batch_path, folder))
 	end
 
-  def qr_codes_dir?(event_name, batch)
-		Dir.exist?(Rails.root.join('events', 'active', event_name, batch, 'qr_codes'))
+	def make_batch_dir(batch_path, folder)
+		Dir.mkdir(Rails.root.join(batch_path, folder))
 	end
 
-	def make_qr_codes_dir(event_name, batch)
-		Dir.mkdir(Rails.root.join('events', 'active', event_name, batch, 'qr_codes'))
+	def export_file?(batch_path)
+		File.exist?(Rails.root.join(batch_path, 'export', 'export.xls'))
 	end
 
-	def export_dir?(event_name, batch)
-		Dir.exist?(Rails.root.join('events', 'active', event_name, batch, 'export'))
+	def export_file_path(batch_path)
+		Rails.root.join(batch_path, 'export', 'export.xls')
 	end
 
-	def make_export_dir(event_name, batch)
-		Dir.mkdir(Rails.root.join('events', 'active', event_name, batch, 'export'))
+	def delete_export_file(batch_path)
+		File.delete(Rails.root.join(batch_path, 'export', 'export.xls'))
 	end
 
-	def export_file?(event_name, batch)
-		File.exist?(Rails.root.join('events', 'active', event_name,
-			batch, 'export', 'export.xls'))
+	def qr_codes_file_path(batch_path)
+		Rails.root.join(batch_path, 'qr_codes').to_s
 	end
 
-	def export_file_path(event_name, batch)
-		Rails.root.join('events', 'active', event_name, batch, 'export', 'export.xls')
+	def qr_codes_zip_path(batch_path)
+		Rails.root.join(batch_path, 'qr_codes.zip').to_s
 	end
 
-	def qr_codes_file_path(event_name, batch)
-		Rails.root.join('events', 'active', event_name, batch, 'qr_codes').to_s
+	def qr_code_filenames(path)
+		Dir.entries(path).select { |file| file[-4..-1] == '.png' }
 	end
 
-	def qr_codes_zip_path(event_name, batch)
-		Rails.root.join('events', 'active', event_name, batch, 'qr_codes.zip').to_s
+	def delete_qr_codes_dir(batch_path)
+		FileUtils.remove_dir(Rails.root.join(batch_path, 'qr_codes'))
 	end
 
-	def original_upload(event_name, batch)
-		Dir.entries("events/active/#{event_name}/#{batch}").select do |file|
-			file[-4..-1] == '.xls'
-		end.first
-	end
-
-	def delete_export_file(event_name, batch)
-		File.delete(Rails.root.join('events', 'active', event_name,
-			batch, 'export', 'export.xls'))
-	end
-
-	def delete_qr_codes_dir(event_name, batch)
-		FileUtils.remove_dir(Rails.root.join('events', 'active', event_name, batch, 'qr_codes'))
+	def original_upload(batch_path)
+		Dir.entries(batch_path).select { |file| file[-4..-1] == '.xls' }.first
 	end
 end

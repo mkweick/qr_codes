@@ -24,8 +24,8 @@ class SessionsController < ApplicationController
       ldap_user = Adauth.authenticate(username, password)
 
       if ldap_user
-        session[:email] = ldap_user.ldap_object[:mail].first
-        session[:first_name] = ldap_user.ldap_object[:givenname].first
+        session[:email] = ldap_user.ldap_object[:mail].first.strip
+        session[:first_name] = ldap_user.ldap_object[:givenname].first.strip
         redirect_to(session[:return_to] || root_path)
         session.delete(:return_to)
       elsif 

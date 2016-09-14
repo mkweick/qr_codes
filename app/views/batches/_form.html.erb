@@ -20,13 +20,14 @@
       <%= f.file_field 'file', accept: ".xls", required: true %>
       <div class="font-12">
         <span class="ss-red">Must be <strong>.xls</strong> format</span> - 
-        <%= link_to '(Download Template)', download_path(type: 'template'),
+        <%= link_to '(Download Template)', download_template_event_path(@event),
           data: { turbolinks: false } %>
       </div>
     <% end %>
   </div>
 
   <%= f.submit btn_text, class: "btn btn-primary submit-btn" %>
+  
   <% if show_cancel_btn %>
     <%= link_to 'Cancel', event_path(@event),
       class: "btn btn-danger submit-btn left-10" %>

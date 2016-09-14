@@ -8,8 +8,8 @@
 <body>
   <strong>QR Codes and Excel Export:</strong>
   <p>
-    <a href="<%= event_url(name: @event_name) %>">
-      <%= "#{@event_name} - Batch #{@batch}" %>
+    <a href="<%= event_url(@event) %>">
+      <%= "#{@event.name} - Batch #{@batch.number}" %>
     </a>
   </p>
 </body>

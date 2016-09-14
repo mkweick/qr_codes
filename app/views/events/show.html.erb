@@ -68,17 +68,17 @@
 
             <% if generation_complete?(@event.id, batch.number) %>
                 <%= link_to 'QR Codes',
-                  download_event_batch_path([@event, batch], type: 'qr_codes'),
+                  download_event_batch_path(@event, batch, type: 'qr_codes'),
                   data: { turbolinks: false }, class: "list-group-item" %>
 
                 <%= link_to 'Excel Export',
-                  download_event_batch_path([@event, batch], type: 'export'),
+                  download_event_batch_path(@event, batch, type: 'export'),
                   data: { turbolinks: false }, class: "list-group-item" %>
               </div>
             <% else %>
               </div>
               <%= link_to 'Generate QR Codes & Export',
-                generate_path(name: @event.name, batch: batch.number),
+                generate_event_batch_path(@event, batch),
                 method: 'post', class: 'btn btn-primary' %>
             <% end %>
         </div>

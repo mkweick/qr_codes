@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     resources :batches, except: [:index, :new, :show] do
       member do
         get 'download'
+        post 'generate'
       end
     end
   end
@@ -34,6 +35,4 @@ Rails.application.routes.draw do
   get 'generate-crm',       to: 'qr_codes#generate_crm'
 
   post 'generate',				  to: 'qr_codes#generate'
-
-  delete 'destroy-batch',   to: 'qr_codes#destroy_batch'
 end

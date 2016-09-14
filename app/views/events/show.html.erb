@@ -65,11 +65,12 @@
             <%= link_to 'Original Upload',
               download_event_batch_path(@event, batch, type: 'original'),
               data: { turbolinks: false }, class: "list-group-item" %>
-              <% binding.pry %>
+
             <% if generation_complete?(@event.id, batch.number) %>
                 <%= link_to 'QR Codes',
                   download_event_batch_path([@event, batch], type: 'qr_codes'),
                   data: { turbolinks: false }, class: "list-group-item" %>
+
                 <%= link_to 'Excel Export',
                   download_event_batch_path([@event, batch], type: 'export'),
                   data: { turbolinks: false }, class: "list-group-item" %>

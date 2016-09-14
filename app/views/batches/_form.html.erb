@@ -5,7 +5,7 @@
   <div class="text-left">
     <% if multi %>
       <div class="form-group">
-        <%= f.select 'location', options_for_select(@locations),
+        <%= f.select 'location', options_for_select(@locations, @batch.location),
           { prompt: '-- Select Location --' },
           { required: true, class: "form-control" } %>
       </div>

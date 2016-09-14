@@ -106,8 +106,13 @@ class BatchesController < ApplicationController
       zip_file = Rails.root.join(batch_path, 'qr_codes.zip')
 
       if File.exist?(zip_file)
-        send_file(zip_file, type: 'application/zip',
-          filename: "QR_CODES_#{@event.name}_BATCH_#{@batch.number}.zip")
+        if @batch.location
+          send_file(zip_file, type: 'application/zip',
+            filename: "QR_CODES_#{@event.name}_#{@batch.location}_BATCH_#{@batch.number}.zip")
+        else
+          send_file(zip_file, type: 'application/zip',
+            filename: "QR_CODES_#{@event.name}_BATCH_#{@batch.number}.zip")
+        end
       else
         flash.alert = "QR Codes zip file can't be found."
         redirect_to event_path(@event)
@@ -116,8 +121,13 @@ class BatchesController < ApplicationController
       export_file = Rails.root.join(batch_path, 'export', 'export.xls')
 
       if File.exist?(export_file)
-        send_file(export_file, type: 'application/vnd.ms-excel',
-          filename: "FINAL_#{@event.name}_BATCH_#{@batch.number}.xls")
+        if @batch.location
+          send_file(export_file, type: 'application/vnd.ms-excel',
+            filename: "FINAL_#{@event.name}_#{@batch.location}_BATCH_#{@batch.number}.xls")
+        else
+          send_file(export_file, type: 'application/vnd.ms-excel',
+            filename: "FINAL_#{@event.name}_BATCH_#{@batch.number}.xls")
+        end
       else
         flash.alert = "Export file can't be found."
         redirect_to event_path(@event)

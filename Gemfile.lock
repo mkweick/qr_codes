@@ -41,7 +41,7 @@ GEM
     adauth (2.0.5)
       expects (~> 0.0.2)
       net-ldap
-    arel (7.1.1)
+    arel (7.1.2)
     autoprefixer-rails (6.4.1.1)
       execjs
     bootstrap-sass (3.3.6)

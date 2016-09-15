@@ -16,7 +16,7 @@
               <%= link_to event.name, event_path(event),
                 class: "list-group-item" %>
             <% else %>
-              <%= link_to event.name, on_site_badge_event_path(event),
+              <%= link_to event.name,  new_event_on_site_attendee_path(event),
                 class: "list-group-item" %>
             <% end %>
           <% end %>

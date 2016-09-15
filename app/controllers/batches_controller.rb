@@ -1,10 +1,8 @@
 class BatchesController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [ :create, :update,
-    :destroy, :generate]
   before_action :require_user
   before_action :require_admin
-  before_action :set_event, only: [:create]
-  before_action :set_event_and_batch, except: [:create]
+  before_action :set_event
+  before_action :set_batch, except: [:create]
 
   def create
     file = params[:batch][:file] if params[:batch][:file]
@@ -76,8 +74,8 @@ class BatchesController < ApplicationController
 
     if upload_file
       GenerateQrCodesExportJob.perform_later(@event, @batch, email)
-      flash.notice = "We'll send you an email once Batch #{@batch.number} " +
-        "processing is complete."
+      flash.notice = "Batch submitted.<br /> You'll receive an email when " +
+        "Batch #{@batch.number} processing is complete."
     else
       flash.alert = "Upload file not found on server. Processing won't complete."
     end
@@ -147,8 +145,7 @@ class BatchesController < ApplicationController
     @event = Event.find(params[:event_id]) if params[:event_id]
   end
 
-  def set_event_and_batch
-    @event = Event.find(params[:event_id]) if params[:event_id]
+  def set_batch
     @batch = Batch.find(params[:id]) if params[:id]
   end
 
@@ -199,7 +196,7 @@ class BatchesController < ApplicationController
       end
     end
 
-    if column_count == 14
+    if column_count == 13
       if duplicates.any?
         error_msg = "Upload failed. Duplicates exist at rows:<br /><ul>"
         
@@ -223,7 +220,7 @@ class BatchesController < ApplicationController
         return false
       end
     else
-      flash.alert = "Spreadsheet has #{column_count} columns. Must have 14 Columns." +
+      flash.alert = "Spreadsheet has #{column_count} columns. Must have 13 Columns." +
         "<br />#{view_context.link_to 'Download Template',
         download_template_event_path(@event), data: { turbolinks: false }}"
       return true

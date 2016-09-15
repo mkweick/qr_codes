@@ -1,0 +1,28 @@
+<% @page_title = "On-Site QR Code - #{@event.name}" %>
+
+<div class="row">
+  <div id="event-title" class="col-xs-12 col-sm-12 col-md-12">
+    <h2 id="event-name" class="pull-left"><%= @event.name %></h2>
+  </div>
+</div>
+
+<div class="row"> 
+  <div class="col-xs-12 col-sm-6 col-md-6">
+    <div class="well text-center">
+      <h3 class="top-15">New QR Code</h3>
+      <hr class="top-10" />
+      New QR Code Form....
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-sm-6 col-md-6">
+    <div class="well">
+      Search for Contact / Account
+
+      <%#= link_to 'Search CRM', crm_contact_event_path(@event),
+        class: "btn btn-lg btn-primary" %>
+      <%#= link_to 'On Demand', on_demand_event_path(@event),
+        class: "btn btn-lg btn-primary left-30" %>
+    </div>
+  </div>
+</div>

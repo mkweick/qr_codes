@@ -15,10 +15,6 @@ Rails.application.routes.draw do
 
     member do 
       get 'download-template'
-      get 'on-site-badge'
-      get 'crm-contact'
-      get 'on-demand'
-      get 'generate-crm'
 
       patch 'archive'
       patch 'activate'
@@ -29,6 +25,17 @@ Rails.application.routes.draw do
         get 'download'
 
         post 'generate'
+      end
+    end
+
+    resources :on_site_attendees, except: [:show], path: 'on-site' do
+      collection do
+        get 'crm-contact'
+        get 'crm-account'
+      end
+
+      member do
+        get 'print'
       end
     end
   end

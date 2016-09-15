@@ -74,6 +74,11 @@ td a:hover { color: #337ab7; }
 	clear: both;
 }
 
+#event-name {
+	margin-top: 10px;
+	margin-bottom: 0;
+}
+
 .batch { height: 240px; }
 .batch-multiple { height: 260px; }
 
@@ -127,6 +132,6 @@ td a:hover { color: #337ab7; }
 	#event-controls {
 		clear: both;
 		float: left !important;
-		margin-top: 0;
+		margin-top: 10px;
 	}
 }

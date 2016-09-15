@@ -1,5 +1,4 @@
 class SessionsController < ApplicationController
-  before_action :require_user, only: [:destroy]
 
   def new
     redirect_to root_path if logged_in?
@@ -36,8 +35,10 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    session.delete(:email)
-    session.delete(:first_name)
+    if logged_in?
+      session.delete(:email)
+      session.delete(:first_name)
+    end
     flash.notice = 'Successfully logged out'
     redirect_to login_path
   end

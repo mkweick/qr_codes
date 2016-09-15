@@ -5,7 +5,7 @@
 
 <div class="row">
   <div id="event-title" class="col-xs-12 col-sm-12 col-md-12">
-    <h2 id="event-name" class="top-10 bottom-0 pull-left"><%= @event.name %></h2>
+    <h2 id="event-name" class="pull-left"><%= @event.name %></h2>
     <div id="event-controls" class="pull-right top-10">
       <%= link_to edit_event_path(@event), title: "Edit Event",
         class: "btn btn-sm btn-primary right-5" do %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160908145559) do
+ActiveRecord::Schema.define(version: 20160915152051) do
 
   create_table "batches", force: :cascade do |t|
     t.string   "event_id",    null: false
@@ -37,17 +37,38 @@ ActiveRecord::Schema.define(version: 20160908145559) do
   end
 
   create_table "events", force: :cascade do |t|
-    t.string   "name",                             null: false
-    t.boolean  "multiple_locations",               null: false
-    t.string   "status",             default: "1", null: false
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
+    t.string   "name",                                null: false
+    t.boolean  "multiple_locations",                  null: false
+    t.string   "qr_code_email_subject",               null: false
+    t.string   "status",                default: "1", null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
   create_table "locations", force: :cascade do |t|
     t.string   "name",       null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "on_site_attendees", force: :cascade do |t|
+    t.string   "event_id",       null: false
+    t.string   "first_name",     null: false
+    t.string   "last_name",      null: false
+    t.string   "email",          null: false
+    t.string   "phone",          null: false
+    t.string   "account_name",   null: false
+    t.string   "account_number"
+    t.string   "street1",        null: false
+    t.string   "street2"
+    t.string   "city",           null: false
+    t.string   "state",          null: false
+    t.string   "zip_code",       null: false
+    t.string   "salesrep"
+    t.string   "type",           null: false
+    t.boolean  "contact_in_crm"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   create_table "types", force: :cascade do |t|

@@ -11,6 +11,12 @@
       class: "form-control" %>
   </div>
 
+  <div class="form-group text-left">
+    <%= label_tag :subject, 'QR Code Email Subject' %>
+    <%= text_field_tag :subject, @event.qr_code_email_subject, required: true,
+      class: "form-control" %>
+  </div>
+
   <%= submit_tag btn_text, class: "btn btn-primary" %>
   <% if show_cancel_btn %>
     <%= link_to 'Cancel', event_path(@event), class: "btn btn-danger left-10" %>

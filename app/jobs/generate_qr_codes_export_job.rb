@@ -33,7 +33,8 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 		  	next if row[2].blank?
 		  	qr_code_filename = "#{sanitize(row[2])}.png"
 
-		  	RQRCode::QRCode.new("MATMSG:TO:leads@divalsafety.com;SUB:#{row[13]};BODY:" +
+		  	RQRCode::QRCode.new(
+		  		"MATMSG:TO:leads@divalsafety.com;SUB:#{event.qr_code_email_subject};BODY:" +
 					"\n______________________" +
 					"#{"\n" + row[2]}" +
 					"#{"\n" + row[3]}#{' / ' + row[4] if row[4]}" +
@@ -45,9 +46,8 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 					"#{row[11] if row[11]} #{row[12]  if row[12]}" +
 					"#{"\n" + 'E: ' + row[6] if row[6]}" +
 					"#{"\n" + 'P: ' + row[7] if row[7]}" +
-					"#{"\n" + row[5] if row[5]};;", level: :q)
-		  		.to_img.resize(375, 375).save("#{qr_codes_path}/#{qr_code_filename}"
-		  	)
+					"#{"\n" + row[5] if row[5]};;", level: :q
+				).to_img.resize(375, 375).save("#{qr_codes_path}/#{qr_code_filename}")
 
 		  	full_name = row[2].split(' ', 2)
 		  	attendee_row = [row[0], row[1], full_name[0], full_name[1],

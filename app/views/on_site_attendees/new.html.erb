@@ -1,5 +1,7 @@
 <% @page_title = "On-Site QR Code - #{@event.name}" %>
 
+<%= render 'shared/errors', obj: @attendee %>
+
 <div class="row">
   <div id="event-title" class="col-xs-12 col-sm-12 col-md-12">
     <h2 id="event-name" class="pull-left"><%= @event.name %></h2>
@@ -8,10 +10,10 @@
 
 <div class="row"> 
   <div class="col-xs-12 col-sm-6 col-md-6">
-    <div class="well text-center">
-      <h3 class="top-15">New QR Code</h3>
+    <div class="well">
+      <h3 class="top-15 text-center">New QR Code</h3>
       <hr class="top-10" />
-      New QR Code Form....
+      <%= render 'form', btn_text: 'Create' %>
     </div>
   </div>
 

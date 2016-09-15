@@ -1,5 +1,6 @@
 class Batch < ActiveRecord::Base
   belongs_to :event
+  
   validates :number, presence: true,
     uniqueness: { scope: :event_id, case_sensitive: false}
   validates :description, presence: true

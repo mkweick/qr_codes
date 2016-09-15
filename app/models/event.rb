@@ -1,5 +1,6 @@
 class Event < ActiveRecord::Base
   has_many :batches, dependent: :destroy
+  has_many :on_site_attendees, dependent: :destroy
 
   validates :name, presence: { message: 'Event type/year are both required.' }
   validates_uniqueness_of :name, {

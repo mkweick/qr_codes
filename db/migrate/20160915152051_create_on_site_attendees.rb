@@ -14,7 +14,7 @@ class CreateOnSiteAttendees < ActiveRecord::Migration[5.0]
       t.string :state,          null: false
       t.string :zip_code,       null: false
       t.string :salesrep
-      t.string :type,           null: false
+      t.string :badge_type,     null: false
       t.boolean :contact_in_crm
       t.timestamps              null: false
     end

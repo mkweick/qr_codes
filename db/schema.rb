@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 20160915152051) do
     t.string   "state",          null: false
     t.string   "zip_code",       null: false
     t.string   "salesrep"
-    t.string   "type",           null: false
+    t.string   "badge_type",     null: false
     t.boolean  "contact_in_crm"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false

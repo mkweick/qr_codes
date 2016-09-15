@@ -4,7 +4,7 @@ class OnSiteAttendeesController < ApplicationController
   before_action :set_on_site_attendee, only: [:edit, :update, :destroy]
 
   def new
-
+    @attendee = @event.on_site_attendees.new
   end
 
   def create

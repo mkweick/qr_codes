@@ -179,9 +179,6 @@ class EventsController < ApplicationController
       contact = query.each(as: :array).first
 
       if contact
-        qr_code_path = Rails.root.join('events', 'active', @event_name, 'Walk In CRM')
-        qr_code_filename = "#{sanitize(contact[0])}.png"
-
         @qr = RQRCode::QRCode.new("MATMSG:TO:leads@divalsafety.com;SUB:#{contact[11]};BODY:" +
           "\n______________________" +
           "#{"\n" + contact[0]}" +
@@ -195,8 +192,6 @@ class EventsController < ApplicationController
           "#{"\n" + 'E: ' + contact[4] if contact[4]}" +
           "#{"\n" + 'P: ' + contact[5] if contact[5]}" +
           "#{"\n" + contact[3] if contact[3]};;", level: :q).to_img.resize(375, 375)
-
-        @qr.save("#{qr_code_path}/#{qr_code_filename}")
       else
         flash.alert = "No contact found."
         redirect_to crm_contact_event_path(@event)

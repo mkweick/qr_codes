@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
 
     username, password = params[:username], params[:password]
 
-    if username == 'checkin' && password == 'checkin!!'
+    if username == 'checkin' && password == 'checkin'
       session[:email] = 'check-in@divalsafety.com'
       session[:first_name] = 'Check-In'
       redirect_to(session[:return_to] || root_path)

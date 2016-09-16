@@ -17,8 +17,11 @@ td a {
 
 td a:hover { color: #337ab7; }
 
-.well {
-	padding-top: 0;
+.well { padding-top: 0; }
+
+.alert ul { 
+	padding: 0;
+	margin-top: 5px;
 }
 
 .inline-block { display: inline-block; }
@@ -68,6 +71,12 @@ td a:hover { color: #337ab7; }
 	border-bottom: 1px solid #ddd;
 }
 
+#event-title-on-site {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
 #event-title:after {
 	content: "";
 	display: block;
@@ -76,6 +85,11 @@ td a:hover { color: #337ab7; }
 
 #event-name {
 	margin-top: 10px;
+	margin-bottom: 0;
+}
+
+#event-name-on-site {
+	margin-top: 0;
 	margin-bottom: 0;
 }
 
@@ -111,12 +125,13 @@ td a:hover { color: #337ab7; }
 	margin-bottom: 5px;
 }
 
-.attendee-form { }
-
-.alert ul { 
-	padding: 0;
-	margin-top: 5px;
+.attendee-form input[type="text"].form-control {
+	height: 20px;
+	padding: 10px 10px;
+	font-size: 12px;
 }
+
+.attendee-form .form-group { margin-bottom: 5px; }
 
 @media (min-width: 1200px) {
 	.container { width: 900px; }
@@ -124,6 +139,10 @@ td a:hover { color: #337ab7; }
 
 @media (min-width: 992px) {
 	.container { width: 900px; }
+}
+
+@media (min-width: 768px) {
+	.attendee-form .control-label { padding-top: 1px; }
 }
 
 @media (max-width: 725px) {

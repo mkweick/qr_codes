@@ -18,34 +18,34 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
 
   # Exchange Settings
-  # config.action_mailer.default_url_options = {
-  #   host: 'webdev.divalsafety.com',
-  #   port: 3000
-  # }
-  # config.action_mailer.smtp_settings = {
-  #   address: 'mail-rails.divalsafety.com',
-  #   port: 25,
-  #   authentication: :login,
-  #   user_name: 'rails-mailer',
-  #   password: 'Tdot1721#',
-  #   domain: 'mainoffice.dival.com',
-  #   enable_starttls_auto: true,
-  #   openssl_verify_mode: 'none'
-  # }
-
-  # Gmail Settings
   config.action_mailer.default_url_options = {
-    host: 'webdev.com',
+    host: 'webdev.divalsafety.com',
     port: 3000
   }
   config.action_mailer.smtp_settings = {
-    address: 'smtp.gmail.com',
-    port: 587,
-    authentication: 'plain',
-    user_name: 'mkweick@gmail.com',
-    password: 'HHockey18!',
-    enable_starttls_auto: true
+    address: 'mail-rails.divalsafety.com',
+    port: 25,
+    authentication: :login,
+    user_name: 'rails-mailer',
+    password: 'Tdot1721#',
+    domain: 'mainoffice.dival.com',
+    enable_starttls_auto: true,
+    openssl_verify_mode: 'none'
   }
+
+  # Gmail Settings
+  # config.action_mailer.default_url_options = {
+  #   host: 'webdev.com',
+  #   port: 3000
+  # }
+  # config.action_mailer.smtp_settings = {
+  #   address: 'smtp.gmail.com',
+  #   port: 587,
+  #   authentication: 'plain',
+  #   user_name: 'mkweick@gmail.com',
+  #   password: 'HHockey18!',
+  #   enable_starttls_auto: true
+  # }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

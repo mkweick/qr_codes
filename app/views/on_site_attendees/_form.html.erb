@@ -9,7 +9,7 @@
     <% end %>
 
     <div class="col-sm-8">
-      <%= f.text_field :first_name, value: @attendee.first_name, 
+      <%= f.text_field :first_name, value: @attendee.first_name, required: true,
         autofocus: 'autofocus', class: "form-control" %>
     </div>
   </div>
@@ -20,7 +20,7 @@
     <% end %>
 
     <div class="col-sm-8">
-      <%= f.text_field :last_name, value: @attendee.last_name, 
+      <%= f.text_field :last_name, value: @attendee.last_name, required: true,
         class: "form-control" %>
     </div>
   </div>
@@ -32,7 +32,7 @@
 
     <div class="col-sm-8">
       <%= f.text_field :account_name, value: @attendee.account_name,
-         class: "form-control" %>
+         required: true, class: "form-control" %>
     </div>
   </div>
 
@@ -51,7 +51,7 @@
     <% end %>
 
     <div class="col-sm-8">
-      <%= f.text_field :street1, value: @attendee.street1, 
+      <%= f.text_field :street1, value: @attendee.street1, required: true,
         class: "form-control" %>
     </div>
   </div>
@@ -71,7 +71,7 @@
     <% end %>
 
     <div class="col-sm-8">
-      <%= f.text_field :city, value: @attendee.city, 
+      <%= f.text_field :city, value: @attendee.city, required: true,
         class: "form-control" %>
     </div>
   </div>
@@ -82,7 +82,7 @@
     <% end %>
 
     <div class="col-sm-8">
-      <%= f.text_field :state, value: @attendee.state, 
+      <%= f.text_field :state, value: @attendee.state, required: true,
         class: "form-control" %>
     </div>
   </div>
@@ -93,7 +93,7 @@
     <% end %>
 
     <div class="col-sm-8">
-      <%= f.text_field :zip_code, value: @attendee.zip_code, 
+      <%= f.text_field :zip_code, value: @attendee.zip_code, required: true,
         class: "form-control" %>
     </div>
   </div>
@@ -104,7 +104,7 @@
     <% end %>
 
     <div class="col-sm-8">
-      <%= f.text_field :email, value: @attendee.email, 
+      <%= f.text_field :email, value: @attendee.email, required: true,
         class: "form-control" %>
     </div>
   </div>
@@ -115,7 +115,7 @@
     <% end %>
 
     <div class="col-sm-8">
-      <%= f.text_field :phone, value: @attendee.phone, 
+      <%= f.text_field :phone, value: @attendee.phone, required: true,
         class: "form-control phone" %>
     </div>
   </div>
@@ -145,7 +145,7 @@
   <div class="text-center">
     <%= f.submit btn_text, class: "btn btn-primary" %>
     <% if show_cancel_btn %>
-      <%= link_to 'Cancel', event_on_site_attendees(@event),
+      <%= link_to 'Cancel', new_event_on_site_attendee_path(@event),
         class: "btn btn-danger left-10" %>
     <% end %>
   </div>

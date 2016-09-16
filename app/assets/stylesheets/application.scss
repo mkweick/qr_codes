@@ -41,11 +41,14 @@ td a:hover { color: #337ab7; }
 .top-40 { margin-top: 40px; }
 .bottom-0 { margin-bottom: 0; }
 .bottom-2 { margin-bottom: 2px; }
+.bottom-5 {margin-bottom: 5px; }
 .bottom-10 {margin-bottom: 10px; }
 .bottom-20 {margin-bottom: 20px; }
+.bottom-30 {margin-bottom: 30px; }
 .right-5 { margin-right: 5px; }
 .right-10 { margin-right: 10px; }
 .left-10 { margin-left: 10px; }
+.left-20 { margin-left: 20px; }
 .left-30 { margin-left: 30px; }
 .left-40 { margin-left: 40px; }
 
@@ -141,6 +144,28 @@ td a:hover { color: #337ab7; }
 	margin-bottom: 20px;
 }
 
+.attendee-name-header {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+#print-qr { width: 200px; }
+#print-qr img { width: 100%; }
+
+#print-qr #first-name {
+	font-size: 30px;
+	font-weight: bold;
+}
+
+#print-qr #last-name {
+	font-size: 20px;
+}
+
+#print-qr #account-name {
+	font-size: 25px;
+	font-weight: bold;
+}
+
 #badge-type label + label { margin-left: 40px; }
 
 #badge-type label {
@@ -170,4 +195,8 @@ td a:hover { color: #337ab7; }
 		float: left !important;
 		margin-top: 10px;
 	}
+}
+
+@media print {
+	.no-print, .no-print * { display: none !important; }
 }

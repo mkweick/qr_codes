@@ -1,7 +1,7 @@
 class OnSiteAttendeesController < ApplicationController
   before_action :require_user
   before_action :set_event
-  before_action :set_on_site_attendee, only: [:show, :edit, :update, :destroy]
+  before_action :set_attendee, only: [:show, :edit, :update, :destroy]
 
   def index
 
@@ -39,14 +39,19 @@ class OnSiteAttendeesController < ApplicationController
       "#{"\n" + @attendee.phone if @attendee.phone}" +
       "#{"\n" + @attendee.salesrep if @attendee.salesrep};;", level: :q
     ).to_img.resize(375, 375)
+
+    render layout: false
   end
 
-  def edit
-
-  end
+  def edit; end
 
   def update
-
+    if @attendee.update(on_site_attendee_params)
+      redirect_to event_on_site_attendee_path(@event, @attendee)
+    else
+      @attendee.reload
+      render 'edit'
+    end
   end
 
   def destroy
@@ -186,7 +191,7 @@ class OnSiteAttendeesController < ApplicationController
     @event = Event.find(params[:event_id]) if params[:event_id]
   end
 
-  def set_on_site_attendee
+  def set_attendee
     @attendee = OnSiteAttendee.find(params[:id]) if params[:id]
   end
 end

@@ -18,7 +18,7 @@ class TypesController < ApplicationController
       flash.notice = "Event type created."
       redirect_to types_path
     else
-      render :new
+      render 'new'
     end
   end
 
@@ -35,7 +35,7 @@ class TypesController < ApplicationController
       redirect_to types_path
     else
       @type.reload
-      render :edit
+      render 'edit'
     end
   end
 

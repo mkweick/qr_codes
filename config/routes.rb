@@ -28,14 +28,10 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :on_site_attendees, except: [:show], path: 'on-site' do
+    resources :on_site_attendees, path: 'on-site' do
       collection do
         get 'crm-contact'
         get 'crm-account'
-      end
-
-      member do
-        get 'print'
       end
     end
   end

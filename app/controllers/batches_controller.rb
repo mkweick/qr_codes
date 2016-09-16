@@ -10,7 +10,8 @@ class BatchesController < ApplicationController
     if file && file.original_filename[-4..-1].downcase == '.xls'
       batches = @event.batches.pluck(:number)
       next_batch = batches.any? ? batches.map(&:to_i).sort.last.next.to_s : '1'
-      @batch = @event.batches.create(batch_params.merge(number: next_batch))
+      
+      @batch = @event.batches.new(batch_params.merge(number: next_batch))
 
       if @batch.save
         make_batch_dir(@event.id, @batch.number)

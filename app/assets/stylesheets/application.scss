@@ -42,10 +42,12 @@ td a:hover { color: #337ab7; }
 .bottom-0 { margin-bottom: 0; }
 .bottom-2 { margin-bottom: 2px; }
 .bottom-10 {margin-bottom: 10px; }
+.bottom-20 {margin-bottom: 20px; }
 .right-5 { margin-right: 5px; }
 .right-10 { margin-right: 10px; }
 .left-10 { margin-left: 10px; }
 .left-30 { margin-left: 30px; }
+.left-40 { margin-left: 40px; }
 
 .pad-top-15 { padding-top: 15px; }
 
@@ -126,12 +128,25 @@ td a:hover { color: #337ab7; }
 }
 
 .attendee-form input[type="text"].form-control {
-	height: 20px;
-	padding: 10px 10px;
+	height: 30px;
+	padding: 13px 10px;
 	font-size: 12px;
 }
 
 .attendee-form .form-group { margin-bottom: 5px; }
+.attendee-form sup { color: #FF0000; }
+
+.attendee-form #badge-type {
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+
+#badge-type label + label { margin-left: 40px; }
+
+#badge-type label {
+	font-size: 16px;
+	font-weight: bold;
+}
 
 @media (min-width: 1200px) {
 	.container { width: 900px; }
@@ -142,7 +157,7 @@ td a:hover { color: #337ab7; }
 }
 
 @media (min-width: 768px) {
-	.attendee-form .control-label { padding-top: 1px; }
+	.attendee-form .control-label { padding-top: 6px; }
 }
 
 @media (max-width: 725px) {

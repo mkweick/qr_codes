@@ -144,6 +144,7 @@ GEM
     rqrcode_png (0.1.5)
       chunky_png
       rqrcode
+    ruby-odbc (0.99997)
     ruby-ole (1.2.12)
     rubyzip (1.2.0)
     sass (3.4.22)
@@ -208,6 +209,7 @@ DEPENDENCIES
   rb-readline
   rqrcode
   rqrcode_png
+  ruby-odbc (= 0.99997)
   rubyzip
   sass-rails (~> 5.0.6)
   sdoc (~> 0.4.1)

@@ -13,7 +13,7 @@
             <% messages.each do |msg| %>
               <li>
                 <% if !hide_attr %>
-                  <%= field + ' ' + msg %>
+                  <%= field.gsub('_', ' ') + ' ' + msg %>
                 <% else %>
                   <%= msg %>
                 <% end %>

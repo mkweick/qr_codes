@@ -35,9 +35,9 @@ class GenerateQrCodesExportJob < ActiveJob::Base
 
 		  	RQRCode::QRCode.new(
 		  		"MATMSG:TO:leads@divalsafety.com;SUB:#{event.qr_code_email_subject};BODY:" +
-					"\n______________________" +
-					"#{"\n" + row[2]}" +
-					"#{"\n" + row[3]}#{' / ' + row[4] if row[4]}" +
+					"\n\n\n______________________" +
+					"\n" + row[2] +
+					"\n" + row[3] + "#{' / ' + row[4] if row[4]}" +
 					"#{"\n" + row[8] if row[8]}" +
 					"#{"\n" + row[9] if row[9]}" +
 					"#{"\n" + row[10] if row[10]}" +

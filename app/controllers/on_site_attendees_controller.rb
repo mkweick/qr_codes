@@ -1,14 +1,44 @@
 class OnSiteAttendeesController < ApplicationController
   before_action :require_user
   before_action :set_event
-  before_action :set_on_site_attendee, only: [:edit, :update, :destroy]
+  before_action :set_on_site_attendee, only: [:show, :edit, :update, :destroy]
+
+  def index
+
+  end
 
   def new
     @attendee = @event.on_site_attendees.new
   end
 
   def create
+    @attendee = @event.on_site_attendees.new(on_site_attendee_params)
 
+    if @attendee.save
+      redirect_to event_on_site_attendee_path(@event, @attendee)
+    else
+      render 'new'
+    end
+  end
+
+  def show
+    @qr_code = RQRCode::QRCode.new(
+      "MATMSG:TO:leads@divalsafety.com;SUB:#{@event.qr_code_email_subject};BODY:" +
+      "\n\n\n______________________" +
+      "\n" + @attendee.first_name + " " + @attendee.last_name +
+      "\n" + @attendee.account_name +
+      "#{' / ' + @attendee.account_number if @attendee.account_number}" +
+      "#{"\n" + @attendee.street1 if @attendee.street1}" +
+      "#{"\n" + @attendee.street2 if @attendee.street2}" +
+      "#{"\n" + @attendee.city if @attendee.city}" +
+      "#{"\n" if !@attendee.city && (@attendee.state || @attendee.zip)}" +
+      "#{', ' if @attendee.city && @attendee.state}" +
+      "#{@attendee.state if @attendee.state} " +
+      "#{@attendee.zip_code if @attendee.zip_code}" +
+      "#{"\n" + @attendee.email if @attendee.email}" +
+      "#{"\n" + @attendee.phone if @attendee.phone}" +
+      "#{"\n" + @attendee.salesrep if @attendee.salesrep};;", level: :q
+    ).to_img.resize(375, 375)
   end
 
   def edit
@@ -24,6 +54,24 @@ class OnSiteAttendeesController < ApplicationController
   end
 
   def crm_contact
+    require 'odbc'
+
+    as400 = ODBC.connect('as400_fds')
+
+    sql_cust_name = "SELECT cmcsno, cmcsnm FROM cusms
+                     WHERE UPPER(cmcsnm) LIKE '\%AURU\%'
+                       AND cmsusp != 'S'
+                       AND cmusr1 != 'HSS'"
+
+    results = as400.run(sql_cust_num)
+
+    cust_results = results.fetch_all
+
+    as400.commit
+    as400.disconnect
+
+# ----------------------------------------------------------------------- #
+
     last_name = params[:last_name].strip unless params[:last_name].blank?
     account_name = params[:account_name].strip unless params[:account_name].blank?
 
@@ -125,6 +173,14 @@ class OnSiteAttendeesController < ApplicationController
   end
 
   private
+
+  def on_site_attendee_params
+    params.require(:on_site_attendee).permit(
+      :first_name, :last_name, :account_name, :account_number, :street1,
+      :street2, :city, :state, :zip_code, :email, :phone, :salesrep,
+      :badge_type, :contact_in_crm
+    )
+  end
 
   def set_event
     @event = Event.find(params[:event_id]) if params[:event_id]

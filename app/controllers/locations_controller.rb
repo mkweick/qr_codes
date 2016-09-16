@@ -18,7 +18,7 @@ class LocationsController < ApplicationController
       flash.notice = "Location created."
       redirect_to locations_path
     else
-      render :new
+      render 'new'
     end
   end
 
@@ -35,7 +35,7 @@ class LocationsController < ApplicationController
       redirect_to locations_path
     else
       @location.reload
-      render :edit
+      render 'edit'
     end
   end
 

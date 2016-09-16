@@ -16,6 +16,7 @@ gem 'daemons'
 gem 'whenever',         :require => false
 gem 'rb-readline'
 gem 'tiny_tds'
+gem 'ruby-odbc',         '0.99997'
 
 gem 'jquery-rails'
 gem 'turbolinks'

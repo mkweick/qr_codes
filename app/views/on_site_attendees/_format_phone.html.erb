@@ -1,0 +1,24 @@
+<script>
+  $('.phone').on('keypress', function(e) {
+    var key = e.keyCode || 0;
+    return (key == 8 || key == 9 || key == 13 || key == 46 || (key >= 48 && key <= 57));
+  })
+
+  $('.phone').change(function() {
+    var phone = $('.phone').val()
+    var scrubbed = phone.toString().replace(/[^0-9]/g, "");
+
+    var sevenDigitFormat = /^\(?([0-9]{3})[-. ]?([0-9]{4})$/;
+    var tenDigitFormat = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    var extDigitFormat = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})?([0-9]*)$/;
+    if (tenDigitFormat.test(scrubbed)) {
+        $('.phone').val(scrubbed.replace(tenDigitFormat, "($1) $2-$3"));
+    }
+    else if (sevenDigitFormat.test(scrubbed)) {
+        $('.phone').val(scrubbed.replace(sevenDigitFormat, "$1-$2"));
+    }
+    else if (extDigitFormat.test(scrubbed)) {
+        $('.phone').val(scrubbed.replace(extDigitFormat, "($1) $2-$3 x$4"));
+    }
+  });
+</script>

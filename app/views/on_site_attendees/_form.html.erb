@@ -10,7 +10,7 @@
 
     <div class="col-sm-8">
       <%= f.text_field :first_name, value: @attendee.first_name, required: true,
-        autofocus: 'autofocus', class: "form-control" %>
+        class: "form-control" %>
     </div>
   </div>
 
@@ -143,7 +143,8 @@
   </div>
 
   <div class="text-center">
-    <%= f.submit btn_text, class: "btn btn-primary" %>
+    <%= f.submit btn_text, class: "btn btn-primary",
+      data: { disable_with: "Loading..." } %>
     <% if show_cancel_btn %>
       <%= link_to 'Cancel', new_event_on_site_attendee_path(@event),
         class: "btn btn-danger left-10" %>
@@ -151,4 +152,4 @@
   </div>
 <% end %>
 
-<%= render 'format_phone' %>
+<%= render 'format_phone_js' %>

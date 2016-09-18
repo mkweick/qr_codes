@@ -1,0 +1,78 @@
+var cancelBtn = "<a id=\"crm-account-cancel-btn\"";
+cancelBtn += "class=\"btn btn-sm btn-danger top-10 left-10\">Cancel</a>";
+
+var results = "";
+
+<% if @results.any? %>
+  results += "<hr id=\"crm-account-line\" class=\"top-10 bottom-10\" />";
+  results += "<div id=\"crm-account-results\" class=\"list-group\">";
+  <% @results.each do |row| %>
+    <% first_name = row[0].strip if row[0] %>
+    <% last_name = row[1].strip if row[1] %>
+    <% account_name = row[2].strip if row[2] %>
+    <% account_number = row[3].strip if row[3] %>
+    <% street1 = row[4].strip if row[4] %>
+    <% street2 = row[5].strip if row[5] %>
+    <% city = row[6].strip if row[6] %>
+    <% state = row[7].strip if row[7] %>
+    <% zip_code = row[8].strip if row[8] %>
+    <% email = row[9].strip if row[9] %>
+    <% phone = row[10].strip if row[10] %>
+    <% salesrep = row[11].strip if row[11] %>
+
+    results += "<a class=\"list-group-item text-left\">";
+    results += "<%= first_name %> <%= last_name %>";
+    results += "<span class=\"pull-right\"><%= account_name %></span>";
+    results += "<div id=\"first-name\"><%= first_name %></div>";
+    results += "<div id=\"last-name\"><%= last_name %></div>";
+    results += "<div id=\"account-name\"><%= account_name %></div>";
+    results += "<div id=\"account-number\"><%= account_number %></div>";
+    results += "<div id=\"street1\"><%= street1 %></div>";
+    results += "<div id=\"street2\"><%= street2 %></div>";
+    results += "<div id=\"city\"><%= city %></div>";
+    results += "<div id=\"state\"><%= state %></div>";
+    results += "<div id=\"zip-code\"><%= zip_code %></div>";
+    results += "<div id=\"email\"><%= email %></div>";
+    results += "<div id=\"phone\"><%= phone %></div>";
+    results += "<div id=\"salesrep\"><%= salesrep %></div>";
+    results += "</a>";
+  <% end %>
+  results += "</div>";
+<% else %>
+  results += "<hr id=\"crm-account-line\" class=\"top-10 bottom-10\" />";
+  results += "<h4 id=\"crm-account-no-results\" class=\"text-center top-20\">";
+  <% if params[:account_name].present? %>
+    <% if @account_length_error %>
+      results += "3 characters required for account search."
+    <% else %>
+      results += "No results found.";
+    <% end %>
+  <% else %>
+    results += "You didn't search anything.";
+  <% end %>
+  results += "</h4>";
+<% end %>
+
+clearCrmContactAndAccountSearch();
+
+$(cancelBtn).insertAfter('#crm-account-submit-btn');
+$(results).insertAfter('.crm-account-form');
+
+$('#crm-account-cancel-btn').click(clearCrmContactAndAccountSearch);
+
+$('#crm-account-results a').click(function() {
+  $('#on_site_attendee_first_name').val($(this).find('#first-name').text());
+  $('#on_site_attendee_last_name').val($(this).find('#last-name').text());
+  $('#on_site_attendee_account_name').val($(this).find('#account-name').text());
+  $('#on_site_attendee_account_number').val($(this).find('#account-number').text());
+  $('#on_site_attendee_street1').val($(this).find('#street1').text());
+  $('#on_site_attendee_street2').val($(this).find('#street2').text());
+  $('#on_site_attendee_city').val($(this).find('#city').text());
+  $('#on_site_attendee_state').val($(this).find('#state').text());
+  $('#on_site_attendee_zip_code').val($(this).find('#zip-code').text());
+  $('#on_site_attendee_email').val($(this).find('#email').text());
+  $('#on_site_attendee_phone').val($(this).find('#phone').text());
+  $('#on_site_attendee_salesrep').val($(this).find('#salesrep').text());
+  $('#on_site_attendee_contact_in_crm').val("true");
+  clearCrmContactAndAccountSearch();
+});

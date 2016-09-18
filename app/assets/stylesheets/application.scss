@@ -132,7 +132,8 @@ td a:hover { color: #337ab7; }
 }
 
 .attendee-form input[type="text"].form-control,
-.crm-contact-form input[type="text"].form-control {
+.crm-contact-form input[type="text"].form-control,
+.crm-account-form input[type="text"].form-control {
 	height: 30px;
 	padding: 13px 10px;
 	font-size: 12px;
@@ -151,7 +152,25 @@ td a:hover { color: #337ab7; }
 	font-weight: bold;
 }
 
-.crm-contact-form .form-group { margin-bottom: 0; }
+.crm-contact-form .form-group, .crm-account-form .form-group {
+	margin-bottom: 0;
+}
+
+#crm-contact-results .list-group-item {
+	padding: 8px 10px;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+#crm-account-results .list-group-item {
+	padding: 8px 10px;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+#crm-contact-results a div, #crm-account-results a div {
+	display: none;
+}
 
 #print-qr {
 	margin-left: 0;

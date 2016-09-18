@@ -2,8 +2,9 @@
 
 <script>
   $(document).ready(function() {
-    $('#last_name').focus(function() { $('#account_name').val(""); });
-    $('#account_name').focus(function() { $('#last_name').val(""); });
+    $('#crm-contact-ln').focus(function() { $('#crm-contact-an').val(""); });
+    $('#crm-contact-an').focus(function() { $('#crm-contact-ln').val(""); });
+    $('#reset-form-btn').click(resetNewAttendeeForm);
   });
 </script>
 
@@ -18,7 +19,12 @@
 <div class="row"> 
   <div class="col-xs-12 col-sm-6 col-md-6">
     <div class="well">
-      <h3 class="top-15 text-center">New QR Code</h3>
+      <h3 class="top-15 text-center">
+        New QR Code
+        <a id="reset-form-btn" class="btn btn-xs btn-danger pull-right">
+          Reset
+        </a>
+      </h3>
       <hr class="top-10 bottom-10" />
       <%= render 'form', btn_text: 'Create & Print' %>
     </div>
@@ -32,15 +38,35 @@
         method: 'get', remote: true, class: "crm-contact-form" do %>
         <div class="form-group">
           <%= text_field_tag 'last_name', params[:last_name],
-            placeholder: "Last Name...", class: "form-control" %>
+            placeholder: "Last Name...", autofocus: true,
+            id: "crm-contact-ln", class: "form-control" %>
         </div>
-        <h4 class="top-5 bottom-5">OR</h4>
+        <h5 class="top-5 bottom-5">OR</h5>
         <div class="form-group">
           <%= text_field_tag 'account_name', params[:account_name],
-            placeholder: "Account Name...", class: "form-control" %>
+            placeholder: "Account Name...", id: "crm-contact-an",
+            class: "form-control" %>
         </div>
         <%= submit_tag 'Search', id: "crm-contact-submit-btn",
-          class: "btn btn-primary top-10",
+          class: "btn btn-sm btn-primary top-10",
+          data: { disable_with: "Loading..." } %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-sm-6 col-md-6 pull-right">
+    <div class="well pad-bottom-10 text-center">
+      <h4>Populate CRM Account Info</h4>
+      <hr class="top-10 bottom-10" />
+      <%= form_tag crm_account_event_on_site_attendees_path(@event),
+        method: 'get', remote: true, class: "crm-account-form" do %>
+        <div class="form-group">
+          <%= text_field_tag 'account_name', params[:account_name],
+            placeholder: "Account Name...", id: "crm-account-an",
+            class: "form-control" %>
+        </div>
+        <%= submit_tag 'Search', id: "crm-account-submit-btn",
+          class: "btn btn-sm btn-primary top-10",
           data: { disable_with: "Loading..." } %>
       <% end %>
     </div>

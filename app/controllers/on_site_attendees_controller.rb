@@ -65,9 +65,9 @@ class OnSiteAttendeesController < ApplicationController
     if last_name || account_name
       db = TinyTds::Client.new( host: '10.220.0.252', database: 'DiValSafety1_MSCRM',
         username: 'sa', password: 'CRMadmin#')
-
-      @results = []
     end
+
+    @results = []
 
     if last_name
       params.delete(:account_name)
@@ -90,7 +90,7 @@ class OnSiteAttendeesController < ApplicationController
       query.each(as: :array) { |row| @results << row }
       db.close unless db.closed?
     elsif account_name 
-      #if account_name.size > 2
+      if account_name.size > 2
         params.delete(:last_name)
 
         account_name = db.escape(account_name)
@@ -110,30 +110,42 @@ class OnSiteAttendeesController < ApplicationController
 
         query.each(as: :array) { |row| @results << row }
         db.close unless db.closed?
-      #else
-        #flash.now.alert = "Minimum of 3 characters required for account search."
-      #end
-    else
-      return false
+      else
+        @account_length_error = true
+      end
     end
   end
 
   def crm_account
     require 'odbc'
 
-    as400 = ODBC.connect('as400_fds')
+    unless params[:account_name].blank?
+      account_name = params[:account_name].strip.upcase
+    end
 
-    sql_cust_name = "SELECT cmcsno, cmcsnm FROM cusms
-                     WHERE UPPER(cmcsnm) LIKE '\%AURU\%'
-                       AND cmsusp != 'S'
-                       AND cmusr1 != 'HSS'"
+    @results = []
+    
+    if account name
+      if account_name.size > 2
+        as400 = ODBC.connect('as400_fds')
 
-    results = as400.run(sql_cust_num)
+        sql = "SELECT cmcsno, cmcsnm FROM cusms
+               WHERE UPPER(cmcsnm) LIKE '\%#{account_name}\%'
+                 AND cmsusp != 'S'
+                 AND cmusr1 != 'HSS'"
 
-    cust_results = results.fetch_all
+        results = as400.run(sql_cust_num).fetch_all
 
-    as400.commit
-    as400.disconnect
+        as400.commit
+        as400.disconnect
+
+        if results && results.any?
+          results.each { |row| @results << row }
+        end
+      else
+        @account_length_error = true
+      end
+    end
   end
 
   def generate

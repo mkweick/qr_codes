@@ -1,77 +1,25 @@
-<% @page_title = 'Search CRM Contacts' %>
-
-<div class="row"> 
-  <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
-    <div class="well text-center">
-      <h2>Search CRM Contacts</h2>
-      <span class="font-20"><%= @event.name %></span>
-      <hr class="top-10" />
-      <%= form_tag crm_contact_event_path(@event), method: 'get' do %>
-        <div class="form-group">
-          <%= hidden_field_tag 'name', @event.name %>
-          <%= text_field_tag 'last_name', params[:last_name],
-            placeholder: "Last Name (Min of 3 characters)",
-            class: "form-control" %>
-        </div>
-
-        <h4>OR</h4>
-
-        <div class="form-group">
-          <%= text_field_tag 'account_name', params[:account_name],
-            placeholder: "Account Name (Min of 3 characters)",
-            class: "form-control", maxlength: 30 %>
-        </div>
-
-        <%= submit_tag 'Search', class: "btn btn-primary" %>
-        <%= link_to 'Cancel', on_site_badge_event_path(@event),
-          class: "btn btn-danger left-10" %>
-      <% end %>
-    </div>
-  </div>
-</div>
-
-<% if @results %>
-  <% if @results.any? %>
-    <div class="row">
-      <table class="table table-hover top-table-border">
-        <thead>
-          <tr>
-            <th>Full Name</th>
-            <th>Account Name</th>
-            <th>Sales Rep</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @results.each do |row| %>
-            <tr>
-              <td>
-                <%= link_to row[:FullName],
-                  generate_crm_event_path(@event, contact_id: row[:ContactId]) %>
-              </td>
-              <td>
-                <%= link_to row[:ParentCustomerIdName],
-                  generate_crm_event_path(@event.name, contact_id: row[:ContactId]) %>
-              </td>
-              <td>
-                <%= link_to row[:SalesRep],
-                  generate_crm_event_path(@event.name, contact_id: row[:ContactId]) %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  <% else %>
-    <h3 class="text-center">
-      No results found for
-      <%= params[:last_name] ? params[:last_name] : params[:account_name] %>
-    </h3>
+<% if @results.any? %>
+  results = "<hr id=\"crm-contact-line\" class=\"top-10 bottom-10\" />"
+  results += "<div id=\"crm-contact-results\" class=\"list-group\">"
+  <% @results.each do |row| %>
+    results += "<a href=\"#\" class=\"list-group-item text-left\">"
+    results += "<%= row[0] %> <%= row[1] %>"
+    results += "<span class=\"pull-right\"><%= row[2] %></span>"
+    results += "</a>"
   <% end %>
+  results += "</div>"
+<% else %>
+  results = "<hr id=\"crm-contact-line\" class=\"top-10 bottom-10\" />"
+  results += "<h4 id=\"crm-contact-no-results\" class=\"text-center\">"
+  results += "No results found for "
+  results += "<%= params[:last_name] ? params[:last_name] : params[:account_name] %>"
+  results += "</h4>"
 <% end %>
 
-<script>
-  $(document).ready(function() {
-    $('#last_name').focus(function() { $('#account_name').val(""); });
-    $('#account_name').focus(function() { $('#last_name').val(""); });
-  });
-</script>
+if ($('#crm-contact-line')) { $('#crm-contact-line').remove(); };
+if ($('#crm-contact-results')) { $('#crm-contact-results').remove(); };
+if ($('#crm-contact-no-results')) { $('#crm-contact-no-results').remove(); };
+if ($('#crm-contact-cancel-btn')) { $('#crm-contact-cancel-btn').remove(); };
+
+$("<button id=\"crm-contact-cancel-btn\" class=\"btn btn-danger top-10 left-10\">Cancel</button>").insertAfter('#crm-contact-submit-btn');
+$(results).insertAfter('.crm-contact-form');

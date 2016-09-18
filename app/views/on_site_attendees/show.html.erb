@@ -7,15 +7,21 @@
   <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= favicon_link_tag 'favicon.ico' %>
   <%= csrf_meta_tags %>
+  <style>
+    @media print {
+      @page { margin: 0; }
+    .no-print, .no-print * { display: none !important; }
+    }
+  </style>
 </head>
-<body id="print-qr" class="text-center">
-  <div id="first-name"><%= @attendee.first_name %></div>
-  <div id="last-name"><%= @attendee.last_name %></div>
-  <div id="account-name"><%= @attendee.account_name %></div>
+<body id="print-qr">
+  <div id="first-name" class="text-center"><%= @attendee.first_name %></div>
+  <div id="last-name" class="text-center"><%= @attendee.last_name %></div>
+  <div id="account-name" class="text-center"><%= @attendee.account_name %></div>
 
-  <img src="<%= @qr_code.to_data_url %>" class="bottom-30" />
+  <img src="<%= @qr_code.to_data_url %>" />
 
-  <div class="no-print">
+  <div class="no-print top-30">
     <div id="print-badge-btn">
       <a href="javascript:window.print()" class="btn btn-primary">
         Print Badge

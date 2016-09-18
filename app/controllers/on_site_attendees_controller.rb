@@ -59,24 +59,6 @@ class OnSiteAttendeesController < ApplicationController
   end
 
   def crm_contact
-    require 'odbc'
-
-    as400 = ODBC.connect('as400_fds')
-
-    sql_cust_name = "SELECT cmcsno, cmcsnm FROM cusms
-                     WHERE UPPER(cmcsnm) LIKE '\%AURU\%'
-                       AND cmsusp != 'S'
-                       AND cmusr1 != 'HSS'"
-
-    results = as400.run(sql_cust_num)
-
-    cust_results = results.fetch_all
-
-    as400.commit
-    as400.disconnect
-
-# ----------------------------------------------------------------------- #
-
     last_name = params[:last_name].strip unless params[:last_name].blank?
     account_name = params[:account_name].strip unless params[:account_name].blank?
 
@@ -92,40 +74,66 @@ class OnSiteAttendeesController < ApplicationController
 
       last_name = db.escape(last_name)
       query = db.execute(
-        "SELECT a.ContactId, a.FullName, a.ParentCustomerIdName, b.FullName AS \"SalesRep\"
+        "SELECT a.FirstName, a.LastName, b.Name, b.icbcore_ExtAccountID,
+          d.Line1, d.Line2, d.City, d.StateOrProvince, d.PostalCode,
+          a.EMailAddress1, a.Telephone1, c.FullName
          FROM ContactBase AS a
-         JOIN SystemUserBase AS b ON a.OwnerId = b.SystemUserId
+         JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId
+         JOIN SystemUserBase AS c ON a.OwnerId = c.SystemUserId
+         JOIN CustomerAddressBase AS d ON a.ContactId = d.ParentId
          WHERE a.LastName = '#{last_name}'
            AND a.StateCode = '0'
-         ORDER BY a.FullName"
+           AND d.AddressNumber = '1'
+         ORDER BY a.FirstName, a.LastName"
       )
 
-      query.each(symbolize_keys: true) { |row| @results << row }
+      query.each(as: :array) { |row| @results << row }
       db.close unless db.closed?
     elsif account_name 
-      if account_name.size > 2
+      #if account_name.size > 2
         params.delete(:last_name)
 
         account_name = db.escape(account_name)
         query = db.execute(
-          "SELECT a.ContactId, a.FullName, a.ParentCustomerIdName, b.FullName AS \"SalesRep\"
+          "SELECT a.FirstName, a.LastName, b.Name, b.icbcore_ExtAccountID,
+            d.Line1, d.Line2, d.City, d.StateOrProvince, d.PostalCode,
+            a.EMailAddress1, a.Telephone1, c.FullName
            FROM ContactBase AS a
-           JOIN SystemUserBase AS b ON a.OwnerId = b.SystemUserId
+           JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId
+           JOIN SystemUserBase AS c ON a.OwnerId = c.SystemUserId
+           JOIN CustomerAddressBase AS d ON a.ContactId = d.ParentId
            WHERE a.ParentCustomerIdName LIKE '%#{account_name}%'
              AND a.StateCode = '0'
-           ORDER BY a.ParentCustomerIdName, a.FullName"
+             AND d.AddressNumber = '1'
+           ORDER BY a.ParentCustomerIdName, a.FirstName, a.LastName"
         )
 
-        query.each(symbolize_keys: true) { |row| @results << row }
+        query.each(as: :array) { |row| @results << row }
         db.close unless db.closed?
-      else
-        flash.now.alert = "Minimum of 3 characters required for account search."
-      end
+      #else
+        #flash.now.alert = "Minimum of 3 characters required for account search."
+      #end
+    else
+      return false
     end
   end
 
   def crm_account
+    require 'odbc'
 
+    as400 = ODBC.connect('as400_fds')
+
+    sql_cust_name = "SELECT cmcsno, cmcsnm FROM cusms
+                     WHERE UPPER(cmcsnm) LIKE '\%AURU\%'
+                       AND cmsusp != 'S'
+                       AND cmusr1 != 'HSS'"
+
+    results = as400.run(sql_cust_num)
+
+    cust_results = results.fetch_all
+
+    as400.commit
+    as400.disconnect
   end
 
   def generate

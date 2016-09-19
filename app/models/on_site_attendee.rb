@@ -13,7 +13,7 @@ class OnSiteAttendee < ActiveRecord::Base
   validates :email, presence: true
   validates :phone, presence: true
   validates :badge_type, presence: true
-  validate :unique_record
+  validate :unique_record, on: :create
 
   def nilify_blank_values
     attributes.each { |col, val| self[col].present? || self[col] = nil }

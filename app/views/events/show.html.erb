@@ -7,7 +7,15 @@
   <div id="event-title" class="col-xs-12 col-sm-12 col-md-12">
     <h2 id="event-name" class="pull-left"><%= @event.name %></h2>
     <div id="event-controls" class="pull-right top-10">
-      <%= link_to edit_event_path(@event), title: "Edit Event",
+      <% if @attendees_present %>
+        <%= link_to download_event_on_site_attendees_path(@event),
+          title: "Download On-Site Attendees Export",
+          class: "btn btn-sm btn-success right-5" do %>
+            <span class="glyphicon glyphicon-cloud-download"></span>
+        <% end %>
+      <% end %>
+
+      <%= link_to edit_event_path(@event), title: "Edit Event Details",
         class: "btn btn-sm btn-primary right-5" do %>
           <span class="glyphicon glyphicon-pencil"></span>
       <% end %>

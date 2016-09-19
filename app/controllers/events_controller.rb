@@ -118,11 +118,14 @@ class EventsController < ApplicationController
 
   def make_event_dir(event)
     event_path = Rails.root.join('events', event.to_s)
+    attendees_export_path = Rails.root.join(event_path, 'attendees_export')
     FileUtils.remove_dir(event_path) if Dir.exist?(event_path)
     FileUtils.mkdir(event_path)
+    FileUtils.mkdir(attendees_export_path)
   end
 
   def set_event_info
+    @attendees_present = @event.on_site_attendees.any?
     @batch = @event.batches.new
     @batches = @event.batches.order(:created_at)
     @locations = Location.sorted_locations.pluck(:name) if @event.multiple_locations

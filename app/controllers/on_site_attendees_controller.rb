@@ -4,7 +4,7 @@ class OnSiteAttendeesController < ApplicationController
   before_action :set_attendee, only: [:show, :edit, :update, :destroy]
 
   def index
-    @attendees = @event.on_site_attendees.order(:last_name)
+    @attendees = @event.on_site_attendees.order("lower(last_name)")
   end
 
   def new
@@ -185,6 +185,30 @@ class OnSiteAttendeesController < ApplicationController
       if results && results.any?
         results.each { |row| @results << row }
       end
+    end
+  end
+
+  def download
+    export_folder = Rails.root.join('events', @event.id.to_s, 'attendees_export')
+    export_file = Rails.root.join(export_folder, 'export.xls')
+
+    FileUtils.mkdir(export_folder) unless Dir.exist?(export_folder)
+
+    @attendees = @event.on_site_attendees.order("lower(last_name)")
+
+    if @attendees.any?
+      # dump to spreadsheet code
+
+      # if File.exist?(export_file)
+      #   send_file(export_file, type: 'application/vnd.ms-excel',
+      #     filename: "FINAL_#{@event.name}_BATCH_#{@batch.number}.xls")
+      # else
+      #   flash.alert = "Export file can't be found."
+      #   redirect_to event_path(@event)
+      # end
+    else
+      flash.alert = "No on-site attendees to export for this event."
+      redirect_to event_path(@event)
     end
   end
 

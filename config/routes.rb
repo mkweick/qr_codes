@@ -33,6 +33,7 @@ Rails.application.routes.draw do
         get 'crm-contact'
         get 'crm-account'
         get 'crm-ship-to'
+        get 'download'
       end
     end
   end

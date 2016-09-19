@@ -1,0 +1,53 @@
+var results = "";
+
+results += "<h4 class=\"bottom-0\">Select Ship-To Address</h4>";
+results += "<div class=\"bottom-10\"><%= @results[0][0] %></div>";
+
+<% if @results.any? %>
+  <% @results.each do |row| %>
+    <% account_name = row[0].strip if row[0].present? %>
+    <% account_number = row[1].strip if row[1].present? %>
+    <% ship_to_num = row[2].strip if row[2].present? %>
+    <% ship_to_name = row[3].strip if row[3].present? %>
+    <% ship_to_street1 = row[4].strip if row[4].present? %>
+    <% ship_to_street2 = row[5].strip if row[5].present? %>
+    <% ship_to_city = row[6].strip if row[6].present? %>
+    <% ship_to_state = row[7].strip if row[7].present? %>
+    <% ship_to_zip_code = row[8].strip if row[8].present? %>
+
+    results += "<a class=\"list-group-item text-left\">";
+    results += "<%= ship_to_street1 %>";
+    results += "<span class=\"pull-right\"><%= leading_zero(ship_to_num) %></span>";
+    <% if ship_to_street2 %>
+      results += "<br /><%= ship_to_street2 %>";
+    <% end %>
+    results += "<br /><%= ship_to_city %>, <%= ship_to_state %> <%= ship_to_zip_code %>";
+    results += "<div id=\"account-name\"><%= account_name %></div>";
+    results += "<div id=\"account-number\"><%= account_number %></div>";
+    results += "<div id=\"ship-to-street1\"><%= ship_to_street1 %></div>";
+    results += "<div id=\"ship-to-street2\"><%= ship_to_street2 %></div>";
+    results += "<div id=\"ship-to-city\"><%= ship_to_city %></div>";
+    results += "<div id=\"ship-to-state\"><%= ship_to_state %></div>";
+    results += "<div id=\"ship-to-zip-code\"><%= ship_to_zip_code %></div>";
+    results += "</a>";
+  <% end %>
+<% else %>
+  results += "<h4 id=\"crm-account-no-results\" class=\"text-center top-20\">";
+  results += "No ship-to addresses found.";
+  results += "</h4>";
+<% end %>
+
+$('#crm-account-results').html(results);
+
+$('#crm-account-results a').click(function() {
+  $('#on_site_attendee_account_name').val($(this).find('#account-name').text());
+  $('#on_site_attendee_account_number').val($(this).find('#account-number').text());
+  $('#on_site_attendee_street1').val($(this).find('#ship-to-street1').text());
+  $('#on_site_attendee_street2').val($(this).find('#ship-to-street2').text());
+  $('#on_site_attendee_city').val($(this).find('#ship-to-city').text());
+  $('#on_site_attendee_state').val($(this).find('#ship-to-state').text());
+  $('#on_site_attendee_zip_code').val($(this).find('#ship-to-zip-code').text());
+  $('#on_site_attendee_contact_in_crm').val("false");
+  clearCrmContactAndAccountSearch();
+  $('#on_site_attendee_first_name').focus();
+});

@@ -125,16 +125,19 @@ class OnSiteAttendeesController < ApplicationController
 
     @results = []
     
-    if account name
+    if account_name
       if account_name.size > 2
         as400 = ODBC.connect('as400_fds')
 
-        sql = "SELECT cmcsno, cmcsnm FROM cusms
+        account_name = escape_single_quotes(account_name)
+
+        sql = "SELECT cmcsnm, cmcsno FROM cusms
                WHERE UPPER(cmcsnm) LIKE '\%#{account_name}\%'
                  AND cmsusp != 'S'
-                 AND cmusr1 != 'HSS'"
+                 AND cmusr1 != 'HSS'
+               ORDER BY cmcsnm"
 
-        results = as400.run(sql_cust_num).fetch_all
+        results = as400.run(sql).fetch_all
 
         as400.commit
         as400.disconnect
@@ -144,6 +147,34 @@ class OnSiteAttendeesController < ApplicationController
         end
       else
         @account_length_error = true
+      end
+    end
+  end
+
+  def crm_ship_to
+    require 'odbc'
+    account_number = params[:account_number] unless params[:account_number].blank?
+
+    @results = []
+    
+    if account_number
+      as400 = ODBC.connect('as400_fds')
+
+      sql = "SELECT a.cmcsnm, a.cmcsno, b.sashp#, b.sashnm,
+              b.sasad1, b.sasad2, b.sascty, b.sashst, b.saszip
+             FROM cusms AS a
+             JOIN addr AS b ON b.sacsno = a.cmcsno
+             WHERE a.cmcsno = '#{account_number}'
+               AND b.sasusp != 'S'
+             ORDER BY CAST(b.sashp# AS INTEGER)"
+
+      results = as400.run(sql).fetch_all
+
+      as400.commit
+      as400.disconnect
+
+      if results && results.any?
+        results.each { |row| @results << row }
       end
     end
   end
@@ -213,5 +244,9 @@ class OnSiteAttendeesController < ApplicationController
 
   def set_attendee
     @attendee = OnSiteAttendee.find(params[:id]) if params[:id]
+  end
+
+  def escape_single_quotes(string)
+    string.chars.map { |char| char == "\'" ? "\'\'" : char }.join('')
   end
 end

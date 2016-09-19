@@ -13,12 +13,24 @@ class OnSiteAttendee < ActiveRecord::Base
   validates :email, presence: true
   validates :phone, presence: true
   validates :badge_type, presence: true
-
-  def self.sorted_attendees
-    self.order('lower(last_name)', 'lower(first_name')
-  end
+  validate :unique_record
 
   def nilify_blank_values
     attributes.each { |col, val| self[col].present? || self[col] = nil }
+  end
+
+  def unique_record
+    record = OnSiteAttendee.where([
+      "event_id = ? and lower(first_name) = ? and " +
+      "lower(last_name) = ? and lower(account_name) = ? and " +
+      "account_number = ?", event_id,
+      first_name.strip.downcase, last_name.strip.downcase,
+      account_name.strip.downcase, account_number.strip
+    ])
+
+    if record.any?
+      errors.add(:attendee, "already has a badge for this event.<br />" +
+                            "Go to All Badges to update/print it.")
+    end
   end
 end

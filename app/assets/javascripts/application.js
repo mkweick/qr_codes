@@ -23,6 +23,8 @@ function clearCrmContactAndAccountSearch() {
 };
 
 function resetNewAttendeeForm() {
+  if ($('div#flash-msg')) { $('div#flash-msg').remove(); };
+  if ($('div#obj-errors')) { $('div#obj-errors').remove(); };
   $('#on_site_attendee_contact_in_crm').val("false");
   $('#on_site_attendee_first_name').val("");
   $('#on_site_attendee_last_name').val("");
@@ -39,4 +41,5 @@ function resetNewAttendeeForm() {
   $('input[type=radio]').prop('checked', function() {
     return this.getAttribute('checked') == 'checked';
   });
+  $('div.form-group').removeClass("has-error");
 };

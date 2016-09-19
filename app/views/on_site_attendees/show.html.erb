@@ -30,7 +30,7 @@
 
     <div id="edit-attendee-btn" class="top-10">
       <%= link_to "Edit Info",
-        edit_event_on_site_attendee_path(@event, @attendee),
+        edit_event_on_site_attendee_path(@event, @attendee, return: "y"),
         class: "btn btn-danger" %>
     </div>
 

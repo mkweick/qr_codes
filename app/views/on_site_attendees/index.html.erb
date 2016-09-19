@@ -1,0 +1,70 @@
+<% @page_title = "All Badges - #{@event.name}" %>
+
+<div class="row">
+  <div id="event-title-on-site" class="col-xs-12 col-sm-12 col-md-12">
+    <h2 id="event-name-on-site" class="pull-left"><%= @event.name %></h2>
+    <%= link_to 'New Badge', new_event_on_site_attendee_path(@event),
+      class: "btn btn-sm btn-success pull-right" %>
+  </div>
+</div>
+
+<div class="row">
+  <% if @attendees.any? %>
+    <div class="col-xs-12 col-sm-12 col-md-12">
+      <table width="100%" class="table table-hover text-left">
+        <thead>
+          <tr class="th-row">
+            <th width="20%">First Name</th>
+            <th width="20%">Last Name</th>
+            <th width="41%%">Account Name</th>
+            <th width="15%" class="badge-type-col">Badge Type</th>
+            <th width="4%"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @attendees.each do |attendee| %>
+            <tr>
+              <td>
+                <%= link_to edit_event_on_site_attendee_path(@event, attendee) do %>
+                  <%= attendee.first_name %>
+                <% end %>
+              </td>
+              <td>
+                <%= link_to edit_event_on_site_attendee_path(@event, attendee) do %>
+                  <%= attendee.last_name %>
+                <% end %>
+              </td>
+              <td>
+                <%= link_to edit_event_on_site_attendee_path(@event, attendee) do %>
+                  <%= attendee.account_name %>
+                <% end %>
+              </td>
+              <td class="badge-type-col">
+                <%= link_to edit_event_on_site_attendee_path(@event, attendee) do %>
+                  <%= attendee.badge_type == 'n' ? 'New' : 'Correction' %>
+                <% end %>
+              </td>
+              <td class="text-center">
+                <%= link_to event_on_site_attendee_path(@event, attendee),
+                  method: 'delete', class: "delete-attendee", data: {
+                    confirm: "Are you sure you want to DELETE record " +
+                    "for #{attendee.first_name} #{attendee.last_name}?"
+                  } do %>
+                    <span class="glyphicon glyphicon-remove red"></span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1">
+      <div class="well top-20">
+        <h3 class="text-center">
+          No badges created on-site for this event yet :(
+        </h3>
+      </div>
+    </div>
+  <% end %>
+</div>

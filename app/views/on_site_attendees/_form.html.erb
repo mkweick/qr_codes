@@ -1,129 +1,127 @@
 <% show_cancel_btn ||= false %>
+<% show_return_btn ||= false %>
 
 <%= form_for [@event, @attendee], html: { class: "form-horizontal attendee-form" } do |f| %>
   <%= f.hidden_field :contact_in_crm, value: false %>
 
-  <div class="form-group">
-    <%= f.label :first_name, class: "col-sm-4 control-label" do %>
+  <div class="form-group <%= error_field(@attendee, :first_name) %>">
+    <%= f.label :first_name, class: "col-sm-5 label-control" do %>
       First Name <sup>*</sup>
     <% end %>
 
-    <div class="col-sm-8">
-      <%= f.text_field :first_name, value: @attendee.first_name, required: true,
+    <div class="col-sm-7">
+      <%= f.text_field :first_name, value: @attendee.first_name,
         class: "form-control" %>
     </div>
   </div>
 
-  <div class="form-group">
-    <%= f.label :last_name, class: "col-sm-4 control-label" do %>
+  <div class="form-group <%= error_field(@attendee, :last_name) %>">
+    <%= f.label :last_name, class: "col-sm-5 label-control" do %>
       Last Name <sup>*</sup>
     <% end %>
 
-    <div class="col-sm-8">
-      <%= f.text_field :last_name, value: @attendee.last_name, required: true,
+    <div class="col-sm-7">
+      <%= f.text_field :last_name, value: @attendee.last_name,
+        class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group <%= error_field(@attendee, :account_name) %>">
+    <%= f.label :account_name, class: "col-sm-5 label-control" do %>
+      Account Name <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= f.text_field :account_name, value: @attendee.account_name,
         class: "form-control" %>
     </div>
   </div>
 
   <div class="form-group">
-    <%= f.label :account_name, 'Account', class: "col-sm-4 control-label" do %>
-      Account <sup>*</sup>
-    <% end %>
+    <%= f.label :account_number, 'Account #', class: "col-sm-5 label-control" %>
 
-    <div class="col-sm-8">
-      <%= f.text_field :account_name, value: @attendee.account_name,
-         required: true, class: "form-control" %>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <%= f.label :account_number, 'Account #', class: "col-sm-4 control-label" %>
-
-    <div class="col-sm-8">
+    <div class="col-sm-7">
       <%= f.text_field :account_number, value: @attendee.account_number,
         class: "form-control" %>
     </div>
   </div>
 
-  <div class="form-group">
-    <%= f.label :street1, 'Street 1', class: "col-sm-4 control-label" do %>
+  <div class="form-group <%= error_field(@attendee, :street1) %>">
+    <%= f.label :street1, class: "col-sm-5 label-control" do %>
       Street 1 <sup>*</sup>
     <% end %>
 
-    <div class="col-sm-8">
-      <%= f.text_field :street1, value: @attendee.street1, required: true,
+    <div class="col-sm-7">
+      <%= f.text_field :street1, value: @attendee.street1,
         class: "form-control" %>
     </div>
   </div>
 
   <div class="form-group">
-    <%= f.label :street2, 'Street 2', class: "col-sm-4 control-label" %>
+    <%= f.label :street2, 'Street 2', class: "col-sm-5 label-control" %>
 
-    <div class="col-sm-8">
+    <div class="col-sm-7">
       <%= f.text_field :street2, value: @attendee.street2,
         class: "form-control" %>
     </div>
   </div>
 
-  <div class="form-group">
-    <%= f.label :city, class: "col-sm-4 control-label" do %>
+  <div class="form-group <%= error_field(@attendee, :city) %>">
+    <%= f.label :city, class: "col-sm-5 label-control" do %>
       City <sup>*</sup>
     <% end %>
 
-    <div class="col-sm-8">
-      <%= f.text_field :city, value: @attendee.city, required: true,
-        class: "form-control" %>
+    <div class="col-sm-7">
+      <%= f.text_field :city, value: @attendee.city, class: "form-control" %>
     </div>
   </div>
 
-  <div class="form-group">
-    <%= f.label :state, class: "col-sm-4 control-label" do %>
+  <div class="form-group <%= error_field(@attendee, :state) %>">
+    <%= f.label :state, class: "col-sm-5 label-control" do %>
       State <sup>*</sup>
     <% end %>
 
-    <div class="col-sm-8">
-      <%= f.text_field :state, value: @attendee.state, required: true,
-        class: "form-control" %>
+    <div class="col-sm-7">
+      <%= f.text_field :state, value: @attendee.state, class: "form-control" %>
     </div>
   </div>
 
-  <div class="form-group">
-    <%= f.label :zip_code, class: "col-sm-4 control-label" do %>
+  <div class="form-group <%= error_field(@attendee, :zip_code) %>">
+    <%= f.label :zip_code, class: "col-sm-5 label-control" do %>
       Zip Code <sup>*</sup>
     <% end %>
 
-    <div class="col-sm-8">
-      <%= f.text_field :zip_code, value: @attendee.zip_code, required: true,
+    <div class="col-sm-7">
+      <%= f.text_field :zip_code, value: @attendee.zip_code,
         class: "form-control" %>
     </div>
   </div>
 
-  <div class="form-group">
-    <%= f.label :email, class: "col-sm-4 control-label" do %>
+  <div class="form-group <%= error_field(@attendee, :email) %>">
+    <%= f.label :email, class: "col-sm-5 label-control" do %>
       Email <sup>*</sup>
     <% end %>
 
-    <div class="col-sm-8">
-      <%= f.text_field :email, value: @attendee.email, required: true,
-        class: "form-control" %>
+    <div class="col-sm-7">
+      <%= f.text_field :email, value: @attendee.email, class: "form-control" %>
     </div>
   </div>
 
-  <div class="form-group">
-    <%= f.label :phone, class: "col-sm-4 control-label" do %>
+  <div class="form-group <%= error_field(@attendee, :phone) %>">
+    <%= f.label :phone, class: "col-sm-5 label-control" do %>
       Phone <sup>*</sup>
     <% end %>
 
-    <div class="col-sm-8">
-      <%= f.text_field :phone, value: @attendee.phone, required: true,
+    <div class="col-sm-7">
+      <%= f.text_field :phone, value: @attendee.phone,
         class: "form-control phone" %>
     </div>
   </div>
 
   <div class="form-group">
-    <%= f.label :salesrep, 'Sales Rep', class: "col-sm-4 control-label" %>
+    <%= f.label :salesrep, 'Sales Rep', class: "col-sm-5 label-control" %>
 
-    <div class="col-sm-8">
+    <div class="col-sm-7">
       <%= f.text_field :salesrep, value: @attendee.salesrep,
         class: "form-control" %>
     </div>
@@ -145,9 +143,16 @@
   <div class="text-center">
     <%= f.submit btn_text, class: "btn btn-primary",
       data: { disable_with: "Loading..." } %>
+
     <% if show_cancel_btn %>
-      <%= link_to 'Cancel', new_event_on_site_attendee_path(@event),
+      <%= link_to 'Cancel', event_on_site_attendees_path(@event),
         class: "btn btn-danger left-10" %>
+    <% end %>
+
+    <% if show_return_btn %>
+      <%= link_to 'Cancel', event_on_site_attendee_path(@event, @attendee),
+        class: "btn btn-danger left-10" %>
+      <%= f.hidden_field :return, value: 'y' %>
     <% end %>
   </div>
 <% end %>

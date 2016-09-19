@@ -71,7 +71,7 @@ $('#crm-contact-results a').click(function() {
   $('#on_site_attendee_state').val($(this).find('#state').text());
   $('#on_site_attendee_zip_code').val($(this).find('#zip-code').text());
   $('#on_site_attendee_email').val($(this).find('#email').text());
-  $('#on_site_attendee_phone').val($(this).find('#phone').text());
+  $('#on_site_attendee_phone').val($(this).find('#phone').text()).change();
   $('#on_site_attendee_salesrep').val($(this).find('#salesrep').text());
   $('#on_site_attendee_contact_in_crm').val("true");
   clearCrmContactAndAccountSearch();

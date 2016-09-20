@@ -22,6 +22,8 @@ class OnSiteAttendeesController < ApplicationController
   end
 
   def show
+    # 220 x 220 supports printing on Chrome and Mozilla.
+    #Labels are 2-3/7" wide and 2-7/8" cut length
     @qr_code = RQRCode::QRCode.new(
       "MATMSG:TO:leads@divalsafety.com;SUB:#{@event.qr_code_email_subject};BODY:" +
       "\n\n\n______________________" +
@@ -169,7 +171,7 @@ class OnSiteAttendeesController < ApplicationController
     if account_number
       as400 = ODBC.connect('as400_fds')
 
-      sql = "SELECT a.cmcsnm, a.cmcsno, b.sashp#, b.sashnm,
+      sql = "SELECT a.cmcsnm, '01-' || a.cmcsno, b.sashp#, b.sashnm,
               b.sasad1, b.sasad2, b.sascty, b.sashst, b.saszip
              FROM cusms AS a
              JOIN addr AS b ON b.sacsno = a.cmcsno
@@ -201,7 +203,7 @@ class OnSiteAttendeesController < ApplicationController
     if @attendees.any?
       bold_format = Spreadsheet::Format.new :weight => :bold
       header_row = [
-        'Event Name', 'Badge Type', 'Contact in CRM?', 'First Name',
+        'Event Name', 'Badge Type', 'Created from CRM Contact?', 'First Name',
         'Last Name', 'Account Name', 'Account #', 'Street 1', 'Street 2',
         'City', 'State', 'Zip Code', 'Email', 'Phone', 'Sales Rep'
       ]
@@ -212,26 +214,30 @@ class OnSiteAttendeesController < ApplicationController
       sheet.insert_row(0, header_row)
       sheet.row(0).default_format = bold_format
 
-      sheet.column(0).width = 35
-      sheet.column(1).width = 19
+      sheet.column(0).width = 28
+      sheet.column(1).width = 14
       sheet.column(2).width = 26
-      sheet.column(3).width = 30
-      sheet.column(4).width = 38
-      sheet.column(5).width = 20
-      sheet.column(6).width = 34
-      sheet.column(7).width = 34
-      sheet.column(8).width = 34
-      sheet.column(9).width = 34
-      sheet.column(10).width = 34
-      sheet.column(11).width = 34
+      sheet.column(3).width = 19
+      sheet.column(4).width = 21
+      sheet.column(5).width = 32
+      sheet.column(6).width = 13
+      sheet.column(7).width = 25
+      sheet.column(8).width = 26
+      sheet.column(9).width = 19
+      sheet.column(10).width = 8
+      sheet.column(11).width = 13
       sheet.column(12).width = 34
-      sheet.column(13).width = 34
-      sheet.column(14).width = 34
+      sheet.column(13).width = 20
+      sheet.column(14).width = 19
 
       @attendees.each do |attendee|
+        badge_type = 'NEW' if attendee[:badge_type] == 'n'
+        badge_type = 'CORRECTION' if attendee[:badge_type] == 'c'
+        created_from_crm = attendee[:contact_in_crm] ? "TRUE" : "FALSE"
+
         attendee_row = [
-          @event.name, attendee[:badge_type], attendee[:contact_in_crm],
-          attendee[:first_name], attendee[:last_name], attendee[:account_name],
+          @event.name, badge_type, created_from_crm, attendee[:first_name],
+          attendee[:last_name], attendee[:account_name],
           attendee[:account_number], attendee[:street1], attendee[:street2],
           attendee[:city], attendee[:state], attendee[:zip_code],
           attendee[:email], attendee[:phone], attendee[:salesrep]

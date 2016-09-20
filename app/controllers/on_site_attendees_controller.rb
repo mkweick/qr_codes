@@ -198,13 +198,14 @@ class OnSiteAttendeesController < ApplicationController
     File.delete(export_file) if File.exist?(export_file)
 
 
-    @attendees = @event.on_site_attendees.order("lower(last_name)")
+    @attendees = @event.on_site_attendees.order(:created_at)
 
     if @attendees.any?
       bold_format = Spreadsheet::Format.new :weight => :bold
       header_row = [
-        'Event Name', 'Badge Type', 'Created from CRM Contact?', 'First Name',
-        'Last Name', 'Account Name', 'Account #', 'Street 1', 'Street 2',
+        'Event Name', 'Created Date', 'Created Time', 'Badge Type',
+        'Created from CRM Contact?', 'First Name', 'Last Name',
+        'Account Name', 'Account #', 'Street 1', 'Street 2',
         'City', 'State', 'Zip Code', 'Email', 'Phone', 'Sales Rep'
       ]
 
@@ -215,29 +216,33 @@ class OnSiteAttendeesController < ApplicationController
       sheet.row(0).default_format = bold_format
 
       sheet.column(0).width = 28
-      sheet.column(1).width = 14
-      sheet.column(2).width = 26
-      sheet.column(3).width = 19
-      sheet.column(4).width = 21
-      sheet.column(5).width = 32
-      sheet.column(6).width = 13
-      sheet.column(7).width = 25
-      sheet.column(8).width = 26
-      sheet.column(9).width = 19
-      sheet.column(10).width = 8
-      sheet.column(11).width = 13
-      sheet.column(12).width = 34
-      sheet.column(13).width = 20
-      sheet.column(14).width = 19
+      sheet.column(1).width = 15
+      sheet.column(2).width = 15
+      sheet.column(3).width = 14
+      sheet.column(4).width = 26
+      sheet.column(5).width = 19
+      sheet.column(6).width = 21
+      sheet.column(7).width = 32
+      sheet.column(8).width = 13
+      sheet.column(9).width = 25
+      sheet.column(10).width = 26
+      sheet.column(11).width = 19
+      sheet.column(12).width = 8
+      sheet.column(13).width = 13
+      sheet.column(14).width = 34
+      sheet.column(15).width = 20
+      sheet.column(16).width = 19
 
       @attendees.each do |attendee|
+        created_date = attendee[:created_at].strftime("%m/%d/%Y")
+        created_time = attendee[:created_at].strftime("%l:%M%p")
         badge_type = 'NEW' if attendee[:badge_type] == 'n'
         badge_type = 'CORRECTION' if attendee[:badge_type] == 'c'
         created_from_crm = attendee[:contact_in_crm] ? "TRUE" : "FALSE"
 
         attendee_row = [
-          @event.name, badge_type, created_from_crm, attendee[:first_name],
-          attendee[:last_name], attendee[:account_name],
+          @event.name, created_date, created_time, badge_type, created_from_crm,
+          attendee[:first_name], attendee[:last_name], attendee[:account_name],
           attendee[:account_number], attendee[:street1], attendee[:street2],
           attendee[:city], attendee[:state], attendee[:zip_code],
           attendee[:email], attendee[:phone], attendee[:salesrep]

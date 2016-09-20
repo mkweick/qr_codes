@@ -194,10 +194,13 @@ hr { border-top: 1px solid #cccccc; }
 	font-weight: bold;
 }
 
-#print-qr #last-name { font-size: 25px; }
+#print-qr #last-name {
+	margin-top: -3px;
+	font-size: 25px;
+}
 
 #print-qr #account-name {
-	font-size: 22px;
+	font-size: 18px;
 	font-weight: bold;
 }
 

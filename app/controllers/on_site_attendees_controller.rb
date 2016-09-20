@@ -193,19 +193,59 @@ class OnSiteAttendeesController < ApplicationController
     export_file = Rails.root.join(export_folder, 'export.xls')
 
     FileUtils.mkdir(export_folder) unless Dir.exist?(export_folder)
+    File.delete(export_file) if File.exist?(export_file)
+
 
     @attendees = @event.on_site_attendees.order("lower(last_name)")
 
     if @attendees.any?
-      # dump to spreadsheet code
+      bold_format = Spreadsheet::Format.new :weight => :bold
+      header_row = [
+        'Event Name', 'Badge Type', 'Contact in CRM?', 'First Name',
+        'Last Name', 'Account Name', 'Account #', 'Street 1', 'Street 2',
+        'City', 'State', 'Zip Code', 'Email', 'Phone', 'Sales Rep'
+      ]
 
-      # if File.exist?(export_file)
-      #   send_file(export_file, type: 'application/vnd.ms-excel',
-      #     filename: "FINAL_#{@event.name}_BATCH_#{@batch.number}.xls")
-      # else
-      #   flash.alert = "Export file can't be found."
-      #   redirect_to event_path(@event)
-      # end
+      export = Spreadsheet::Workbook.new
+      sheet = export.create_worksheet name: "On-Site Attendees"
+
+      sheet.insert_row(0, header_row)
+      sheet.row(0).default_format = bold_format
+
+      sheet.column(0).width = 35
+      sheet.column(1).width = 19
+      sheet.column(2).width = 26
+      sheet.column(3).width = 30
+      sheet.column(4).width = 38
+      sheet.column(5).width = 20
+      sheet.column(6).width = 34
+      sheet.column(7).width = 34
+      sheet.column(8).width = 34
+      sheet.column(9).width = 34
+      sheet.column(10).width = 34
+      sheet.column(11).width = 34
+      sheet.column(12).width = 34
+      sheet.column(13).width = 34
+      sheet.column(14).width = 34
+
+      @attendees.each do |attendee|
+        attendee_row = [
+          @event.name, attendee[:badge_type], attendee[:contact_in_crm],
+          attendee[:first_name], attendee[:last_name], attendee[:account_name],
+          attendee[:account_number], attendee[:street1], attendee[:street2],
+          attendee[:city], attendee[:state], attendee[:zip_code],
+          attendee[:email], attendee[:phone], attendee[:salesrep]
+        ]
+        
+        new_row_index = sheet.last_row_index + 1
+          
+        sheet.insert_row(new_row_index, attendee_row)
+      end
+
+      export.write(export_file)
+
+      send_file(export_file, type: 'application/vnd.ms-excel',
+        filename: "On_Site_Attendees_#{@event.name}.xls")
     else
       flash.alert = "No on-site attendees to export for this event."
       redirect_to event_path(@event)

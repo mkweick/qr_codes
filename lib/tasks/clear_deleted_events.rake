@@ -25,7 +25,7 @@ namespace :events do
     deleted_events = Event.where(status: '3')
 
     deleted_events.each do |event|
-      if event.updated_at < 7.days.ago
+      if event.updated_at < 3.days.ago
         if event.destroy
           delete_event_dir(event.id) if event_dir?(event.id)
         end

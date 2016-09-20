@@ -1,6 +1,6 @@
 <script>
   $('.phone').on('keypress', function(e) {
-    var key = e.keyCode || 0;
+    var key = e.charCode || e.keyCode || 0;
     return (key == 8 || key == 9 || key == 13 || key == 46 || (key >= 48 && key <= 57));
   })
 

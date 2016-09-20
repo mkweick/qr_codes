@@ -15,7 +15,7 @@ class SessionsController < ApplicationController
       session[:first_name] = ldap_user.ldap_object[:givenname].first.strip
       redirect_to(session[:return_to] || root_path)
       session.delete(:return_to)
-    elsif 
+    else 
       flash.now.alert = 'Authentication failed'
       render 'new'
     end

@@ -74,8 +74,10 @@ class OnSiteAttendeesController < ApplicationController
     account_name = params[:account_name].strip unless params[:account_name].blank?
 
     if last_name || account_name
-      db = TinyTds::Client.new( host: '10.220.0.252', database: 'DiValSafety1_MSCRM',
-        username: 'sa', password: 'CRMadmin#')
+      db = TinyTds::Client.new(
+        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
+        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
+      )
     end
 
     @results = []

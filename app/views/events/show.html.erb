@@ -49,15 +49,16 @@
     <% @batches.each do |batch| %>
       <div class="col-xs-12 col-sm-6 col-md-6">
         <div class="well text-center <%= multi ? 'batch-multiple' : 'batch' %>">
-          <%= link_to [:edit, @event, batch], title: 'Edit Batch', 
-            class: "batch edit" do %>
-              <span class="glyphicon glyphicon-pencil font-17 top-12"></span>
-          <% end %>
-          <%= link_to [@event, batch], method: 'delete',
-            title: "Delete Batch", class: "batch delete",
-            data: { confirm: "Are you sure you want to DELETE Batch #{batch.number}"} do %>
-              <span class="glyphicon glyphicon-remove font-20 red top-10"></span>
-          <% end %>
+          <div class="event-actions">
+            <%= link_to [:edit, @event, batch], title: 'Edit Batch', 
+              class: "right-5" do %>
+                <span class="glyphicon glyphicon-pencil font-17 top-12"></span>
+            <% end %>
+            <%= link_to [@event, batch], method: 'delete', title: "Delete Batch",
+              data: { confirm: "Are you sure you want to DELETE Batch #{batch.number}"} do %>
+                <span class="glyphicon glyphicon-remove font-20 red top-10"></span>
+            <% end %>
+          </div>
 
           <h3 class="batch-title inline-block">Batch <%= batch.number %></h3>
           <% if multi %>

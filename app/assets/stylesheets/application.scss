@@ -96,11 +96,12 @@ hr { border-top: 1px solid #cccccc; }
 
 .batch-multiple div.form-group { margin-bottom: 10px; }
 
-.batch a.batch, .batch-multiple a.batch { position: absolute; }
-.batch a.delete, .batch-multiple a.delete { margin-left: 220px; }
-.batch a.edit, .batch-multiple a.edit { margin-left: 190px; }
+.event-actions { float: right; }
 
-.batch-title { margin-top: 10px; }
+.batch-title {
+	margin-top: 10px;
+	margin-right: -40px;
+}
 .batch .batch-title { margin-bottom: 2px; }
 .batch-multiple .batch-title { margin-bottom: 0; }
 

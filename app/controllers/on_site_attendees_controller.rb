@@ -22,8 +22,9 @@ class OnSiteAttendeesController < ApplicationController
   end
 
   def show
-    # 220 x 220 supports printing on Chrome and Mozilla.
-    #Labels are 2-3/7" wide and 2-7/8" cut length
+    # Labels are 2-3/7" wide and 2-7/8" cut length
+    # 180 x 180 = 1.25" - supports printing on Chrome and Mozilla.
+    # 220 x 220 = 1.50" - supports printing on Chrome and Mozilla.
     @qr_code = RQRCode::QRCode.new(
       "MATMSG:TO:leads@divalsafety.com;SUB:#{@event.qr_code_email_subject};BODY:" +
       "\n\n\n______________________" +
@@ -40,7 +41,7 @@ class OnSiteAttendeesController < ApplicationController
       "#{"\n" + @attendee.email if @attendee.email}" +
       "#{"\n" + @attendee.phone if @attendee.phone}" +
       "#{"\n" + @attendee.salesrep if @attendee.salesrep};;", level: :q
-    ).to_img.resize(220, 220)
+    ).to_img.resize(180, 180)
 
     render layout: false
   end

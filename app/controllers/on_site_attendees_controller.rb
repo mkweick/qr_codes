@@ -129,11 +129,11 @@ class OnSiteAttendeesController < ApplicationController
     end
   end
 
-  def crm_account
+  def as400_account
     require 'odbc'
 
     unless params[:account_name].blank?
-      account_name = params[:account_name].strip.upcase
+      account_name = params[:account_name].strip
     end
 
     @results = []
@@ -145,7 +145,7 @@ class OnSiteAttendeesController < ApplicationController
         account_name = escape_single_quotes(account_name)
 
         sql = "SELECT cmcsnm, cmcsno FROM cusms
-               WHERE UPPER(cmcsnm) LIKE '\%#{account_name}\%'
+               WHERE UPPER(cmcsnm) LIKE '\%#{account_name.upcase}\%'
                  AND cmsusp != 'S'
                  AND cmusr1 != 'HSS'
                ORDER BY cmcsnm"
@@ -164,8 +164,9 @@ class OnSiteAttendeesController < ApplicationController
     end
   end
 
-  def crm_ship_to
+  def as400_ship_to
     require 'odbc'
+    @account_name = params[:account_name] unless params[:account_name].blank?
     account_number = params[:account_number] unless params[:account_number].blank?
 
     @results = []

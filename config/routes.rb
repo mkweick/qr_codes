@@ -31,8 +31,8 @@ Rails.application.routes.draw do
     resources :on_site_attendees, path: 'on-site' do
       collection do
         get 'crm-contact'
-        get 'crm-account'
-        get 'crm-ship-to'
+        get 'as400-account'
+        get 'as400-ship-to'
         get 'download'
       end
     end

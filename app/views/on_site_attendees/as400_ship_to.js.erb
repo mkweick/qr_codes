@@ -1,7 +1,7 @@
 var results = "";
 
 results += "<h4 class=\"bottom-0\">Select Ship-To Address</h4>";
-results += "<div class=\"bottom-10\"><%= @results[0][0] %></div>";
+results += "<div class=\"bottom-10\"><%= @account_name %></div>";
 
 <% if @results.any? %>
   <% @results.each do |row| %>

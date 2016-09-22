@@ -193,23 +193,25 @@ hr { border-top: 1px solid #cccccc; }
 }
 
 #print-qr #first-name {
+	margin-top: -10px;
 	font-size: 50px;
 	font-weight: bold;
 }
 
 #print-qr #last-name {
 	margin-top: -8px;
-	font-size: 30px;
+	font-size: 35px;
+	font-weight: bold;
 }
 
 #print-qr #account-name {
-	font-size: 20px;
-	font-weight: bold;
+	margin-top: -4px;
+	font-size: 25px;
 }
 
 #print-qr img {
 	display: block;
-	margin: 0 auto;
+	margin: -3px auto 0 auto;
 }
 
 #print-qr .no-print {

@@ -15,6 +15,11 @@ class SessionsController < ApplicationController
     #   session[:first_name] = 'Test'
     #   redirect_to(session[:return_to] || root_path)
     #   session.delete(:return_to)
+    # elsif username == 'checkin' && password == 'checkin'
+    #   session[:email] = 'check-in@divalsafety.com'
+    #   session[:first_name] = 'Check'
+    #   redirect_to(session[:return_to] || root_path)
+    #   session.delete(:return_to)
     if ldap_user
       session[:email] = ldap_user.ldap_object[:mail].first.strip
       session[:first_name] = ldap_user.ldap_object[:givenname].first.strip

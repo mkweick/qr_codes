@@ -16,11 +16,8 @@
         <%= @attendee.first_name %> <%= @attendee.last_name %>
       </div>
       <hr class="top-10 bottom-10" />
-      <% if @return %>
-        <%= render 'form', btn_text: 'Update & Print', show_return_btn: true %>
-      <% else %>
-        <%= render 'form', btn_text: 'Update & Print', show_cancel_btn: true %>
-      <% end %>
+      <%= render 'form', btn_text: 'Update / Print',
+        "show_#{@return ? 'return' : 'cancel'}_btn": true %>
     </div>
   </div>
 </div>

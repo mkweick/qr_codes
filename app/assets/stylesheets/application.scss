@@ -216,11 +216,20 @@ hr { border-top: 1px solid #cccccc; }
 	transform: scale(1,1.2);
 }
 
-#print-qr #account-name {
-	margin: 0 0 -3px -5px;
-	font-size: 16px;
+#print-qr #account-name-under-15 {
+	margin: -5px 0 -3px -5px;
+	font-size: 28px;
 	font-weight: bold;
-	line-height: 14px;
+	transform: scale(1,1.1);
+	position: relative;
+	z-index: 1;
+}
+
+#print-qr #account-name-over-14 {
+	margin: -5px 0 -7px -5px;
+	font-size: 22px;
+	font-weight: bold;
+	line-height: 22px;
 	transform: scale(0.9,1);
 	position: relative;
 	z-index: 1;

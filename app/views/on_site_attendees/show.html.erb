@@ -15,13 +15,20 @@
   </style>
 </head>
 <body id="print-qr" class="text-center">
-  <% if @attendee.first_name.size <= 8 %>
+  <% if @attendee.first_name.size < 9 %>
     <div id="first-name-under-9"><%= @attendee.first_name %></div>
   <% else %>
     <div id="first-name-over-8"><%= @attendee.first_name %></div>
   <% end %>
+  
   <div id="last-name"><%= @attendee.last_name %></div>
-  <div id="account-name"><%= @attendee.account_name %></div>
+  
+  <% if @attendee.account_name.size < 15 %>
+    <div id="account-name-under-15"><%= @attendee.account_name %></div>
+  <% else %>    
+    <div id="account-name-over-14"><%= @attendee.account_name %></div>
+  <% end %>
+  
   <img src="<%= @qr_code.to_data_url %>" />
 
   <div class="no-print">

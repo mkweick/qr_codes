@@ -1,10 +1,10 @@
 Adauth.configure do |c|
   # DiVal AD Config
-  c.domain = "mainoffice.dival.com"
-  c.query_user = "printers"
-  c.query_password = "!printers!"
-  c.server = "10.220.0.230"
-  c.base = "dc=mainoffice, dc=dival, dc=com"
+  c.domain = ENV["AD_DOMAIN"]
+  c.query_user = ENV["AD_UN"]
+  c.query_password = ENV["AD_PW"]
+  c.server = ENV["AD_SERVER"]
+  c.base = ENV["AD_BASE"]
   c.allowed_groups = ["Events QR Codes Web App Access", "Domain Admins"]
 
   # The LDAP base of your domain/intended users

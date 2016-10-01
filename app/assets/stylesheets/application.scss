@@ -6,6 +6,8 @@ ul { list-style: none; }
 input[type="file"] { width: 100%; }
 hr { border-top: 1px solid #cccccc; }
 
+.hide-me { display: none; }
+
 .well { padding-top: 0; }
 
 .alert ul { 
@@ -141,9 +143,9 @@ hr { border-top: 1px solid #cccccc; }
 
 .attendee-form sup { color: #FF0000; }
 
-.attendee-form #badge-type {
+.attendee-form #badge-type-radio {
 	margin-top: 10px;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 }
 
 .attendee-name-header {
@@ -246,9 +248,9 @@ hr { border-top: 1px solid #cccccc; }
 	margin-top: 30px;
 }
 
-#badge-type label + label { margin-left: 40px; }
+#badge-type-radio label + label { margin-left: 30px; }
 
-#badge-type label {
+#badge-type-radio label {
 	font-size: 16px;
 	font-weight: bold;
 }

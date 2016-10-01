@@ -127,20 +127,50 @@
     </div>
   </div>
 
-  <div id="badge-type" class="form-group text-center">
+  <div id="badge-type-radio" class="form-group text-center">
     <label class="radio-inline">
-      <% if @attendee.badge_type %>
-        <%= f.radio_button :badge_type, 'n', required: true %> New Badge
+      <% if !@attendee.badge_type || @attendee.badge_type == 'NEW' %>
+        <%= radio_button_tag :badge_type_radio, 'NEW',
+        checked: true, required: true %>
+        New Badge
       <% else %>
-        <%= f.radio_button :badge_type, 'n', checked: true, required: true %> New Badge
+        <%= radio_button_tag :badge_type_radio, 'NEW', required: true %>
+        New Badge
       <% end %>
     </label>
-    <label class="radio-inline left-40">
-      <%= f.radio_button :badge_type, 'c' %> Correction
+
+    <label class="radio-inline">
+      <% if @attendee.badge_type == 'CORRECTION' %>
+        <%= radio_button_tag :badge_type_radio, 'CORRECTION', checked: true %>
+        Correction
+      <% else %>
+        <%= radio_button_tag :badge_type_radio, 'CORRECTION' %>
+        Correction
+      <% end %>
+    </label>
+
+    <label class="radio-inline">
+      <% if @attendee.badge_type && @attendee.badge_type != 'NEW' &&
+            @attendee.badge_type != 'CORRECTION' %>
+        <%= radio_button_tag :badge_type_radio, 'OTHER', checked: true %> Other
+      <% else %>
+        <%= radio_button_tag :badge_type_radio, 'OTHER' %> Other
+      <% end %>
     </label>
   </div>
 
-  <div class="text-center">
+  <div id="badge-type" class="form-group hide-me <%= error_field(@attendee, :badge_type) %>">
+    <%= f.label :badge_type, class: "col-sm-5 label-control" do %>
+      Other Reason <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= f.text_field :badge_type, value: (@attendee.badge_type || 'NEW'),
+        placeholder: "Other reason...", required: true, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="text-center top-20">
     <%= f.submit btn_text, class: "btn btn-primary",
       data: { disable_with: "Loading..." } %>
 
@@ -158,3 +188,4 @@
 <% end %>
 
 <%= render 'format_phone_js' %>
+<%= render 'badge_type_js' %>

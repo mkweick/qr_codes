@@ -12,7 +12,7 @@ class OnSiteAttendee < ActiveRecord::Base
   validates :zip_code, presence: true
   validates :email, presence: true
   validates :phone, presence: true
-  validates :badge_type, presence: true
+  validates :badge_type, presence: { message: "must have other reason." }
   validate :unique_record, on: :create
 
   def nilify_blank_values

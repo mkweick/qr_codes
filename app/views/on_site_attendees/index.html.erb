@@ -41,7 +41,13 @@
               </td>
               <td class="badge-type-col">
                 <%= link_to edit_event_on_site_attendee_path(@event, attendee) do %>
-                  <%= attendee.badge_type == 'n' ? 'New' : 'Correction' %>
+                  <% if attendee.badge_type == 'NEW' %>
+                    New
+                  <% elsif attendee.badge_type == 'CORRECTION' %>
+                    Correction
+                  <% else %>
+                    Other
+                  <% end %>
                 <% end %>
               </td>
               <td class="text-center">

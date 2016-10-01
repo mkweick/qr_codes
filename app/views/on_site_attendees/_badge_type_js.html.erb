@@ -1,0 +1,21 @@
+<script>
+  if ($('#badge_type_radio_OTHER').is(':checked')) {
+    $('#badge-type').removeClass('hide-me');
+  };
+
+  $(document).ready(function() {
+    $("input[name='badge_type_radio']").change(function(){
+      if ($('#badge_type_radio_NEW').is(':checked')) {
+        $('#badge-type').addClass('hide-me');
+        $('#on_site_attendee_badge_type').val("NEW");
+      } else if ($('#badge_type_radio_CORRECTION').is(':checked')) {
+        $('#badge-type').addClass('hide-me');
+        $('#on_site_attendee_badge_type').val("CORRECTION");
+      } else if ($('#badge_type_radio_OTHER').is(':checked')) {
+        $('#on_site_attendee_badge_type').val("");
+        $('#badge-type').removeClass('hide-me');
+        $('#on_site_attendee_badge_type').focus();
+      }
+    });
+  });
+</script>

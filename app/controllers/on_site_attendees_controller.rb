@@ -240,16 +240,15 @@ class OnSiteAttendeesController < ApplicationController
       @attendees.each do |attendee|
         created_date = attendee[:created_at].strftime("%m/%d/%Y")
         created_time = attendee[:created_at].strftime("%l:%M%p")
-        badge_type = 'NEW' if attendee[:badge_type] == 'n'
-        badge_type = 'CORRECTION' if attendee[:badge_type] == 'c'
         created_from_crm = attendee[:contact_in_crm] ? "TRUE" : "FALSE"
 
         attendee_row = [
-          @event.name, created_date, created_time, badge_type, created_from_crm,
-          attendee[:first_name], attendee[:last_name], attendee[:account_name],
-          attendee[:account_number], attendee[:street1], attendee[:street2],
-          attendee[:city], attendee[:state], attendee[:zip_code],
-          attendee[:email], attendee[:phone], attendee[:salesrep]
+          @event.name, created_date, created_time, attendee[:badge_type],
+          created_from_crm, attendee[:first_name], attendee[:last_name],
+          attendee[:account_name], attendee[:account_number],
+          attendee[:street1], attendee[:street2], attendee[:city],
+          attendee[:state], attendee[:zip_code], attendee[:email],
+          attendee[:phone], attendee[:salesrep]
         ]
         
         new_row_index = sheet.last_row_index + 1

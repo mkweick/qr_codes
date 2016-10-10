@@ -17,6 +17,7 @@ class OnSiteAttendeesController < ApplicationController
     if @attendee.save
       redirect_to event_on_site_attendee_path(@event, @attendee)
     else
+      @contact_in_crm = true if on_site_attendee_params[:contact_in_crm]
       render 'new'
     end
   end

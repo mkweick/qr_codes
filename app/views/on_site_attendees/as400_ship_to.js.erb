@@ -47,7 +47,6 @@ $('#crm-account-results a').click(function() {
   $('#on_site_attendee_city').val($(this).find('#ship-to-city').text());
   $('#on_site_attendee_state').val($(this).find('#ship-to-state').text());
   $('#on_site_attendee_zip_code').val($(this).find('#ship-to-zip-code').text());
-  $('#on_site_attendee_contact_in_crm').val("false");
   clearCrmContactAndAccountSearch();
   $('#on_site_attendee_first_name').focus();
 });

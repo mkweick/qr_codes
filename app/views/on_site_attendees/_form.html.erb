@@ -2,7 +2,11 @@
 <% show_return_btn ||= false %>
 
 <%= form_for [@event, @attendee], html: { class: "form-horizontal attendee-form" } do |f| %>
-  <%= f.hidden_field :contact_in_crm, value: false %>
+  <% if @contact_in_crm %>
+    <%= f.hidden_field :contact_in_crm, value: true %>
+  <% else %>
+    <%= f.hidden_field :contact_in_crm, value: false %>
+  <% end %>
 
   <div class="form-group <%= error_field(@attendee, :first_name) %>">
     <%= f.label :first_name, class: "col-sm-5 label-control" do %>

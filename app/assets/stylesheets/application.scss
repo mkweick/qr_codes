@@ -59,6 +59,12 @@ hr { border-top: 1px solid #cccccc; }
 .red:hover { color: #bd2d29; }
 .red:active { color: #7e1e1b; }
 
+#main-nav {
+	background-color: #f2f2f2;
+	border-bottom: 1px solid #bfbfbf;
+	border-radius: 0;	
+}
+
 .nav-logo-img { margin-top: -10px; }
 
 .list-group a.red { color: #d9534f; }

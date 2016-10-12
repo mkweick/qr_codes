@@ -57,6 +57,7 @@ function resetDivalEmployeeForm() {
   if ($('div#flash-msg')) { $('div#flash-msg').remove(); };
   $('#first_name').val("");
   $('#last_name').val("");
+  $('#title').val("");
   $('#account_name').val("");
   $('#street1').val("");
   $('#street2').val("");

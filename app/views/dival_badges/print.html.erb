@@ -41,10 +41,11 @@
     <div id="edit-attendee-btn" class="top-10">
       <%= link_to "Edit Info", new_dival_badge_path(
           first_name: params[:first_name], last_name: params[:last_name],
-          account_name: params[:account_name], street1: params[:street1],
-          street2: params[:street2], city: params[:city],
-          state: params[:state], zip_code: params[:zip_code],
-          email: params[:email], phone: params[:phone]
+          title: params[:title], account_name: params[:account_name],
+          street1: params[:street1], street2: params[:street2],
+          city: params[:city], state: params[:state],
+          zip_code: params[:zip_code], email: params[:email],
+          phone: params[:phone]
         ), class: "btn btn-danger" %>
     </div>
 

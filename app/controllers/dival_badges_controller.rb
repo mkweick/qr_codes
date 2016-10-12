@@ -7,6 +7,7 @@ class DivalBadgesController < ApplicationController
     @first_name = params[:first_name].strip if params[:first_name].present?
     @last_name = params[:last_name].strip if params[:last_name].present?
     @account_name = params[:account_name].strip if params[:account_name].present?
+    title = params[:title].strip if params[:title].present?
     street1 = params[:street1].strip if params[:street1].present?
     street2 = params[:street2].strip if params[:street2].present?
     city = params[:city].strip if params[:city].present?
@@ -15,25 +16,25 @@ class DivalBadgesController < ApplicationController
     email = params[:email].strip if params[:email].present?
     phone = params[:phone].strip if params[:phone].present?
 
-    if @first_name && @last_name && @account_name && street1 &&
-       city && state && zip_code && email && phone
+    if @first_name && @last_name && @account_name && title &&
+       street1 && city && state && zip_code && email && phone
 
       # Labels are 2-3/7" wide and 2-7/8" cut length
-      # 180 x 180 = 1.25" - supports printing on Chrome and Mozilla.
-      # 220 x 220 = 1.50" - supports printing on Chrome and Mozilla.
+      # 180 x 180 = 1.25"  /  220 x 220 = 1.50"
       @qr_code = RQRCode::QRCode.new(
-        "MATMSG:TO:leads@divalsafety.com;SUB:Vendor: ;BODY:" +
+        "MATMSG:TO:;SUB:DIVAL SALES REP REQUEST;BODY:" +
         "\n\n\n______________________" +
         "\n" + @first_name + " " + @last_name +
-        "\n" + @account_name +
+        "\n" + title +
+        "#{"\n" + email if email}" +
+        "#{"\n" + phone if phone}" +
+        "\n\n" + @account_name +
         "#{"\n" + street1 if street1}" +
         "#{"\n" + street2 if street2}" +
         "#{"\n" + city if city}" +
         "#{"\n" if !city && (state || zip_code)}" +
         "#{', ' if city && state}" + "#{state if state} " +
-        "#{zip_code if zip_code}" +
-        "#{"\n" + email if email}" +
-        "#{"\n" + phone if phone};;", level: :q
+        "#{zip_code if zip_code};;", level: :q
       ).to_img.resize(180, 180)
 
       render layout: false

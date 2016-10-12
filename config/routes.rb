@@ -5,8 +5,21 @@ Rails.application.routes.draw do
   post '/login',    to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
 
-  resources :locations, except: [:show]
-  resources :types,     except: [:show]
+  resources :locations,     except: [:show]
+  resources :types,         except: [:show]
+
+  resources :dival_badges,  only: [:new] do
+    collection do
+      get 'print'
+      get 'crm-dival-employee'
+    end
+  end
+
+  resources :vendor_badges,  only: [:new] do
+    collection do
+      get 'print'
+    end
+  end
 
   resources :events, except: [:new] do
     collection do

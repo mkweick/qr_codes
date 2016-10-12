@@ -22,6 +22,15 @@ function clearCrmContactAndAccountSearch() {
   if ($('#crm-account-cancel-btn')) { $('#crm-account-cancel-btn').remove(); };
 };
 
+function clearCrmDivalEmployeeSearch() {
+  $('#crm-dival-employee-ln').val("");
+  
+  if ($('#crm-dival-employee-line')) { $('#crm-dival-employee-line').remove(); };
+  if ($('#crm-dival-employee-results')) { $('#crm-dival-employee-results').remove(); };
+  if ($('#crm-dival-employee-no-results')) { $('#crm-dival-employee-no-results').remove(); };
+  if ($('#crm-dival-employee-cancel-btn')) { $('#crm-dival-employee-cancel-btn').remove(); };
+};
+
 function resetNewAttendeeForm() {
   if ($('div#flash-msg')) { $('div#flash-msg').remove(); };
   if ($('div#obj-errors')) { $('div#obj-errors').remove(); };
@@ -42,4 +51,25 @@ function resetNewAttendeeForm() {
     return this.getAttribute('checked') == 'checked';
   });
   $('div.form-group').removeClass("has-error");
+};
+
+function resetDivalEmployeeForm() {
+  if ($('div#flash-msg')) { $('div#flash-msg').remove(); };
+  $('#first_name').val("");
+  $('#last_name').val("");
+  $('#account_name').val("");
+  $('#street1').val("");
+  $('#street2').val("");
+  $('#city').val("");
+  $('#state').val("");
+  $('#zip_code').val("");
+  $('#email').val("");
+  $('#phone').val("");
+};
+
+function resetVendorForm() {
+  if ($('div#flash-msg')) { $('div#flash-msg').remove(); };
+  $('#first_name').val("");
+  $('#last_name').val("");
+  $('#vendor_name').val("");
 };

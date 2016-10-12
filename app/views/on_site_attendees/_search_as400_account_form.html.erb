@@ -1,0 +1,11 @@
+<%= form_tag as400_account_event_on_site_attendees_path(@event),
+  method: 'get', remote: true, class: "crm-account-form" do %>
+  <div class="form-group">
+    <%= text_field_tag 'account_name', params[:account_name],
+      placeholder: "Account Name...", id: "crm-account-an",
+      class: "form-control" %>
+  </div>
+  <%= submit_tag 'Search', id: "crm-account-submit-btn",
+    class: "btn btn-sm btn-primary top-10",
+    data: { disable_with: "Loading..." } %>
+<% end %>

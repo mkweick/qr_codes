@@ -1,0 +1,117 @@
+<%= form_tag print_dival_badges_path, method: 'get',
+  class: "form-horizontal dival-employee-form" do %>
+
+  <div class="form-group">
+    <%= label_tag :first_name, class: "col-sm-5 label-control" do %>
+      First Name <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :first_name, params[:first_name],
+        required: true, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :last_name, class: "col-sm-5 label-control" do %>
+      Last Name <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :last_name, params[:last_name],
+        required: true, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :account_name, class: "col-sm-5 label-control" do %>
+      Account Name <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :account_name, params[:account_name],
+        required: true, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :street1, class: "col-sm-5 label-control" do %>
+      Street 1 <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :street1, params[:street1], required: true,
+        class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :street2, 'Street 2', class: "col-sm-5 label-control" %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :street2, params[:street2], class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :city, class: "col-sm-5 label-control" do %>
+      City <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :city, params[:city], required: true,
+        class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :state, class: "col-sm-5 label-control" do %>
+      State <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :state, params[:state], required: true,
+        class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :zip_code, class: "col-sm-5 label-control" do %>
+      Zip Code <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :zip_code, params[:zip_code], required: true,
+        class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :email, class: "col-sm-5 label-control" do %>
+      Email <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :email, params[:email], required: true,
+        class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :phone, class: "col-sm-5 label-control" do %>
+      Phone <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :phone, params[:phone], required: true,
+        class: "form-control phone" %>
+    </div>
+  </div>
+
+  <div class="text-center top-20">
+    <%= submit_tag 'Create & Print', class: "btn btn-primary",
+      data: { disable_with: "Loading..." } %>
+  </div>
+<% end %>
+
+<%= render 'shared/format_phone_js' %>

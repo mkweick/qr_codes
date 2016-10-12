@@ -83,6 +83,12 @@ hr { border-top: 1px solid #cccccc; }
   border-bottom: 1px solid #ddd;
 }
 
+#dival-employee-badge-header, #vendor-badge-header {
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
 #event-title:after {
 	content: "";
 	display: block;
@@ -98,6 +104,12 @@ hr { border-top: 1px solid #cccccc; }
 	margin-top: 0;
 	margin-bottom: 0;
 }
+
+#dival-employee-badge-title, #vendor-badge-title {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
 
 .batch { height: 240px; }
 .batch-multiple { height: 260px; }
@@ -134,20 +146,29 @@ hr { border-top: 1px solid #cccccc; }
 
 .attendee-form input[type="text"].form-control,
 .crm-contact-form input[type="text"].form-control,
-.crm-account-form input[type="text"].form-control {
+.crm-account-form input[type="text"].form-control,
+.dival-employee-form input[type="text"].form-control,
+.crm-dival-employee-form input[type="text"].form-control,
+.vendor-form input[type="text"].form-control {
 	height: 30px;
 	padding: 8px 10px;
 	font-size: 12px;
 }
 
-.attendee-form .form-group { margin-bottom: 5px; }
+.attendee-form .form-group, .dival-employee-form .form-group,
+.vendor-form .form-group {
+	margin-bottom: 5px;
+}
 
-.attendee-form .label-control {
+.attendee-form .label-control, .dival-employee-form .label-control,
+.vendor-form .label-control {
 	text-align: right;
 	margin-bottom: 0;
 }
 
-.attendee-form sup { color: #FF0000; }
+.attendee-form sup, .dival-employee-form sup, .vendor-form sup {
+	color: #FF0000;
+}
 
 .attendee-form #badge-type-radio {
 	margin-top: 10px;
@@ -159,11 +180,13 @@ hr { border-top: 1px solid #cccccc; }
 	font-weight: bold;
 }
 
-.crm-contact-form .form-group, .crm-account-form .form-group {
+.crm-contact-form .form-group, .crm-account-form .form-group,
+.crm-dival-employee-form .form-group {
 	margin-bottom: 0;
 }
 
-#crm-contact-results .list-group-item {
+#crm-contact-results .list-group-item,
+#crm-dival-employee-results .list-group-item {
 	padding: 8px 10px;
 	font-size: 12px;
 	cursor: pointer;
@@ -175,7 +198,8 @@ hr { border-top: 1px solid #cccccc; }
 	cursor: pointer;
 }
 
-#crm-contact-results a div, #crm-account-results a div {
+#crm-contact-results a div, #crm-account-results a div,
+#crm-dival-employee-results a div {
 	display: none;
 }
 
@@ -270,7 +294,10 @@ hr { border-top: 1px solid #cccccc; }
 }
 
 @media (min-width: 768px) {
-	.attendee-form .label-control { padding-top: 6px; }
+	.attendee-form .label-control, .dival-employee-form .label-control,
+	.vendor-form .label-control {
+		padding-top: 6px;
+	}
 }
 
 @media (max-width: 725px) {

@@ -1,0 +1,41 @@
+<%= form_tag print_vendor_badges_path, method: 'get',
+  class: "form-horizontal vendor-form" do %>
+
+  <div class="form-group">
+    <%= label_tag :first_name, class: "col-sm-5 label-control" do %>
+      First Name <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :first_name, params[:first_name], autofocus: true,
+        required: true, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :last_name, class: "col-sm-5 label-control" do %>
+      Last Name <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :last_name, params[:last_name],
+        required: true, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :vendor_name, class: "col-sm-5 label-control" do %>
+      Vendor Name <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :vendor_name, params[:vendor_name],
+        required: true, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="text-center top-20">
+    <%= submit_tag 'Create & Print', class: "btn btn-primary",
+      data: { disable_with: "Loading..." } %>
+  </div>
+<% end %>

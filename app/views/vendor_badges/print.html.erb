@@ -1,0 +1,51 @@
+<% @page_title = "Print Vendor Badge - #{@first_name} #{@last_name}" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= format_page_title %></title>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= favicon_link_tag 'favicon.ico' %>
+  <%= csrf_meta_tags %>
+  <style>
+    @media print {
+      @page { margin: 0; }
+      .no-print, .no-print * { display: none !important; }
+    }
+  </style>
+</head>
+<body id="print-qr" class="text-center">
+  <% if @first_name.size < 9 %>
+    <div id="first-name-under-9"><%= @first_name %></div>
+  <% else %>
+    <div id="first-name-over-8"><%= @first_name %></div>
+  <% end %>
+  
+  <div id="last-name"><%= @last_name %></div>
+  
+  <% if @vendor_name.size < 15 %>
+    <div id="account-name-under-15"><%= @vendor_name %></div>
+  <% else %>    
+    <div id="account-name-over-14"><%= @vendor_name %></div>
+  <% end %>
+
+  <div class="no-print">
+    <div id="print-badge-btn">
+      <a href="javascript:window.print()" class="btn btn-primary">
+        Print Badge
+      </a>
+    </div>
+
+    <div id="edit-attendee-btn" class="top-10">
+      <%= link_to "Edit Info", new_vendor_badge_path(
+          first_name: params[:first_name], last_name: params[:last_name],
+          vendor_name: params[:vendor_name]
+        ), class: "btn btn-danger" %>
+    </div>
+
+    <div id="finished-btn" class="top-10">
+      <%= link_to "Done", new_vendor_badge_path, class: "btn btn-success" %>
+    </div>
+  </div>
+</body>
+</html>

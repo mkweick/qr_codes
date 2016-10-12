@@ -1,0 +1,67 @@
+var cancelBtn = "<a id=\"crm-dival-employee-cancel-btn\"";
+cancelBtn += "class=\"btn btn-sm btn-danger top-10 left-10\">Cancel</a>";
+
+var results = "";
+
+<% if @results.any? %>
+  results += "<hr id=\"crm-dival-employee-line\" class=\"top-10 bottom-10\" />";
+  results += "<div id=\"crm-dival-employee-results\" class=\"list-group\">";
+  <% @results.each do |row| %>
+    <% first_name = row[0].strip if row[0] %>
+    <% last_name = row[1].strip if row[1] %>
+    <% account_name = row[2].strip if row[2] %>
+    <% street1 = row[3].strip if row[3] %>
+    <% street2 = row[4].strip if row[4] %>
+    <% city = row[5].strip if row[5] %>
+    <% state = row[6].strip if row[6] %>
+    <% zip_code = row[7].strip if row[7] %>
+    <% email = row[8].strip if row[8] %>
+    <% phone = row[9].strip if row[9] %>
+
+    results += "<a class=\"list-group-item text-left\">";
+    results += "<%= first_name %> <%= last_name %>";
+    results += "<span class=\"pull-right\"><%= account_name %></span>";
+    results += "<div id=\"first-name\"><%= first_name %></div>";
+    results += "<div id=\"last-name\"><%= last_name %></div>";
+    results += "<div id=\"account-name\"><%= account_name %></div>";
+    results += "<div id=\"street1\"><%= street1 %></div>";
+    results += "<div id=\"street2\"><%= street2 %></div>";
+    results += "<div id=\"city\"><%= city %></div>";
+    results += "<div id=\"state\"><%= state %></div>";
+    results += "<div id=\"zip-code\"><%= zip_code %></div>";
+    results += "<div id=\"email\"><%= email %></div>";
+    results += "<div id=\"phone\"><%= phone %></div>";
+    results += "</a>";
+  <% end %>
+  results += "</div>";
+<% else %>
+  results += "<hr id=\"crm-dival-employee-line\" class=\"top-10 bottom-10\" />";
+  results += "<h4 id=\"crm-dival-employee-no-results\" class=\"text-center top-20\">";
+  <% if params[:last_name].present? %>
+    results += "No results found.";
+  <% else %>
+    results += "You didn't search anything.";
+  <% end %>
+  results += "</h4>";
+<% end %>
+
+clearCrmDivalEmployeeSearch();
+
+$(cancelBtn).insertAfter('#crm-dival-employee-submit-btn');
+$(results).insertAfter('.crm-dival-employee-form');
+
+$('#crm-dival-employee-cancel-btn').click(clearCrmDivalEmployeeSearch);
+
+$('#crm-dival-employee-results a').click(function() {
+  $('#first_name').val($(this).find('#first-name').text());
+  $('#last_name').val($(this).find('#last-name').text());
+  $('#account_name').val($(this).find('#account-name').text());
+  $('#street1').val($(this).find('#street1').text());
+  $('#street2').val($(this).find('#street2').text());
+  $('#city').val($(this).find('#city').text());
+  $('#state').val($(this).find('#state').text());
+  $('#zip_code').val($(this).find('#zip-code').text());
+  $('#email').val($(this).find('#email').text());
+  $('#phone').val($(this).find('#phone').text()).change();
+  clearCrmDivalEmployeeSearch();
+});

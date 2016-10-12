@@ -1,0 +1,17 @@
+<%= form_tag crm_contact_event_on_site_attendees_path(@event),
+  method: 'get', remote: true, class: "crm-contact-form" do %>
+  <div class="form-group">
+    <%= text_field_tag 'last_name', params[:last_name],
+      placeholder: "Last Name...", autofocus: true,
+      id: "crm-contact-ln", class: "form-control" %>
+  </div>
+  <h5 class="top-5 bottom-5">OR</h5>
+  <div class="form-group">
+    <%= text_field_tag 'account_name', params[:account_name],
+      placeholder: "Account Name...", id: "crm-contact-an",
+      class: "form-control" %>
+  </div>
+  <%= submit_tag 'Search', id: "crm-contact-submit-btn",
+    class: "btn btn-sm btn-primary top-10",
+    data: { disable_with: "Loading..." } %>
+<% end %>

@@ -1,0 +1,40 @@
+<% @page_title = "New DiVal Employee Badge" %>
+
+<script>
+  $(document).ready(function() {
+    $('#reset-form-btn').click(resetDivalEmployeeForm);
+  });
+</script>
+
+<div class="row">
+  <div id="dival-employee-badge-header" class="col-xs-12 col-sm-12 col-md-12">
+    <h2 id="dival-employee-badge-title" class="pull-left">
+      DiVal Safety Employee Badge
+    </h2>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12 col-sm-6 col-md-6">
+    <div class="row">
+      <div class="well">
+        <h3 class="top-15 text-center">
+          New Badge
+          <a id="reset-form-btn" class="btn btn-xs btn-danger pull-right">
+            Reset
+          </a>
+        </h3>
+        <hr class="top-10 bottom-10" />
+        <%= render 'form' %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-sm-6 col-md-6">
+    <div class="well pad-bottom-10 text-center">
+      <h4>Search for DiVal Employee</h4>
+      <hr class="top-10 bottom-10" />
+      <%= render 'search_crm_dival_employees_form' %>
+    </div>
+  </div>
+</div>

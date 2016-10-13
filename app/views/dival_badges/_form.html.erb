@@ -35,6 +35,32 @@
   </div>
 
   <div class="form-group">
+    <%= label_tag :email, class: "col-sm-5 label-control" do %>
+      Email <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :email, params[:email], required: true,
+        class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :phone, class: "col-sm-5 label-control" do %>
+      Phone <sup>*</sup>
+    <% end %>
+
+    <div class="col-sm-7">
+      <%= text_field_tag :phone, params[:phone], required: true,
+        class: "form-control phone" %>
+    </div>
+  </div>
+
+  <div id="dival-employee-address-msg" class="text-center">
+    ** Address info is where samples will be sent **
+  </div>
+
+  <div class="form-group">
     <%= label_tag :street1, class: "col-sm-5 label-control" do %>
       Street 1 <sup>*</sup>
     <% end %>
@@ -83,28 +109,6 @@
     <div class="col-sm-7">
       <%= text_field_tag :zip_code, params[:zip_code], required: true,
         class: "form-control" %>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <%= label_tag :email, class: "col-sm-5 label-control" do %>
-      Email <sup>*</sup>
-    <% end %>
-
-    <div class="col-sm-7">
-      <%= text_field_tag :email, params[:email], required: true,
-        class: "form-control" %>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <%= label_tag :phone, class: "col-sm-5 label-control" do %>
-      Phone <sup>*</sup>
-    <% end %>
-
-    <div class="col-sm-7">
-      <%= text_field_tag :phone, params[:phone], required: true,
-        class: "form-control phone" %>
     </div>
   </div>
 

@@ -2,6 +2,15 @@
 
 <script>
   $(document).ready(function() {
+    
+    $('#crm-dival-employee-fn').focus(function() {
+      $('#crm-dival-employee-ln').val("");
+    });
+
+    $('#crm-dival-employee-ln').focus(function() {
+      $('#crm-dival-employee-fn').val("");
+    });
+
     $('#reset-form-btn').click(resetDivalEmployeeForm);
   });
 </script>

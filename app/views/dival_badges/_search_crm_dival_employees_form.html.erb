@@ -1,10 +1,20 @@
 <%= form_tag crm_dival_employee_dival_badges_path, method: 'get',
   remote: true, class: "crm-dival-employee-form" do %>
+
+  <div class="form-group">
+    <%= text_field_tag 'first_name', params[:first_name],
+      placeholder: "First name...", id: "crm-dival-employee-fn",
+      class: "form-control" %>
+  </div>
+
+  <h5 class="top-5 bottom-5">OR</h5>
+
   <div class="form-group">
     <%= text_field_tag 'last_name', params[:last_name],
-      placeholder: "Last Name...", autofocus: true, required: true,
+      placeholder: "Last name...", autofocus: true,
       id: "crm-dival-employee-ln", class: "form-control" %>
   </div>
+
   <%= submit_tag 'Search', id: "crm-dival-employee-submit-btn",
     class: "btn btn-sm btn-primary top-10",
     data: { disable_with: "Loading..." } %>

@@ -44,14 +44,39 @@ class DivalBadgesController < ApplicationController
   end
 
   def crm_dival_employee
+    first_name = params[:first_name].strip unless params[:first_name].blank?
     last_name = params[:last_name].strip unless params[:last_name].blank?
     @results = []
 
-    if last_name
+    if first_name || last_name
       db = TinyTds::Client.new(
         host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
         username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
       )
+    end
+
+    if first_name
+      params.delete(:last_name)
+
+      first_name = db.escape(first_name)
+      query = db.execute(
+        "SELECT a.FirstName, a.LastName, c.Line1, c.Line2, c.City,
+          c.StateOrProvince, c.PostalCode, a.EMailAddress1, a.Telephone1
+         FROM ContactBase AS a
+         JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId
+         JOIN CustomerAddressBase AS c ON a.ContactId = c.ParentId
+         WHERE a.FirstName LIKE '#{first_name}%'
+           AND a.StateCode = '0'
+           AND b.icbcore_ExtAccountID = '01-101673'
+           AND c.AddressNumber = '1'
+         ORDER BY a.FirstName, a.LastName"
+      )
+
+      query.each(as: :array) { |row| @results << row }
+      db.close unless db.closed?
+
+    elsif last_name
+      params.delete(:first_name)
 
       last_name = db.escape(last_name)
       query = db.execute(

@@ -23,6 +23,7 @@ function clearCrmContactAndAccountSearch() {
 };
 
 function clearCrmDivalEmployeeSearch() {
+  $('#crm-dival-employee-fn').val("");
   $('#crm-dival-employee-ln').val("");
   
   if ($('#crm-dival-employee-line')) { $('#crm-dival-employee-line').remove(); };

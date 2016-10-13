@@ -16,17 +16,17 @@
 </head>
 <body id="print-qr" class="text-center">
   <% if @first_name.size < 9 %>
-    <div id="first-name-under-9"><%= @first_name %></div>
+    <div id="first-name-vendor-under-9"><%= @first_name %></div>
   <% else %>
-    <div id="first-name-over-8"><%= @first_name %></div>
+    <div id="first-name-vendor-over-8"><%= @first_name %></div>
   <% end %>
   
-  <div id="last-name"><%= @last_name %></div>
+  <div id="last-name-vendor"><%= @last_name %></div>
   
   <% if @vendor_name.size < 15 %>
-    <div id="account-name-under-15"><%= @vendor_name %></div>
+    <div id="account-name-vendor-under-15"><%= @vendor_name %></div>
   <% else %>    
-    <div id="account-name-over-14"><%= @vendor_name %></div>
+    <div id="account-name-vendor-over-14"><%= @vendor_name %></div>
   <% end %>
 
   <div class="no-print">

@@ -22,12 +22,8 @@
   <% end %>
   
   <div id="last-name"><%= @last_name %></div>
-  
-  <% if @account_name.size < 15 %>
-    <div id="account-name-under-15"><%= @account_name %></div>
-  <% else %>    
-    <div id="account-name-over-14"><%= @account_name %></div>
-  <% end %>
+     
+  <div id="account-name-dival"><%= @account_name %></div>
   
   <img src="<%= @qr_code.to_data_url %>" />
 

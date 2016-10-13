@@ -74,6 +74,7 @@ class OnSiteAttendeesController < ApplicationController
   def crm_contact
     last_name = params[:last_name].strip unless params[:last_name].blank?
     account_name = params[:account_name].strip unless params[:account_name].blank?
+    @results = []
 
     if last_name || account_name
       db = TinyTds::Client.new(
@@ -81,8 +82,6 @@ class OnSiteAttendeesController < ApplicationController
         username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
       )
     end
-
-    @results = []
 
     if last_name
       params.delete(:account_name)

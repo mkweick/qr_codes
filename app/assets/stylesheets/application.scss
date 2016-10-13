@@ -114,7 +114,11 @@ hr { border-top: 1px solid #cccccc; }
 
 .batch { height: 240px; }
 .batch-multiple { height: 260px; }
-.batch-form .form-control { height: 28px; }
+
+.batch-form .form-control {
+	height: 28px;
+	padding: 4px 12px;
+}
 
 .batch-multiple div.form-group { margin-bottom: 10px; }
 
@@ -323,4 +327,8 @@ hr { border-top: 1px solid #cccccc; }
 		float: left !important;
 		margin-top: 10px;
 	}
+}
+
+@media (max-width: 440px) {
+	#nav-title-text { display: none; }
 }

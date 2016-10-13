@@ -31,11 +31,11 @@
       <%= f.file_field 'file', accept: ".xls", required: true %>
       <div class="font-12">
         <span class="ss-red">Must be <strong>.xls</strong> format</span> - 
-        <%= link_to 'Attendee Template',
+        <%= link_to 'Attendee',
           download_attendee_template_event_path(@event),
           data: { turbolinks: false } %>
         /
-        <%= link_to 'Employee Template',
+        <%= link_to 'Employee',
           download_employee_template_event_path(@event),
           data: { turbolinks: false } %>
       </div>

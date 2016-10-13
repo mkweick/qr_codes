@@ -39,9 +39,9 @@
 <div class="row">
   <% if @batches.any? %>
     <div class="col-xs-12 col-sm-6 col-md-6">
-      <div class="well text-center pad-top-15 <%= multi ? 'batch-multiple' : 'batch' %>">
+      <div class="well text-center pad-top-10 <%= multi ? 'batch-multiple' : 'batch' %>">
         <h3 class="margin-0">New Batch</h3>
-        <hr class="top-10" />
+        <hr class="top-10 bottom-10" />
         <%= render 'batches/form', multi: multi, upload: true, btn_text: 'Create' %>
       </div>
     </div>
@@ -66,6 +66,11 @@
           <% end %>
           <div class="batch-date font-12">
             <%= batch.created_at.strftime('%b %d, %Y -%l:%M %p') %>
+            <% if batch.batch_type == '1' %>
+              -- <strong>Attendees</strong>
+            <% elsif batch.batch_type == '2' %>
+              -- <strong>Employees</strong>
+            <% end %>
           </div>
           <div class="batch-desc font-12">
             <%= batch.description %>
@@ -96,9 +101,9 @@
     <% end %>
   <% else %>
     <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
-      <div class="well text-center pad-top-15 <%= multi ? 'batch-multiple' : 'batch' %>">
+      <div class="well text-center pad-top-10 <%= multi ? 'batch-multiple' : 'batch' %>">
         <h3 class="margin-0">New Batch</h3>
-        <hr class="top-10" />
+        <hr class="top-10 bottom-10" />
         <%= render 'batches/form', multi: multi, upload: true, btn_text: 'Create' %>
       </div>
     </div>

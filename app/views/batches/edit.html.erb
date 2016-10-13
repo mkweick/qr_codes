@@ -9,7 +9,7 @@
     <div class="font-17">
       <%= @event.name %><%= " - #{@batch.location}" if @batch.location %>
     </div>
-    <hr class="top-10" />
-    <%= render 'batches/form', multi: multi, btn_text: 'Update', show_cancel_btn: true %>
+    <hr class="top-10 bottom-10" />
+    <%= render 'form', multi: multi, btn_text: 'Update', show_cancel_btn: true %>
   </div>
 </div>

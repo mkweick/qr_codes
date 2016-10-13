@@ -27,7 +27,8 @@ Rails.application.routes.draw do
     end
 
     member do 
-      get 'download-template'
+      get 'download-attendee-template'
+      get 'download-employee-template'
 
       patch 'archive'
       patch 'activate'

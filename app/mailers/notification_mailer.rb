@@ -5,15 +5,31 @@ class NotificationMailer < ApplicationMailer
 		@batch = batch
 
     if @batch.location
-      mail(
-        to: email,
-        subject: "#{@event.name} - #{@batch.location} - Batch #{@batch.number} is Ready!"
-      )
+      if @batch.batch_type == '1'
+        mail(
+          to: email,
+          subject: "#{@event.name} - #{@batch.location} - Batch " +
+            "#{@batch.number} - Attendees is Ready!"
+        )
+      elsif @batch.batch_type == '2'
+        mail(
+          to: email,
+          subject: "#{@event.name} - #{@batch.location} - Batch " +
+            "#{@batch.number} - Employees is Ready!"
+        )
+      end
     else
-		  mail(
-        to: email,
-        subject: "#{@event.name} - Batch #{@batch.number} is Ready!"
-      )
+		  if @batch.batch_type == '1'
+        mail(
+          to: email,
+          subject: "#{@event.name} - Batch #{@batch.number} - Attendees is Ready!"
+        )
+      elsif @batch.batch_type == '2'
+        mail(
+          to: email,
+          subject: "#{@event.name} - Batch #{@batch.number} - Employees is Ready!"
+        )
+      end
     end
 	end
 end

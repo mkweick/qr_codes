@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 20160915152051) do
     t.string   "number",      null: false
     t.string   "location"
     t.string   "description", null: false
+    t.string   "batch_type",  null: false
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
   end

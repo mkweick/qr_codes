@@ -1,12 +1,23 @@
 <% upload ||= false %>
 <% show_cancel_btn ||= false %>
 
-<%= form_for [@event, @batch], multipart: true do |f| %>
+<%= form_for [@event, @batch], multipart: true,
+  html: { class: "batch-form" } do |f| %>
+  
   <div class="text-left">
     <% if multi %>
       <div class="form-group">
         <%= f.select 'location', options_for_select(@locations, @batch.location),
           { prompt: '-- Select Location --' },
+          { required: true, class: "form-control" } %>
+      </div>
+    <% end %>
+
+    <% if upload %>
+      <div class="form-group">
+        <%= f.select 'batch_type',
+          options_for_select([['Attendees', 1],['Employees', 2]], @batch.batch_type),
+          { prompt: '-- Select Batch Type --' },
           { required: true, class: "form-control" } %>
       </div>
     <% end %>
@@ -20,7 +31,12 @@
       <%= f.file_field 'file', accept: ".xls", required: true %>
       <div class="font-12">
         <span class="ss-red">Must be <strong>.xls</strong> format</span> - 
-        <%= link_to '(Download Template)', download_template_event_path(@event),
+        <%= link_to 'Attendee Template',
+          download_attendee_template_event_path(@event),
+          data: { turbolinks: false } %>
+        /
+        <%= link_to 'Employee Template',
+          download_employee_template_event_path(@event),
           data: { turbolinks: false } %>
       </div>
     <% end %>

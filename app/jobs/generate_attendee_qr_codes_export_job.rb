@@ -1,4 +1,4 @@
-class GenerateQrCodesExportJob < ActiveJob::Base
+class GenerateAttendeeQrCodesExportJob < ActiveJob::Base
   queue_as :default
 
   def perform(event, batch, email)

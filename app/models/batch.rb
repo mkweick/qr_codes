@@ -4,6 +4,7 @@ class Batch < ActiveRecord::Base
   validates :number, presence: true,
     uniqueness: { scope: :event_id, case_sensitive: false}
   validates :description, presence: true
+  validates :batch_type, presence: true
 
   def sorted_batches
     self.order(:created_at)

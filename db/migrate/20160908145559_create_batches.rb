@@ -5,6 +5,7 @@ class CreateBatches < ActiveRecord::Migration[5.0]
       t.string :number,           null: false
       t.string :location
       t.string :description,      null: false
+      t.string :batch_type,       null: false
       t.timestamps null: false
     end
   end

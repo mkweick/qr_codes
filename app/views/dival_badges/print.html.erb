@@ -16,14 +16,12 @@
 </head>
 <body id="print-qr" class="text-center">
   <% if @first_name.size < 9 %>
-    <div id="first-name-under-9"><%= @first_name %></div>
+    <div id="first-name-dival-under-9"><%= @first_name %></div>
   <% else %>
-    <div id="first-name-over-8"><%= @first_name %></div>
+    <div id="first-name-dival-over-8"><%= @first_name %></div>
   <% end %>
   
-  <div id="last-name"><%= @last_name %></div>
-     
-  <div id="account-name-dival"><%= @account_name %></div>
+  <div id="last-name-dival"><%= @last_name %></div>
   
   <img src="<%= @qr_code.to_data_url %>" />
 

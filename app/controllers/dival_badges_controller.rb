@@ -6,7 +6,6 @@ class DivalBadgesController < ApplicationController
   def print
     @first_name = params[:first_name].strip if params[:first_name].present?
     @last_name = params[:last_name].strip if params[:last_name].present?
-    @account_name = params[:account_name].strip if params[:account_name].present?
     title = params[:title].strip if params[:title].present?
     street1 = params[:street1].strip if params[:street1].present?
     street2 = params[:street2].strip if params[:street2].present?
@@ -16,8 +15,8 @@ class DivalBadgesController < ApplicationController
     email = params[:email].strip if params[:email].present?
     phone = params[:phone].strip if params[:phone].present?
 
-    if @first_name && @last_name && @account_name && title &&
-       street1 && city && state && zip_code && email && phone
+    if @first_name && @last_name && title && street1 &&
+       city && state && zip_code && email && phone
 
       # Labels are 2-3/7" wide and 2-7/8" cut length
       # 180 x 180 = 1.25"  /  220 x 220 = 1.50"
@@ -28,7 +27,7 @@ class DivalBadgesController < ApplicationController
         "\n" + title +
         "#{"\n" + email if email}" +
         "#{"\n" + phone if phone}" +
-        "\n\n" + @account_name +
+        "\n\n" + "DiVal Safety Equipment" +
         "#{"\n" + street1 if street1}" +
         "#{"\n" + street2 if street2}" +
         "#{"\n" + city if city}" +
@@ -56,9 +55,8 @@ class DivalBadgesController < ApplicationController
 
       last_name = db.escape(last_name)
       query = db.execute(
-        "SELECT a.FirstName, a.LastName, 'DiVal Safety Equipment' AS \"Name\",
-          c.Line1, c.Line2, c.City, c.StateOrProvince, c.PostalCode,
-          a.EMailAddress1, a.Telephone1
+        "SELECT a.FirstName, a.LastName, c.Line1, c.Line2, c.City,
+          c.StateOrProvince, c.PostalCode, a.EMailAddress1, a.Telephone1
          FROM ContactBase AS a
          JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId
          JOIN CustomerAddressBase AS c ON a.ContactId = c.ParentId

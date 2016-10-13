@@ -1,0 +1,20 @@
+<script>
+  $(document).ready(function() {
+    $('#crm-dival-employee-fn').focus(function() {
+      $('#crm-dival-employee-ln').val("");
+    });
+    $('#crm-dival-employee-ln').focus(function() {
+      $('#crm-dival-employee-fn').val("");
+    });
+
+    $('#reset-form-btn').click(resetDivalEmployeeForm);
+
+    $('#whs-buffalo').click(populateBuffaloWhsAddress);
+    $('#whs-rochester').click(populateRochesterWhsAddress);
+    $('#whs-syracuse').click(populateSyracuseWhsAddress);
+    $('#whs-houston').click(populateHoustonWhsAddress);
+    $('#whs-pittsburgh').click(populatePittsburghWhsAddress);
+    $('#whs-boston').click(populateBostonWhsAddress);
+    $('#whs-florida').click(populateFloridaWhsAddress);
+  });
+</script>

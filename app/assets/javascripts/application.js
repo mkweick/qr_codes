@@ -74,3 +74,59 @@ function resetVendorForm() {
   $('#last_name').val("");
   $('#vendor_name').val("");
 };
+
+function populateBuffaloWhsAddress() {
+  $('#street1').val("1721 Niagara St");
+  $('#street2').val("");
+  $('#city').val("Buffalo");
+  $('#state').val("NY");
+  $('#zip_code').val("14207");
+};
+
+function populateRochesterWhsAddress() {
+  $('#street1').val("845 West Ave");
+  $('#street2').val("Building 7");
+  $('#city').val("Rochester");
+  $('#state').val("NY");
+  $('#zip_code').val("14611");
+};
+
+function populateSyracuseWhsAddress() {
+  $('#street1').val("6179 East Molloy Rd");
+  $('#street2').val("");
+  $('#city').val("East Syracuse");
+  $('#state').val("NY");
+  $('#zip_code').val("13057");
+};
+
+function populateHoustonWhsAddress() {
+  $('#street1').val("3131 Federal Rd");
+  $('#street2').val("");
+  $('#city').val("Pasadena");
+  $('#state').val("TX");
+  $('#zip_code').val("77504");
+};
+
+function populatePittsburghWhsAddress() {
+  $('#street1').val("311 South Central Ave");
+  $('#street2').val("");
+  $('#city').val("Canonsburg");
+  $('#state').val("PA");
+  $('#zip_code').val("15317");
+};
+
+function populateBostonWhsAddress() {
+  $('#street1').val("31 Loring Rd");
+  $('#street2').val("");
+  $('#city').val("Framingham");
+  $('#state').val("MA");
+  $('#zip_code').val("01702");
+};
+
+function populateFloridaWhsAddress() {
+  $('#street1').val("2207 Sterling Rd");
+  $('#street2').val("");
+  $('#city').val("Dania Beach");
+  $('#state').val("FL");
+  $('#zip_code').val("33312");
+};

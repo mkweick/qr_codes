@@ -1,19 +1,6 @@
 <% @page_title = "New DiVal Employee Badge" %>
 
-<script>
-  $(document).ready(function() {
-    
-    $('#crm-dival-employee-fn').focus(function() {
-      $('#crm-dival-employee-ln').val("");
-    });
-
-    $('#crm-dival-employee-ln').focus(function() {
-      $('#crm-dival-employee-fn').val("");
-    });
-
-    $('#reset-form-btn').click(resetDivalEmployeeForm);
-  });
-</script>
+<%= render "new_dival_badge_js" %>
 
 <div class="row">
   <div id="dival-employee-badge-header" class="col-xs-12 col-sm-12 col-md-12">
@@ -47,6 +34,42 @@
       <h4>Search for DiVal Employee</h4>
       <hr class="top-10 bottom-10" />
       <%= render 'search_crm_dival_employees_form' %>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-sm-6 col-md-6">
+    <div class="well text-center">
+      <h4>Populate Warehouse Address</h4>
+      <hr class="top-10 bottom-10" />
+      <div>
+        <button id="whs-buffalo" class="btn btn-sm btn-default whs-btn-sm">
+          Buffalo
+        </button>
+        <button id="whs-rochester" class="btn btn-sm btn-default whs-btn-sm left-10">
+          Rochester
+        </button>
+        <button id="whs-syracuse" class="btn btn-sm btn-default whs-btn-sm left-10">
+          Syracuse
+        </button>
+      </div>
+
+      <div class="top-10">
+        <button id="whs-houston" class="btn btn-sm btn-default whs-btn-lg">
+          Houston
+        </button>
+        <button id="whs-pittsburgh" class="btn btn-sm btn-default whs-btn-lg left-20">
+          Pittsburgh
+        </button>
+      </div>
+
+      <div class="top-10">
+        <button id="whs-boston" class="btn btn-sm btn-default whs-btn-lg">
+          Boston
+        </button>
+        <button id="whs-florida" class="btn btn-sm btn-default whs-btn-lg left-20">
+          Ft Lauderdale
+        </button>
+      </div>
     </div>
   </div>
 </div>

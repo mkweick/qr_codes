@@ -130,3 +130,15 @@ function populateFloridaWhsAddress() {
   $('#state').val("FL");
   $('#zip_code').val("33312");
 };
+
+function showOrRemoveLocations() {
+  if (typeof batchLocationGroup === 'undefined') {
+    window.batchLocationGroup = $('#batch-location-group')[0];
+  }
+
+  if ($("#batch_batch_type option[value='2']").is(':selected')) {
+    $('#batch-location-group').remove();
+  } else {
+    $(batchLocationGroup).insertAfter('#batch-type-group');
+  }
+};

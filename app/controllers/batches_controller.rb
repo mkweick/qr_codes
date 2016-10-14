@@ -78,8 +78,7 @@ class BatchesController < ApplicationController
   end
 
   def generate
-    #email = session[:email] if session[:email]
-    email = 'mweick@provident.com'
+    email = session[:email] if session[:email]
     batch_path = Rails.root.join('events', @event.id.to_s, @batch.number.to_s)
     upload_file = Dir.entries(batch_path).select { |f| f[-4..-1] == '.xls' }.first
 

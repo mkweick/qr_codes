@@ -5,19 +5,28 @@
   html: { class: "batch-form" } do |f| %>
   
   <div class="text-left">
-    <% if multi %>
-      <div class="form-group">
-        <%= f.select 'location', options_for_select(@locations, @batch.location),
-          { prompt: '-- Select Location --' },
+    
+    <% if multi && upload %>
+      <div id="batch-type-group" class="form-group">
+        <%= f.select 'batch_type',
+          options_for_select([['Attendees', 1],['Employees', 2]], 1),
+          { prompt: '-- Select Batch Type --'},
+          { required: true, class: "form-control",
+            onChange: "showOrRemoveLocations()" } %>
+      </div>
+    <% elsif upload %>
+      <div id="batch-type-group" class="form-group">
+        <%= f.select 'batch_type',
+          options_for_select([['Attendees', 1],['Employees', 2]], 1),
+          { prompt: '-- Select Batch Type --'},
           { required: true, class: "form-control" } %>
       </div>
     <% end %>
 
-    <% if upload %>
-      <div class="form-group">
-        <%= f.select 'batch_type',
-          options_for_select([['Attendees', 1],['Employees', 2]], @batch.batch_type),
-          { prompt: '-- Select Batch Type --' },
+    <% if multi %>
+      <div id="batch-location-group" class="form-group">
+        <%= f.select 'location', options_for_select(@locations, @batch.location),
+          { prompt: '-- Select Location --' },
           { required: true, class: "form-control" } %>
       </div>
     <% end %>

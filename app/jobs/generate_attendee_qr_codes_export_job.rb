@@ -31,7 +31,23 @@ class GenerateAttendeeQrCodesExportJob < ActiveJob::Base
 		Spreadsheet.open(workbook) do |book|
 		  book.worksheet(0).map { |row| row.to_a }.drop(1).each do |row|
 		  	next if row[2].blank?
+
 		  	qr_code_filename = "#{sanitize(row[2])}.png"
+
+		  	dups = sheet.column(6).drop(1).select do |filename|
+		  		qr_code_filename == filename.gsub(/-{1}\d+/, '')
+		  	end
+
+		  	if dups.any?
+		  		last_number = dups.last[-5]
+		  		if last_number =~ /\d/
+		  			incrementer = (last_number.to_i + 1).to_s
+		  			qr_code_filename.insert(-5, "-#{incrementer}")
+		  		else
+		  			qr_code_filename.insert(-5, '-1')
+		  		end
+		  	end
+
 
 		  	RQRCode::QRCode.new(
 		  		"MATMSG:TO:leads@divalsafety.com;SUB:#{event.qr_code_email_subject};BODY:" +

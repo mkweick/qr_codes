@@ -78,7 +78,8 @@ class BatchesController < ApplicationController
   end
 
   def generate
-    email = session[:email] if session[:email]
+    #email = session[:email] if session[:email]
+    email = 'mweick@provident.com'
     batch_path = Rails.root.join('events', @event.id.to_s, @batch.number.to_s)
     upload_file = Dir.entries(batch_path).select { |f| f[-4..-1] == '.xls' }.first
 
@@ -125,8 +126,8 @@ class BatchesController < ApplicationController
                 "BATCH_#{@batch.number}_Attendees.zip")
           elsif @batch.batch_type == '2'
             send_file(zip_file, type: 'application/zip',
-              filename: "QR_CODES_#{@event.name}_#{@batch.location}_" +
-                "BATCH_#{@batch.number}_Employees.zip")
+              filename: "QR_CODES_#{@event.name}_BATCH_#{@batch.number}_" +
+                "Employees.zip")
           end
         else
           if @batch.batch_type == '1'
@@ -154,8 +155,8 @@ class BatchesController < ApplicationController
                 "BATCH_#{@batch.number}_Attendees.xls")
           elsif @batch.batch_type == '2'
             send_file(export_file, type: 'application/vnd.ms-excel',
-              filename: "FINAL_#{@event.name}_#{@batch.location}_" +
-                "BATCH_#{@batch.number}_Employees.xls")
+              filename: "FINAL_#{@event.name}_BATCH_#{@batch.number}_" +
+                "Employees.xls")
           end
         else
           if @batch.batch_type == '1'
@@ -271,52 +272,16 @@ class BatchesController < ApplicationController
   end
 
   def employee_upload_has_errors?(event_id, batch_num, filename)
-    duplicates = []
     column_count = 0
     workbook = Rails.root.join('events', event_id, batch_num, filename)
 
     Spreadsheet.open(workbook) do |book|
       sheet = book.worksheet(0)
       column_count = sheet.column_count
-
-      attendees_with_row = sheet.map.with_index do |row, idx|
-        next if row[0].blank? && row[1].blank?
-        row = row.to_a
-        [row[0], row[1], idx + 1]
-      end.compact
-
-      attendees_no_row = attendees_with_row.map { |row| row.take(2) }
-      dups = attendees_no_row.select { |row| attendees_no_row.count(row) > 1 }.uniq
-      dups.each do |dup|
-        duplicates << attendees_with_row.each_index.map do |idx|
-                        attendees_with_row[idx][2] if attendees_with_row[idx][0..1] == dup
-                      end.compact
-      end
     end
 
     if column_count == 10
-      if duplicates.any?
-        error_msg = "Upload failed. Duplicates exist at rows:<br /><ul>"
-        
-        duplicates.each do |dup|
-          last_index = dup.size - 1
-          increment = 1
-          lines = "<li>#{dup[0]}"
-
-          while increment <= last_index
-            lines += " / #{dup[increment]}"
-            increment += 1
-          end
-          lines += "</li>"
-          error_msg += lines
-        end
-        error_msg += "</ul>"
-
-        flash.alert = error_msg
-        return true
-      else
-        return false
-      end
+      return false
     else
       flash.alert = "Spreadsheet has #{column_count} columns. Must have 10 Columns for employees." +
         "<br />#{view_context.link_to 'Download Employee Template',

@@ -27,7 +27,22 @@ class GenerateEmployeeQrCodesExportJob < ActiveJob::Base
     Spreadsheet.open(workbook) do |book|
       book.worksheet(0).map { |row| row.to_a }.drop(1).each do |row|
         next if row[0].blank? && row[1].blank?
+
         qr_code_filename = "#{sanitize(row[0])} #{sanitize(row[1])}.png"
+
+        dups = sheet.column(3).drop(1).select do |filename|
+          qr_code_filename == filename.gsub(/-{1}\d+/, '')
+        end
+
+        if dups.any?
+          last_number = dups.last[-5]
+          if last_number =~ /\d/
+            incrementer = (last_number.to_i + 1).to_s
+            qr_code_filename.insert(-5, "-#{incrementer}")
+          else
+            qr_code_filename.insert(-5, '-1')
+          end
+        end
 
         RQRCode::QRCode.new(
           "MATMSG:TO:;SUB:DIVAL SALES REP REQUEST;BODY:" +

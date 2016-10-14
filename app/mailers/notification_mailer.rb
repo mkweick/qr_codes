@@ -14,8 +14,7 @@ class NotificationMailer < ApplicationMailer
       elsif @batch.batch_type == '2'
         mail(
           to: email,
-          subject: "#{@event.name} - #{@batch.location} - Batch " +
-            "#{@batch.number} - Employees is Ready!"
+          subject: "#{@event.name} - Batch #{@batch.number} - Employees is Ready!"
         )
       end
     else

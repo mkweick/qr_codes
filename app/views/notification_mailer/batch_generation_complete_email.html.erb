@@ -13,7 +13,7 @@
         <% if @batch.batch_type == '1' %>
           <%= "#{@event.name} - #{@batch.location} - Batch #{@batch.number} - Attendees" %>
         <% elsif @batch.batch_type == '2' %>
-          <%= "#{@event.name} - #{@batch.location} - Batch #{@batch.number} - Employees" %>
+          <%= "#{@event.name} - Batch #{@batch.number} - Employees" %>
         <% end %>
       <% else %>
         <% if @batch.batch_type == '1' %>

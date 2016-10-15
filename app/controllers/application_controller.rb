@@ -18,7 +18,10 @@ class ApplicationController < ActionController::Base
   end
 
   def require_user
-    log_in_message unless logged_in?
+    respond_to do |format|
+      format.html { log_in_message_html unless logged_in? }
+      format.js { log_in_message_js unless logged_in? }
+    end
   end
 
   def require_user_event_redirect
@@ -32,9 +35,14 @@ class ApplicationController < ActionController::Base
     access_denied_message unless admin?
   end
 
-  def log_in_message
+  def log_in_message_html
     flash.alert = "Please log in."
     redirect_to login_path
+  end
+
+  def log_in_message_js
+    flash.alert = "Please log in."
+    render :js => "window.location = '#{login_path}'"
   end
 
   def access_denied_message

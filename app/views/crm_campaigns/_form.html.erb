@@ -1,0 +1,11 @@
+<%= form_tag search_event_crm_campaigns_path(@event), method: 'get',
+  remote: true, class: "text-center crm-campaign-form" do |f| %>
+
+  <div class="form-group">
+    <%= text_field_tag 'name', nil, placeholder: "CRM Campaign Name..",
+      autofocus: 'autofocus', required: true, class: "form-control" %>
+  </div>
+
+  <%= submit_tag btn_text, id: "crm-campaign-submit-btn",
+    class: "btn btn-sm btn-primary" %>
+<% end %>

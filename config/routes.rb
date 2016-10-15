@@ -34,6 +34,12 @@ Rails.application.routes.draw do
       patch 'activate'
     end
 
+    resources :crm_campaigns, path: 'crm-campaigns', only: [:create, :destroy] do
+      collection do
+        get 'search'
+      end
+    end
+
     resources :batches, except: [:index, :new, :show] do
       member do
         get 'download'

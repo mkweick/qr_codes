@@ -1,0 +1,30 @@
+var cancelBtn = "<a id=\"crm-campaign-cancel-btn\"";
+cancelBtn += "class=\"btn btn-sm btn-danger left-10\">Cancel</a>";
+
+var results = "";
+
+<% if @results.any? %>
+  results += "<div id=\"crm-campaign-results\" class=\"list-group\">";
+  <% @results.each do |row| %>
+    <% name = row[0].strip if row[0] %>
+    <% code = row[1].strip if row[1] %>
+
+    results += "<%= j render 'create_campaign_link', name: name, code: code %>"
+  <% end %>
+  results += "</div>";
+<% else %>
+  results += "<h4 id=\"crm-campaign-no-results\" class=\"text-center top-20\">";
+  <% if params[:name].present? %>
+    results += "No results found.";
+  <% else %>
+    results += "You didn't search anything.";
+  <% end %>
+  results += "</h4>";
+<% end %>
+
+clearCrmCampaignSearch();
+
+$(cancelBtn).insertAfter('#crm-campaign-submit-btn');
+$(results).insertAfter('.crm-campaign-form');
+
+$('#crm-campaign-cancel-btn').click(clearCrmCampaignSearch);

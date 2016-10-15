@@ -48,6 +48,7 @@ hr { border-top: 1px solid #cccccc; }
 .pad-top-15 { padding-top: 15px; }
 .pad-bottom-10 { padding-bottom: 10px; }
 
+.font-10 { font-size: 10px; }
 .font-12 { font-size: 12px; }
 .font-17 { font-size: 17px; }
 .font-20 { font-size: 20px; }
@@ -84,7 +85,7 @@ hr { border-top: 1px solid #cccccc; }
   border-bottom: 1px solid #ddd;
 }
 
-#dival-employee-badge-header, #vendor-badge-header {
+#dival-employee-badge-header, #vendor-badge-header, #edit-event-header {
   padding-bottom: 10px;
   margin-bottom: 20px;
   border-bottom: 1px solid #ddd;
@@ -106,7 +107,7 @@ hr { border-top: 1px solid #cccccc; }
 	margin-bottom: 0;
 }
 
-#dival-employee-badge-title, #vendor-badge-title {
+#dival-employee-badge-title, #vendor-badge-title, #edit-event-title {
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
@@ -191,6 +192,16 @@ hr { border-top: 1px solid #cccccc; }
 	margin-bottom: 0;
 }
 
+#event-crm-campaigns .list-group-item {
+	padding: 8px 10px;
+}
+
+#crm-campaign-results {
+	margin-top: 20px;
+	margin-bottom: 0;
+}
+
+#crm-campaign-results .list-group-item,
 #crm-contact-results .list-group-item,
 #crm-dival-employee-results .list-group-item {
 	padding: 8px 10px;
@@ -204,8 +215,8 @@ hr { border-top: 1px solid #cccccc; }
 	cursor: pointer;
 }
 
-#crm-contact-results a div, #crm-account-results a div,
-#crm-dival-employee-results a div {
+#crm-campaign-results a div, #crm-contact-results a div,
+#crm-account-results a div, #crm-dival-employee-results a div {
 	display: none;
 }
 

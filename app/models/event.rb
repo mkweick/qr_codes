@@ -1,4 +1,5 @@
 class Event < ActiveRecord::Base
+  has_many :crm_campaigns, dependent: :destroy
   has_many :batches, dependent: :destroy
   has_many :on_site_attendees, dependent: :destroy
 

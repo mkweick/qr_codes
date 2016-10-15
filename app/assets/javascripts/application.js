@@ -5,6 +5,14 @@
 //= require bootstrap
 //= require_tree .
 
+function clearCrmCampaignSearch() {
+  $('#name').val("");
+  
+  if ($('#crm-campaign-results')) { $('#crm-campaign-results').remove(); };
+  if ($('#crm-campaign-no-results')) { $('#crm-campaign-no-results').remove(); };
+  if ($('#crm-campaign-cancel-btn')) { $('#crm-campaign-cancel-btn').remove(); };
+};
+
 function clearCrmContactAndAccountSearch() {
   $('#crm-contact-ln').val("");
   $('#crm-contact-an').val("");

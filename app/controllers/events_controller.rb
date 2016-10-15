@@ -150,6 +150,9 @@ class EventsController < ApplicationController
     @years = Time.now.year..(Time.now.year + 2)
     @type = event_name.join(' ')
     @types = Type.sorted_types.pluck(:name)
+
+    @campaign = @event.crm_campaigns.new
+    @campaigns = @event.crm_campaigns.order(:name)
   end
 
   def set_archives_info

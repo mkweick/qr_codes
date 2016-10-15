@@ -12,7 +12,9 @@
   <div id="event-title-on-site" class="col-xs-12 col-sm-12 col-md-12">
     <h2 id="event-name-on-site" class="pull-left"><%= @event.name %></h2>
     <%= link_to 'All Badges', event_on_site_attendees_path(@event),
-      class: "btn btn-sm btn-success pull-right" %>
+      class: "btn btn-sm btn-primary pull-right" %>
+    <%= link_to 'Check In', new_event_check_in_path(@event),
+      class: "btn btn-sm btn-success pull-right right-10" %>
   </div>
 </div>
 

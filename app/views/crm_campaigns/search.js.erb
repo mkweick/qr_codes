@@ -9,7 +9,7 @@ var results = "";
     <% name = row[0].strip if row[0] %>
     <% code = row[1].strip if row[1] %>
 
-    results += "<%= j render 'create_campaign_link', name: name, code: code %>"
+    results += "<%= j render 'create_campaign_link', name: name, code: code %>";
   <% end %>
   results += "</div>";
 <% else %>

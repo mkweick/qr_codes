@@ -43,7 +43,7 @@ var results = "";
   results += "<h4 id=\"crm-contact-no-results\" class=\"text-center top-20\">";
   <% if params[:last_name].present? || params[:account_name].present? %>
     <% if @account_length_error %>
-      results += "3 characters required for account search."
+      results += "3 characters required for account search.";
     <% else %>
       results += "No results found.";
     <% end %>

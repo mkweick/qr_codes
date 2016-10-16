@@ -20,6 +20,12 @@ hr { border-top: 1px solid #cccccc; }
 .list-group a { color: #337ab7; }
 .list-group a:hover { color: #23527c; }
 
+a.list-group-item:after {
+	display: block;
+	clear: both;
+	content: "";
+}
+
 .margin-0 { margin: 0; }
 .top-0 { margin-top: 0; }
 .top-2 { margin-top: 2px; }
@@ -98,7 +104,7 @@ hr { border-top: 1px solid #cccccc; }
 	clear: both;
 }
 
-#event-name {
+#event-name, #edit-event-title {
 	margin-top: 10px;
 	margin-bottom: 0;
 }
@@ -108,7 +114,7 @@ hr { border-top: 1px solid #cccccc; }
 	margin-bottom: 0;
 }
 
-#dival-employee-badge-title, #vendor-badge-title, #edit-event-title {
+#dival-employee-badge-title, #vendor-badge-title {
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
@@ -400,7 +406,7 @@ hr { border-top: 1px solid #cccccc; }
 }
 
 @media (max-width: 725px) {
-	#event-name { font-size: 24px; }
+	#event-name, #edit-event-title { font-size: 24px; }
 }
 
 @media (max-width: 700px) {
@@ -415,6 +421,33 @@ hr { border-top: 1px solid #cccccc; }
 	}
 }
 
+@media (max-width: 470px) {
+	#dival-employee-badge-title, #event-name-on-site,
+	#event-name-check-in {
+		font-size: 25px;
+	}
+}
+
 @media (max-width: 440px) {
 	#nav-title-text { display: none; }
+}
+
+@media (max-width: 405px) {
+	#badge-type-radio label { font-size: 12px; }
+	#badge-type-radio label + label { margin-left: 15px; }
+	input[type="radio"] { margin: 2px 0 0; }
+
+	#dival-employee-badge-title, #event-name-on-site,
+	#event-name-check-in {
+		font-size: 23px;
+	}
+}
+
+@media (max-width: 373px) {
+	#new-attendee-title { font-size: 18px; }
+
+	#dival-employee-badge-title, #event-name-on-site,
+	#event-name-check-in {
+		font-size: 20px;
+	}
 }

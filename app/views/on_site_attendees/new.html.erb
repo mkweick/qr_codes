@@ -11,30 +11,29 @@
 <div class="row">
   <div id="event-title-on-site" class="col-xs-12 col-sm-12 col-md-12">
     <h2 id="event-name-on-site" class="pull-left"><%= @event.name %></h2>
-    <%= link_to 'All Badges', event_on_site_attendees_path(@event),
-      class: "btn btn-sm btn-primary pull-right" %>
-    <% if @event_has_campaigns %>
-      <%= link_to 'Check In', new_event_check_in_path(@event),
-        class: "btn btn-sm btn-success pull-right right-10" %>
-    <% end %>
+    <div id="event-controls" class="pull-right">
+      <% if @event_has_campaigns %>
+        <%= link_to 'Check In', new_event_check_in_path(@event),
+          class: "btn btn-sm btn-success right-5" %>
+      <% end %>
+      <%= link_to 'All Badges', event_on_site_attendees_path(@event),
+        class: "btn btn-sm btn-primary" %>
+    </div>
   </div>
 </div>
 
 <div class="row">
   <div class="col-xs-12 col-sm-6 col-md-6">
     <%= render 'errors', obj: @attendee %>
-
-    <div class="row">
-      <div class="well">
-        <h3 class="top-15 text-center">
-          New Attendee Badge
-          <a id="reset-form-btn" class="btn btn-xs btn-danger pull-right">
-            Reset
-          </a>
-        </h3>
-        <hr class="top-10 bottom-10" />
-        <%= render 'form', btn_text: 'Create & Print' %>
-      </div>
+    <div class="well">
+      <h3 id="new-attendee-title" class="top-15 text-center">
+        New Attendee Badge
+        <a id="reset-form-btn" class="btn btn-xs btn-danger pull-right">
+          Reset
+        </a>
+      </h3>
+      <hr class="top-10 bottom-10" />
+      <%= render 'form', btn_text: 'Create & Print' %>
     </div>
   </div>
 

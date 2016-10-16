@@ -3,12 +3,14 @@
 <div class="row">
   <div id="event-title-on-site" class="col-xs-12 col-sm-12 col-md-12">
     <h2 id="event-name-on-site" class="pull-left"><%= @event.name %></h2>
-    <%= link_to 'New Badge', new_event_on_site_attendee_path(@event),
-      class: "btn btn-sm btn-primary pull-right" %>
-    <% if @event_has_campaigns %>
-      <%= link_to 'Check In', new_event_check_in_path(@event),
-        class: "btn btn-sm btn-success pull-right right-10" %>
-    <% end %>
+    <div id="event-controls" class="pull-right">
+      <% if @event_has_campaigns %>
+        <%= link_to 'Check In', new_event_check_in_path(@event),
+          class: "btn btn-sm btn-success right-5" %>
+      <% end %>
+      <%= link_to 'New Badge', new_event_on_site_attendee_path(@event),
+        class: "btn btn-sm btn-primary" %>
+    </div>
   </div>
 </div>
 

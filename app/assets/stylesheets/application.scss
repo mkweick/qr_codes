@@ -447,11 +447,17 @@ li.list-group-item:after, a.list-group-item:after {
 	}
 }
 
+@media (max-width: 650px) {
+	#no-on-site-badges-msg { font-size: 18px; }
+}
+
 @media (max-width: 470px) {
 	#dival-employee-badge-title, #event-name-on-site,
 	#event-name-check-in {
 		font-size: 25px;
 	}
+
+	#no-on-site-badges-msg { font-size: 14px; }
 }
 
 @media (max-width: 440px) {
@@ -476,6 +482,8 @@ li.list-group-item:after, a.list-group-item:after {
 	#event-name-check-in {
 		font-size: 20px;
 	}
+
+	#no-on-site-badges-msg { font-size: 11px; }
 }
 
 @media (max-width: 360px) {
@@ -484,4 +492,11 @@ li.list-group-item:after, a.list-group-item:after {
 
 @media (max-width: 340px) {
 	#no-campaigns-assigned-msg { font-size: 14px; }
+
+	#dival-whs-first-row {
+		margin-left: -7px;
+		width: 105%;
+	}
+
+	#dival-whs-first-row button:nth-of-type(1n+2) { margin-left: 5px; }
 }

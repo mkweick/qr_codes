@@ -14,7 +14,7 @@ class CrmCampaignsController < ApplicationController
       @campaign = @event.crm_campaigns.new(name: name, code: code)
 
       if @campaign.save
-        flash.notice = "CRM Campaign created."
+        flash.notice = "CRM Campaign assigned."
         redirect_to edit_event_path(@event)
       else
         set_event_form_info
@@ -29,7 +29,7 @@ class CrmCampaignsController < ApplicationController
   def destroy
     if @campaign
       if @campaign.destroy
-        flash.notice = "CRM Campaign deleted."
+        flash.notice = "CRM Campaign unassigned."
       else
         flash.alert = "CRM Campaign can't be deleted. Contact IT."
       end

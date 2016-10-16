@@ -244,7 +244,7 @@ li.list-group-item:after, a.list-group-item:after {
 
 .table tbody tr td { padding: 0; }
 
-.table tbody tr td a {
+.table tbody tr td a, .table tbody tr td div {
 	display: block;
 	padding: 8px;
 }
@@ -263,7 +263,6 @@ table#on-site-badges {
 	border-radius: 5px;
 }
 
-#check-in-results table tbody tr td.no-link { padding: 8px; }
 #check-in-results tbody td a { color: #000000; }
 
 #check-in-results tbody tr.not-attended {
@@ -448,6 +447,13 @@ table#on-site-badges {
 	}
 
 	#no-on-site-badges-msg { font-size: 18px; }
+
+	#check-in-results table tbody tr td a,
+	#check-in-results table tbody tr td div,
+	#check-in-results table thead tr th {
+		padding: 10px 8px;
+		font-size: 12px;
+	}
 }
 
 @media (max-width: 574px) {
@@ -455,6 +461,15 @@ table#on-site-badges {
 	table#on-site-badges thead tr th {
 		padding: 10px 8px;
 		font-size: 12px;
+	}
+}
+
+@media (max-width: 545px) {
+	#check-in-results table tbody tr td a,
+	#check-in-results table tbody tr td div,
+	#check-in-results table thead tr th {
+		padding: 12px 8px;
+		font-size: 10px;
 	}
 }
 
@@ -477,14 +492,6 @@ table#on-site-badges {
 
 @media (max-width: 440px) {
 	#nav-title-text { display: none; }
-}
-
-@media (max-width: 420px) {
-	table#on-site-badges tbody tr td a,
-	table#on-site-badges thead tr th {
-		padding: 12px 8px;
-		font-size: 8px;
-	}
 }
 
 @media (max-width: 405px) {

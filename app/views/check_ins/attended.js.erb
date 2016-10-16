@@ -1,0 +1,12 @@
+<% if @attended %>
+  results = "<tr id=\"<%= @activity_id %>\" class=\"attended\">";
+  results += "<td class=\"no-link\"><%= @first_name %></td>";
+  results += "<td class=\"no-link\"><%= @last_name %></td>";
+  results += "<td class=\"no-link\"><%= @account_name %></td>";
+  results += "<td class=\"text-center\"><%= j link_to 'Attended', not_attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{@first_name} #{@last_name} as Not Attended?" } %></td>";
+  results += "</tr>";
+
+  $('tr#<%= @activity_id %>').replaceWith(results);
+<% else %>
+  alert("There was an issue trying to set <%= @first_name %> <%= @last_name %> to Attended. Please try again. Contact IT if issue persists.");
+<% end %>

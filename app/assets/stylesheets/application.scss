@@ -46,6 +46,7 @@ hr { border-top: 1px solid #cccccc; }
 .pad-0 { padding: 0; }
 .pad-top-10 { padding-top: 10px; }
 .pad-top-15 { padding-top: 15px; }
+.pad-top-20 { padding-top: 20px; }
 .pad-bottom-10 { padding-bottom: 10px; }
 
 .font-10 { font-size: 10px; }
@@ -79,7 +80,7 @@ hr { border-top: 1px solid #cccccc; }
 	border-bottom: 1px solid #ddd;
 }
 
-#event-title-on-site {
+#event-title-on-site, #event-title-check-in {
   padding-bottom: 10px;
   margin-bottom: 10px;
   border-bottom: 1px solid #ddd;
@@ -102,7 +103,7 @@ hr { border-top: 1px solid #cccccc; }
 	margin-bottom: 0;
 }
 
-#event-name-on-site {
+#event-name-on-site, #event-name-check-in {
 	margin-top: 0;
 	margin-bottom: 0;
 }
@@ -187,7 +188,9 @@ hr { border-top: 1px solid #cccccc; }
 	font-weight: bold;
 }
 
-.crm-contact-form .form-group, .crm-account-form .form-group,
+.crm-contact-form .form-group,
+.crm-account-form .form-group,
+#check-in-form .form-group,
 .crm-dival-employee-form .form-group {
 	margin-bottom: 0;
 }
@@ -245,6 +248,8 @@ hr { border-top: 1px solid #cccccc; }
 	padding: 0;
 	margin: 8px;
 }
+
+#check-in-results table tbody tr td.no-link { padding: 8px; }
 
 #print-qr {
 	margin: 0 auto;

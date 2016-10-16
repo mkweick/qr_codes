@@ -13,6 +13,16 @@ function clearCrmCampaignSearch() {
   if ($('#crm-campaign-cancel-btn')) { $('#crm-campaign-cancel-btn').remove(); };
 };
 
+function clearCheckInSearch() {
+  $('#check-in-fn').val("");
+  $('#check-in-ln').val("");
+  $('#check-in-an').val("");
+  
+  if ($('#check-in-results')) { $('#check-in-results').remove(); };
+  if ($('#check-in-no-results')) { $('#check-in-no-results').remove(); };
+  if ($('#check-in-cancel-btn')) { $('#check-in-cancel-btn').remove(); };
+};
+
 function clearCrmContactAndAccountSearch() {
   $('#crm-contact-ln').val("");
   $('#crm-contact-an').val("");
@@ -60,6 +70,13 @@ function resetNewAttendeeForm() {
     return this.getAttribute('checked') == 'checked';
   });
   $('div.form-group').removeClass("has-error");
+};
+
+function resetCheckInForm() {
+  if ($('div#flash-msg')) { $('div#flash-msg').remove(); };
+  $('#check-in-fn').val("");
+  $('#check-in-ln').val("");
+  $('#check-in-an').val("");
 };
 
 function resetDivalEmployeeForm() {

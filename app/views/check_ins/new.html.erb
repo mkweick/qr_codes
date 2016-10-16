@@ -1,0 +1,39 @@
+<% @page_title = "Check In - #{@event.name}" %>
+
+<script>
+  $(document).ready(function() {
+    $('#check-in-fn').focus(function() {
+      $('#check-in-ln').val("");
+      $('#check-in-an').val("");
+    });
+    $('#check-in-ln').focus(function() {
+      $('#check-in-fn').val("");
+      $('#check-in-an').val("");
+    });
+    $('#check-in-an').focus(function() {
+      $('#check-in-fn').val("");
+      $('#check-in-ln').val("");
+    });
+    $('#reset-form-btn').click(resetCheckInForm);
+  });
+</script>
+
+<div class="row">
+  <div id="event-title-check-in" class="col-xs-12 col-sm-12 col-md-12">
+    <h2 id="event-name-check-in" class="pull-left">
+      <%= @event.name %> - Check In
+    </h2>
+    <%= link_to 'New Badge', new_event_on_site_attendee_path(@event),
+      class: "btn btn-sm btn-primary pull-right" %>
+  </div>
+</div>
+
+<div id="check-in-form" class="row">
+  <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+    <div class="well pad-bottom-10 text-center">
+      <h4>Search Event Registrations</h4>
+      <hr class="top-10 bottom-10" />
+      <%= render 'form' %>
+    </div>
+  </div>
+</div>

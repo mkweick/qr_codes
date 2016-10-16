@@ -40,6 +40,15 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :check_ins, path: 'check-in', only: [:new] do
+      collection do
+        get 'search'
+        
+        patch 'attended'
+        patch 'not-attended'
+      end
+    end
+
     resources :batches, except: [:index, :new, :show] do
       member do
         get 'download'

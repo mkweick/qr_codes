@@ -1,0 +1,29 @@
+<%= form_tag search_event_check_ins_path(@event),
+  method: 'get', remote: true do %>
+
+  <div class="form-group">
+    <%= text_field_tag 'first_name', params[:first_name],
+      placeholder: "First Name...", id: "check-in-fn",
+      class: "form-control" %>
+  </div>
+
+  <h5 class="top-5 bottom-5">OR</h5>
+
+  <div class="form-group">
+    <%= text_field_tag 'last_name', params[:last_name],
+      placeholder: "Last Name...", autofocus: true,
+      id: "check-in-ln", class: "form-control" %>
+  </div>
+
+  <h5 class="top-5 bottom-5">OR</h5>
+
+  <div class="form-group">
+    <%= text_field_tag 'account_name', params[:account_name],
+      placeholder: "Account Name...", id: "check-in-an",
+      class: "form-control" %>
+  </div>
+  
+  <%= submit_tag 'Search', id: "check-in-submit-btn",
+    class: "btn btn-sm btn-primary top-10",
+    data: { disable_with: "Loading..." } %>
+<% end %>

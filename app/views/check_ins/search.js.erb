@@ -1,0 +1,102 @@
+var cancelBtn = "<a id=\"check-in-cancel-btn\"";
+cancelBtn += "class=\"btn btn-sm btn-danger top-10 left-10\">Cancel</a>";
+
+var results = "";
+
+<% if @results.any? %>
+  results += "<div id=\"check-in-results\" class=\"row\">";
+  results += "<div class=\"col-xs-12 col-sm-12 col-md-10 col-md-offset-1\">";
+  results += "<table width=\"100%\" class=\"table table-hover text-left\">";
+  results += "<thead><tr class=\"th-row\">";
+  results += "<th width=\"19%\">First Name</th>";
+  results += "<th width=\"22%\">Last Name</th>";
+  results += "<th width=\"41%\">Account Name</th>";
+  results += "<th width=\"18%\" class=\"text-center\">Status</th>";
+  results += "</tr></thead><tbody>";
+
+  <% @results.each do |row| %>
+    <% activity_id = row[0] || nil %>
+    <% response_code = row[1].to_s || nil %>
+    <% contact_first_name = row[2] || nil %>
+    <% contact_last_name = row[3] || nil %>
+    <% contact_account_name = row[4] || nil %>
+    <% first_name = row[5] || nil %>
+    <% last_name = row[6] || nil %>
+    <% account_name = row[7] || nil %>
+
+    <% if contact_first_name && !first_name %>
+      <% if response_code == '100000004' %>
+        results += "<tr id=\"<%= activity_id %>\" class=\"not-attended\"><td>";
+        results += "<%= j link_to contact_first_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %>";
+        results += "</td><td>";
+        results += "<%= j link_to contact_last_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %>";
+        results += "</td><td>";
+        results += "<%= j link_to contact_account_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %>";
+        results += "</td><td class=\"text-center\">";
+        results += "<%= j link_to 'Not Attended', attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %>";
+        results += "</td></tr>";
+      <% elsif response_code == '100000003' %>
+        results += "<tr id=\"<%= activity_id %>\" class=\"attended\">";
+        results += "<td class=\"no-link\"><%= contact_first_name %></td>";
+        results += "<td class=\"no-link\"><%= contact_last_name %></td>";
+        results += "<td class=\"no-link\"><%= contact_account_name %></td>";
+        results += "<td class=\"text-center\"><%= j link_to 'Attended', not_attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{contact_first_name} #{contact_last_name} as Not Attended?" } %></td>";
+        results += "</tr>";
+      <% end %>
+
+    <% elsif first_name && !contact_first_name %>
+      <% if response_code == '100000004' %>
+        results += "<tr id=\"<%= activity_id %>\" class=\"not-attended\"><td>";
+        results += "<%= j link_to first_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %>";
+        results += "</td><td>";
+        results += "<%= j link_to last_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %>";
+        results += "</td><td>";
+        results += "<%= j link_to account_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %>";
+        results += "</td><td class=\"text-center\">";
+        results += "<%= j link_to 'Not Attended', attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %>";
+        results += "</td></tr>";
+      <% elsif response_code == '100000003' %>
+        results += "<tr id=\"<%= activity_id %>\" class=\"attended\">";
+        results += "<td class=\"no-link\"><%= first_name %></td>";
+        results += "<td class=\"no-link\"><%= last_name %></td>";
+        results += "<td class=\"no-link\"><%= account_name %></td>";
+        results += "<td class=\"text-center\"><%= j link_to 'Attended', not_attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{first_name} #{last_name} as Not Attended?" } %></td>";
+        results += "</tr>";
+      <% end %>
+    <% end %>
+  <% end %>
+  results += "</tbody></table></div></div>";
+<% else %>
+  results += "<div id=\"check-in-no-results\" class=\"row\">";
+  results += "<div class=\"col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3\">";
+  results += "<div class=\"well text-center pad-top-20\">";
+  results += "<h4>";
+  <% if params[:first_name].present? || params[:last_name].present? || params[:account_name].present? %>
+    <% if @account_length_error %>
+      results += "3 characters required for account search.";
+    <% else %>
+      results += "No results found.";
+    <% end %>
+  <% else %>
+    results += "You didn't search anything.";
+  <% end %>
+  results += "</h4>";
+  results += "</div></div></div>"
+<% end %>
+
+clearCheckInSearch();
+
+$(cancelBtn).insertAfter('#check-in-submit-btn');
+$('#check-in-cancel-btn').click(clearCheckInSearch);
+
+$(results).insertAfter('#check-in-form');
+
+$('#check-in-results tbody tr.not-attended').click(function() {
+  $(this).find('td a').contents().unwrap();
+  $(this).find('td').addClass('no-link');
+});
+
+$('#check-in-results tbody tr.attended td:nth-of-type(4)').click(function() {
+  $(this).find('a').contents().unwrap();
+  $(this).addClass('no-link');
+});

@@ -256,7 +256,27 @@ a.list-group-item:after {
 	margin: 8px;
 }
 
+#check-in-results table {
+	border-collapse: separate;
+	border: 1px solid #dddddd;
+	border-radius: 5px;
+}
+
 #check-in-results table tbody tr td.no-link { padding: 8px; }
+#check-in-results tbody td a { color: #000000; }
+
+#check-in-results tbody tr.not-attended {
+	background-color: rgba(255, 127, 127, 0.1);
+}
+
+#check-in-results tbody tr.attended {
+	background-color: rgba(152, 251, 152, 0.1);
+}
+
+#check-in-results tbody tr.not-attended:hover,
+#check-in-results tbody tr.attended:hover {
+	background-color: none;
+}
 
 #print-qr {
 	margin: 0 auto;

@@ -426,6 +426,11 @@ a.list-group-item:after {
 	}
 }
 
+@media (min-width: 768px) and (max-width: 991px) {
+	#badge-type-radio label { font-size: 14px; }
+	#badge-type-radio label + label { margin-left: 20px; }
+}
+
 @media (max-width: 725px) {
 	#event-name, #edit-event-title { font-size: 24px; }
 }

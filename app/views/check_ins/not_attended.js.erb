@@ -1,13 +1,10 @@
 <% if @not_attended %>
-  results = "<tr id=\"<%= @activity_id %>\" class=\"not-attended\"><td>";
-  results += "<%= j link_to @first_name, attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %>";
-  results += "</td><td>";
-  results += "<%= j link_to @last_name, attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %>";
-  results += "</td><td>";
-  results += "<%= j link_to @account_name, attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %>";
-  results += "</td><td class=\"text-center\">";
-  results += "<%= j link_to 'Not Attended', attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %>";
-  results += "</td></tr>";
+  results = "<tr id=\"<%= @activity_id %>\" class=\"not-attended\">";
+  results += "<td><%= j link_to @first_name, attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %></td>";
+  results += "<td><%= j link_to @last_name, attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %></td>";
+  results += "<td><%= j link_to @account_name, attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %></td>";
+  results += "<td class=\"text-center\"><%= j link_to 'Not Attended', attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %></td>";
+  results += "</tr>";
 
   $('tr#<%= @activity_id %>').replaceWith(results);
 <% else %>

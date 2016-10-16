@@ -81,7 +81,11 @@ var results = "";
 clearCheckInSearch();
 
 $(cancelBtn).insertAfter('#check-in-submit-btn');
-$('#check-in-cancel-btn').click(clearCheckInSearch);
+
+$('#check-in-cancel-btn').click(function() {
+  clearCheckInSearch();
+  $('#check-in-ln').focus();
+});
 
 $(results).insertAfter('#check-in-form');
 

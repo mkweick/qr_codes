@@ -2,6 +2,7 @@ class CheckInsController < ApplicationController
   before_action :require_user
   before_action :set_event
   before_action :require_active_event
+  before_action :require_assigned_crm_campaigns
 
   def new; end
 
@@ -170,5 +171,12 @@ class CheckInsController < ApplicationController
 
   def set_event
     @event = Event.find(params[:event_id]) if params[:event_id]
+  end
+
+  def require_assigned_crm_campaigns
+    unless @event.crm_campaigns.any?
+      flash.alert = "Check-In not available. Event has no assigned CRM Campaigns."
+      redirect_to root_path
+    end
   end
 end

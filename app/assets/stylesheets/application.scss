@@ -20,7 +20,7 @@ hr { border-top: 1px solid #cccccc; }
 .list-group a { color: #337ab7; }
 .list-group a:hover { color: #23527c; }
 
-a.list-group-item:after {
+li.list-group-item:after, a.list-group-item:after {
 	display: block;
 	clear: both;
 	content: "";
@@ -476,4 +476,12 @@ a.list-group-item:after {
 	#event-name-check-in {
 		font-size: 20px;
 	}
+}
+
+@media (max-width: 360px) {
+	#dival-employee-address-msg { font-size: 10px; }
+}
+
+@media (max-width: 340px) {
+	#no-campaigns-assigned-msg { font-size: 14px; }
 }

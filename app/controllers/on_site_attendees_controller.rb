@@ -5,10 +5,12 @@ class OnSiteAttendeesController < ApplicationController
 
   def index
     @attendees = @event.on_site_attendees.order("lower(last_name)")
+    @event_has_campaigns = @event.crm_campaigns.any?
   end
 
   def new
     @attendee = @event.on_site_attendees.new
+    @event_has_campaigns = @event.crm_campaigns.any?
   end
 
   def create

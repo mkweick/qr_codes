@@ -3,10 +3,15 @@
   results += "<td><%= j link_to @first_name, attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %></td>";
   results += "<td><%= j link_to @last_name, attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %></td>";
   results += "<td><%= j link_to @account_name, attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %></td>";
-  results += "<td class=\"text-center\"><%= j link_to 'Not Attended', attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %></td>";
+  results += "<td class=\"text-center\"><%= j link_to 'No', attended_event_check_ins_path(@event, activity_id: @activity_id, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %></td>";
   results += "</tr>";
 
   $('tr#<%= @activity_id %>').replaceWith(results);
+
+  $('#<%= @activity_id %>').click(function() {
+    $(this).find('td a').contents().unwrap().wrap('<div/>');
+  });
+  
 <% else %>
   alert("There was an issue trying to set <%= @first_name %> <%= @last_name %> back to Not Attended. Please try again. Contact IT if issue persists.");
 <% end %>

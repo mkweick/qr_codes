@@ -2,7 +2,9 @@
 
 <div class="row">
   <div id="event-title-on-site" class="col-xs-12 col-sm-12 col-md-12">
-    <h2 id="event-name-on-site" class="pull-left"><%= @event.name %></h2>
+    <h2 id="event-name-on-site" class="pull-left">
+      <%= "#{@event.name} - All Badges" %>
+    </h2>
     <div id="event-controls" class="pull-right">
       <% if @event_has_campaigns %>
         <%= link_to 'Check In', new_event_check_in_path(@event),
@@ -17,13 +19,13 @@
 <div class="row">
   <% if @attendees.any? %>
     <div class="col-xs-12 col-sm-12 col-md-12">
-      <table width="100%" class="table table-hover text-left">
+      <table width="100%" id="on-site-badges" class="table table-hover text-left">
         <thead>
           <tr class="th-row">
-            <th width="20%">First Name</th>
-            <th width="20%">Last Name</th>
-            <th width="41%">Account Name</th>
-            <th width="15%" class="badge-type-col">Badge Type</th>
+            <th width="17%">First Name</th>
+            <th width="17%">Last Name</th>
+            <th width="47%">Account</th>
+            <th width="15%" class="badge-type-col text-center">Badge Type</th>
             <th width="4%"></th>
           </tr>
         </thead>
@@ -45,7 +47,7 @@
                   <%= attendee.account_name %>
                 <% end %>
               </td>
-              <td class="badge-type-col">
+              <td class="badge-type-col text-center">
                 <%= link_to edit_event_on_site_attendee_path(@event, attendee) do %>
                   <% if attendee.badge_type == 'NEW' %>
                     New

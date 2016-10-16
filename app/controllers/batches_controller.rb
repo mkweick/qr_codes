@@ -2,6 +2,7 @@ class BatchesController < ApplicationController
   before_action :require_user
   before_action :require_admin
   before_action :set_event
+  before_action :require_active_event
   before_action :set_batch, except: [:create]
 
   def create

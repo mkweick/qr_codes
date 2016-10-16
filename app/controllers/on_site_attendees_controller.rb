@@ -1,6 +1,7 @@
 class OnSiteAttendeesController < ApplicationController
   before_action :require_user
   before_action :set_event
+  before_action :require_active_event
   before_action :set_attendee, only: [:show, :edit, :update, :destroy]
 
   def index

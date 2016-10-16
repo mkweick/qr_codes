@@ -2,6 +2,7 @@ class CrmCampaignsController < ApplicationController
   before_action :require_user
   before_action :require_admin
   before_action :set_event
+  before_action :require_active_event
   before_action :set_crm_campaign, except: [:create, :search]
 
 

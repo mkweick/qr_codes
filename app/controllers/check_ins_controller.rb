@@ -1,6 +1,7 @@
 class CheckInsController < ApplicationController
   before_action :require_user
   before_action :set_event
+  before_action :require_active_event
 
   def new; end
 

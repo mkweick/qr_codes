@@ -50,6 +50,13 @@ class ApplicationController < ActionController::Base
     redirect_to root_path
   end
 
+  def require_active_event
+    unless @event.status == '1'
+      flash.alert = "That event is not active."
+      redirect_to root_path
+    end
+  end
+
   def sanitize(filename)
     filename.gsub(/[\\\/:*"'?<>|]/, '')
   end

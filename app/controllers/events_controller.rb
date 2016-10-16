@@ -3,6 +3,7 @@ class EventsController < ApplicationController
   before_action :require_user_event_redirect, only: [:show]
   before_action :require_admin, except: [:index]
   before_action :set_event, except: [:index, :create, :archives]
+  before_action :require_active_event, except: [:index, :create, :archives, :activate]
 
   def index
     redirect_to login_path unless logged_in?

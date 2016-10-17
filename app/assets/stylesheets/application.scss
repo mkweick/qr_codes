@@ -473,6 +473,13 @@ table#on-site-badges {
 	}
 }
 
+@media (max-width: 500px) {
+	#check-in-results table thead tr th span.hide-name,
+	table#on-site-badges thead tr th span.hide-name {
+		display: none;
+	}
+}
+
 @media (max-width: 490px) {
 	table#on-site-badges tbody tr td a,
 	table#on-site-badges thead tr th {

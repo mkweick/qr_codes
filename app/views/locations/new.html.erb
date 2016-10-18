@@ -1,5 +1,6 @@
 <% @page_title = 'New Location' %>
 
+<%= render 'shared/ajax_loader_js', form_id: 'location-form' %>
 <%= render 'shared/errors', obj: @location %>
 
 <div class="row">

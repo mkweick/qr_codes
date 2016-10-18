@@ -1,6 +1,7 @@
 <% @page_title = "Edit Batch #{@batch.number} - #{@event.name}" %>
 <% multi = @event.multiple_locations %>
 
+<%= render 'shared/ajax_loader_js', form_id: 'batch-form' %>
 <%= render 'shared/errors', obj: @batch %>
 
 <div class="row">

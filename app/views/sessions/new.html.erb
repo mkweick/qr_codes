@@ -1,11 +1,14 @@
 <% @page_title = 'Login' %>
 
+<%= render 'shared/ajax_loader_js', form_id: 'login-form' %>
+
 <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
   <div class="well text-center">
     <h2 class="bottom-0">Login</h2>
     <span class="font-12 ss-red">Use windows credntials</span>
     <hr class="top-10" />
-    <%= form_tag login_path, method: 'post' do %>
+    <%= form_tag login_path, method: 'post', id: 'login-form' do %>
+
       <div class="form-group">
         <%= text_field_tag 'username', nil, class: 'form-control',
           placeholder: 'Username', autofocus: 'autofocus' %>
@@ -15,7 +18,14 @@
         <%= password_field_tag 'password', nil, class: 'form-control',
           placeholder: 'Password' %>
       </div>
-      <%= submit_tag 'Login', class: 'btn btn-primary' %>
+
+      <button class="btn btn-primary loader">
+        <span class="submit-text">Login</span>
+        <div class="spinner spinner-20 hide-me">
+          <div></div><div></div><div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div>
+        </div>
+      </button>
     <% end %>
   </div>
 </div>

@@ -1,9 +1,18 @@
-<%= form_for @location, html: { class: "text-center" } do |f| %>
+<%= form_for @location,
+  html: { id: "location-form", class: "text-center" } do |f| %>
+  
   <div class="form-group">
     <%= f.text_field 'name', value: @location.name, placeholder: "Location Name...",
       autofocus: 'autofocus', required: true, class: "form-control" %>
   </div>
 
-  <%= f.submit btn_text, class: "btn btn-primary" %>
+  <button class="btn btn-primary loader">
+    <span class="submit-text"><%= btn_text %></span>
+    <div class="spinner spinner-20 hide-me">
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+    </div>
+  </button>
+  
   <%= link_to 'Cancel', locations_path, class: "btn btn-danger left-10" %>
 <% end %>

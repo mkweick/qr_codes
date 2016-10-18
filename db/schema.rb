@@ -10,16 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161015145755) do
+ActiveRecord::Schema.define(version: 20161018153807) do
 
   create_table "batches", force: :cascade do |t|
-    t.string   "event_id",    null: false
-    t.string   "number",      null: false
+    t.string   "event_id",                        null: false
+    t.string   "number",                          null: false
     t.string   "location"
-    t.string   "description", null: false
-    t.string   "batch_type",  null: false
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.string   "description",                     null: false
+    t.string   "batch_type",                      null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.string   "processing_status", default: "1", null: false
   end
 
   create_table "crm_campaigns", force: :cascade do |t|

@@ -1,5 +1,7 @@
 <% @page_title = "Edit Event - #{@event.name}" %>
 
+<%= render 'shared/ajax_loader_js', form_id: 'event-form' %>
+<%= render 'shared/ajax_loader_js', form_id: 'crm-campaign-form' %>
 <%= render 'shared/errors', obj: @event, hide_attr: true %>
 <%= render 'shared/errors', obj: @campaign, hide_attr: true %>
 

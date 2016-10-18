@@ -85,7 +85,7 @@ class DivalBadgesController < ApplicationController
          FROM ContactBase AS a
          JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId
          JOIN CustomerAddressBase AS c ON a.ContactId = c.ParentId
-         WHERE a.LastName = '#{last_name}'
+         WHERE a.LastName LIKE '#{last_name}%'
            AND a.StateCode = '0'
            AND b.icbcore_ExtAccountID = '01-101673'
            AND c.AddressNumber = '1'

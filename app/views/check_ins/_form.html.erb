@@ -1,5 +1,5 @@
 <%= form_tag search_event_check_ins_path(@event),
-  method: 'get', remote: true do %>
+  method: 'get', remote: true, id: "search-event-registrations-form" do %>
 
   <div class="form-group">
     <%= text_field_tag 'first_name', params[:first_name],
@@ -22,8 +22,12 @@
       placeholder: "Account Name...", id: "check-in-an",
       class: "form-control" %>
   </div>
-  
-  <%= submit_tag 'Search', id: "check-in-submit-btn",
-    class: "btn btn-sm btn-primary top-10",
-    data: { disable_with: "Loading..." } %>
+
+  <button id="check-in-submit-btn" class="btn btn-sm btn-primary top-10 loader">
+    <span class="submit-text">Search</span>
+    <div class="spinner spinner-15 hide-me">
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+    </div>
+  </button>
 <% end %>

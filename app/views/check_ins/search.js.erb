@@ -80,6 +80,11 @@ var results = "";
 
 clearCheckInSearch();
 
+$('#check-in-submit-btn').removeAttr('disabled');
+$('#check-in-submit-btn').removeAttr('width-80');
+$('#check-in-submit-btn').find('span.submit-text').removeClass('hide-me');
+$('#check-in-submit-btn').find('div.spinner').addClass('hide-me');
+
 $(cancelBtn).insertAfter('#check-in-submit-btn');
 
 $('#check-in-cancel-btn').click(function() {

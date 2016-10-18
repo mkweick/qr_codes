@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
   def require_user_event_redirect
     unless logged_in?
       session[:return_to] = request.url
-      log_in_message
+      log_in_message_html
     end
   end
 

@@ -1,7 +1,10 @@
 <% show_cancel_btn ||= false %>
 <% show_return_btn ||= false %>
 
-<%= form_for [@event, @attendee], html: { class: "form-horizontal attendee-form" } do |f| %>
+<%= form_for [@event, @attendee],
+  html: { id: "on-site-attendee-form",
+    class: "form-horizontal attendee-form" } do |f| %>
+  
   <% if @contact_in_crm %>
     <%= f.hidden_field :contact_in_crm, value: true %>
   <% else %>
@@ -175,8 +178,13 @@
   </div>
 
   <div class="text-center top-20">
-    <%= f.submit btn_text, class: "btn btn-primary",
-      data: { disable_with: "Loading..." } %>
+    <button class="btn btn-primary loader">
+      <span class="submit-text"><%= btn_text %></span>
+      <div class="spinner spinner-20 hide-me">
+        <div></div><div></div><div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div><div></div><div></div>
+      </div>
+    </button>
 
     <% if show_cancel_btn %>
       <%= link_to 'Cancel', event_on_site_attendees_path(@event),

@@ -45,6 +45,11 @@ var results = "";
 
 clearCrmDivalEmployeeSearch();
 
+$('#crm-dival-employee-submit-btn').removeAttr('disabled');
+$('#crm-dival-employee-submit-btn').removeAttr('width-80');
+$('#crm-dival-employee-submit-btn').find('span.submit-text').removeClass('hide-me');
+$('#crm-dival-employee-submit-btn').find('div.spinner').addClass('hide-me');
+
 $(cancelBtn).insertAfter('#crm-dival-employee-submit-btn');
 $(results).insertAfter('.crm-dival-employee-form');
 

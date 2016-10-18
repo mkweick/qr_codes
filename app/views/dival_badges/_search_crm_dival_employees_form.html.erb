@@ -1,5 +1,6 @@
 <%= form_tag crm_dival_employee_dival_badges_path, method: 'get',
-  remote: true, class: "crm-dival-employee-form" do %>
+  remote: true, id: "crm-dival-employee-search-form",
+  class: "crm-dival-employee-form" do %>
 
   <div class="form-group">
     <%= text_field_tag 'first_name', params[:first_name],
@@ -15,7 +16,11 @@
       id: "crm-dival-employee-ln", class: "form-control" %>
   </div>
 
-  <%= submit_tag 'Search', id: "crm-dival-employee-submit-btn",
-    class: "btn btn-sm btn-primary top-10",
-    data: { disable_with: "Loading..." } %>
+  <button id="crm-dival-employee-submit-btn" class="btn btn-sm btn-primary top-10 loader">
+    <span class="submit-text">Search</span>
+    <div class="spinner spinner-15 hide-me">
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+    </div>
+  </button>
 <% end %>

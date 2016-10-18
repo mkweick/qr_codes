@@ -30,6 +30,11 @@ var results = "";
 
 clearCrmContactAndAccountSearch();
 
+$('#crm-account-submit-btn').removeAttr('disabled');
+$('#crm-account-submit-btn').removeAttr('width-80');
+$('#crm-account-submit-btn').find('span.submit-text').removeClass('hide-me');
+$('#crm-account-submit-btn').find('div.spinner').addClass('hide-me');
+
 $(cancelBtn).insertAfter('#crm-account-submit-btn');
 $(results).insertAfter('.crm-account-form');
 

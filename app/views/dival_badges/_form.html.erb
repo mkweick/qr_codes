@@ -1,4 +1,4 @@
-<%= form_tag print_dival_badges_path, method: 'get',
+<%= form_tag print_dival_badges_path, method: 'get', id: "dival-employee-form",
   class: "form-horizontal dival-employee-form" do %>
 
   <div class="form-group">
@@ -113,8 +113,13 @@
   </div>
 
   <div class="text-center top-20">
-    <%= submit_tag 'Create & Print', class: "btn btn-primary",
-      data: { disable_with: "Loading..." } %>
+    <button class="btn btn-primary loader">
+      <span class="submit-text">Create & Print</span>
+      <div class="spinner spinner-20 hide-me">
+        <div></div><div></div><div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div><div></div><div></div>
+      </div>
+    </button>
   </div>
 <% end %>
 

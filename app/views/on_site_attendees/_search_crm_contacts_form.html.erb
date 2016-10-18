@@ -1,5 +1,6 @@
 <%= form_tag crm_contact_event_on_site_attendees_path(@event),
-  method: 'get', remote: true, class: "crm-contact-form" do %>
+  method: 'get', remote: true, id: "search-crm-contacts-form",
+  class: "crm-contact-form" do %>
 
   <div class="form-group">
     <%= text_field_tag 'last_name', params[:last_name],
@@ -14,8 +15,12 @@
       placeholder: "Account Name...", id: "crm-contact-an",
       class: "form-control" %>
   </div>
-  
-  <%= submit_tag 'Search', id: "crm-contact-submit-btn",
-    class: "btn btn-sm btn-primary top-10",
-    data: { disable_with: "Loading..." } %>
+
+  <button id="crm-contact-submit-btn" class="btn btn-sm btn-primary top-10 loader">
+    <span class="submit-text">Search</span>
+    <div class="spinner spinner-15 hide-me">
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+    </div>
+  </button>
 <% end %>

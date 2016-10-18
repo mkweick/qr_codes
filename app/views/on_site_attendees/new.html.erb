@@ -8,6 +8,10 @@
   });
 </script>
 
+<%= render 'shared/ajax_loader_js', form_id: 'on-site-attendee-form' %>
+<%= render 'shared/ajax_loader_js', form_id: 'search-crm-contacts-form' %>
+<%= render 'shared/ajax_loader_js', form_id: 'search-as400-accounts-form' %>
+
 <div class="row">
   <div id="event-title-on-site" class="col-xs-12 col-sm-12 col-md-12">
     <h2 id="event-name-on-site" class="pull-left"><%= @event.name %></h2>

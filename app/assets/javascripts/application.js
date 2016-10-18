@@ -141,7 +141,7 @@ function populatePittsburghWhsAddress() {
 };
 
 function populateBostonWhsAddress() {
-  $('#street1').val("31 Loring Rd");
+  $('#street1').val("31 Loring Dr");
   $('#street2').val("");
   $('#city').val("Framingham");
   $('#state').val("MA");
@@ -149,11 +149,11 @@ function populateBostonWhsAddress() {
 };
 
 function populateFloridaWhsAddress() {
-  $('#street1').val("2207 Sterling Rd");
+  $('#street1').val("2207 Stirling Rd");
   $('#street2').val("");
   $('#city').val("Dania Beach");
   $('#state').val("FL");
-  $('#zip_code').val("33312");
+  $('#zip_code').val("33314");
 };
 
 function showOrRemoveLocations() {

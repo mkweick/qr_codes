@@ -24,7 +24,13 @@ var results = "";
 
 clearCrmCampaignSearch();
 
+$('#crm-campaign-submit-btn').removeAttr('disabled');
+$('#crm-campaign-submit-btn').removeAttr('width-80');
+$('#crm-campaign-submit-btn').find('span.submit-text').removeClass('hide-me');
+$('#crm-campaign-submit-btn').find('div.spinner').addClass('hide-me');
+
 $(cancelBtn).insertAfter('#crm-campaign-submit-btn');
+
 $(results).insertAfter('.crm-campaign-form');
 
 $('#crm-campaign-cancel-btn').click(clearCrmCampaignSearch);

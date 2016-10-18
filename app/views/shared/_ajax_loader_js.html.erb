@@ -1,0 +1,10 @@
+<script>
+  $(document).on('submit', "form#<%= form_id %>", function() {
+    var button = $(this).find('button.loader');
+    
+    button.attr('disabled', 'true');
+    button.addClass('width-80');
+    button.find('span.submit-text').remove();
+    button.find('div.spinner').removeClass('hide-me');
+  });
+</script>

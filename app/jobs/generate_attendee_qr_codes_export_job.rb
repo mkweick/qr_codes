@@ -88,6 +88,8 @@ class GenerateAttendeeQrCodesExportJob < ActiveJob::Base
 
 		delete_qr_codes_dir(batch_path)
 
+		batch.update(processing_status: '3')
+
 		NotificationMailer.batch_generation_complete_email(event, batch, email).deliver_now
   end
 

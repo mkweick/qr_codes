@@ -2,7 +2,7 @@
 <% show_cancel_btn ||= false %>
 
 <%= form_for [@event, @batch], multipart: true,
-  html: { class: "batch-form" } do |f| %>
+  html: { id: 'batch-form', class: "batch-form" } do |f| %>
   
   <div class="text-left">
     
@@ -23,7 +23,7 @@
       </div>
     <% end %>
 
-    <% if multi %>
+    <% if multi && @batch.batch_type != '2' %>
       <div id="batch-location-group" class="form-group">
         <%= f.select 'location', options_for_select(@locations, @batch.location),
           { prompt: '-- Select Location --' },
@@ -50,9 +50,15 @@
       </div>
     <% end %>
   </div>
-
-  <%= f.submit btn_text, class: "btn btn-primary submit-btn" %>
   
+  <button class="btn btn-primary submit-btn loader">
+    <span class="submit-text"><%= btn_text %></span>
+    <div class="spinner spinner-20 hide-me">
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+    </div>
+  </button>
+
   <% if show_cancel_btn %>
     <%= link_to 'Cancel', event_path(@event),
       class: "btn btn-danger submit-btn left-10" %>

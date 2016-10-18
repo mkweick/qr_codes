@@ -84,6 +84,8 @@ class BatchesController < ApplicationController
     upload_file = Dir.entries(batch_path).select { |f| f[-4..-1] == '.xls' }.first
 
     if upload_file
+      @batch.update(processing_status: '2')
+
       if @batch.batch_type == '1'
         GenerateAttendeeQrCodesExportJob.perform_later(@event, @batch, email)
       elsif @batch.batch_type == '2'

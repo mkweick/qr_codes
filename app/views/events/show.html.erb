@@ -1,6 +1,16 @@
 <% @page_title = @event.name %>
 <% multi = @event.multiple_locations %>
 
+<script>
+  $(document).on('click', '.generate-batch', function() {
+    $(this).attr('disabled', 'true');
+    $(this).addClass('width-205');
+    $(this).find('span.submit-text').remove();
+    $(this).find('div.spinner').removeClass('hide-me');
+  });
+</script>
+
+<%= render 'shared/ajax_loader_js', form_id: 'batch-form' %>
 <%= render 'shared/errors', obj: @batch %>
 
 <div class="row">
@@ -81,7 +91,7 @@
               download_event_batch_path(@event, batch, type: 'original'),
               data: { turbolinks: false }, class: "list-group-item" %>
 
-            <% if generation_complete?(@event.id, batch.number) %>
+            <% if batch.processing_status == '3' %>
                 <%= link_to 'QR Codes',
                   download_event_batch_path(@event, batch, type: 'qr_codes'),
                   data: { turbolinks: false }, class: "list-group-item" %>
@@ -92,9 +102,20 @@
               </div>
             <% else %>
               </div>
-              <%= link_to 'Generate QR Codes & Export',
-                generate_event_batch_path(@event, batch),
-                method: 'post', class: 'btn btn-primary' %>
+              <% if batch.processing_status == '2' %>
+                <button class="btn btn-primary" disabled="disabled">
+                  Currently Processing Batch
+                </button>
+              <% else %>
+                <%= link_to generate_event_batch_path(@event, batch),
+                  method: 'post', class: 'btn btn-primary generate-batch' do %>
+                  <span class="submit-text">Generate QR Codes & Export</span>
+                  <div class="spinner spinner-20 hide-me">
+                    <div></div><div></div><div></div><div></div><div></div><div></div>
+                    <div></div><div></div><div></div><div></div><div></div><div></div>
+                  </div>
+                <% end %>
+              <% end %>
             <% end %>
         </div>
       </div>

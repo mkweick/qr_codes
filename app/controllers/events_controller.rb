@@ -36,6 +36,7 @@ class EventsController < ApplicationController
 
   def show
     set_event_info
+    batches_status_check
   end
 
   def edit
@@ -143,6 +144,25 @@ class EventsController < ApplicationController
     @batch = @event.batches.new
     @batches = @event.batches.order(:created_at)
     @locations = Location.sorted_locations.pluck(:name) if @event.multiple_locations
+  end
+
+  def batches_status_check
+    if @batches.any?
+      @batches.each do |batch|
+        next unless batch.processing_status == '3'
+
+        qr_codes_path = Rails.root.join('events', batch.event_id.to_s,
+          batch.number.to_s, 'qr_codes.zip')
+    
+        export_path = Rails.root.join('events', batch.event_id.to_s,
+          batch.number.to_s, 'export', 'export.xls')
+
+        qr_codes = File.exist?(qr_codes_path)
+        export = File.exist?(export_path)
+
+        batch.update(processing_status: '1') unless qr_codes && export
+      end
+    end
   end
 
   def set_event_form_info

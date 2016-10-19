@@ -249,10 +249,12 @@ li.list-group-item:after, a.list-group-item:after {
 
 .table tbody tr td { padding: 0; }
 
-.table tbody tr td a, .table tbody tr td div {
+.table tbody tr td a, .table tbody tr td > div {
 	display: block;
 	padding: 8px;
 }
+
+#check-in-results table tbody tr td div.spinner-row { margin: 8px auto; }
 
 .table tbody tr td a:hover { color: #337ab7; }
 
@@ -454,7 +456,7 @@ table#on-site-badges {
 	#no-on-site-badges-msg { font-size: 18px; }
 
 	#check-in-results table tbody tr td a,
-	#check-in-results table tbody tr td div,
+	#check-in-results table tbody tr td > div,
 	#check-in-results table thead tr th {
 		padding: 10px 8px;
 		font-size: 12px;
@@ -471,7 +473,7 @@ table#on-site-badges {
 
 @media (max-width: 545px) {
 	#check-in-results table tbody tr td a,
-	#check-in-results table tbody tr td div,
+	#check-in-results table tbody tr td > div,
 	#check-in-results table thead tr th {
 		padding: 12px 8px;
 		font-size: 10px;
@@ -568,13 +570,25 @@ table#on-site-badges {
   top: 0;
 }
 
-.spinner div:nth-of-type(1n):before {
+.spinner div.white:nth-of-type(1n):before {
   content: '';
   display: block;
   margin: 0 auto;
   width: 9%;
   height: 17%;
   background-color: #fff;
+  border-radius: 100%;
+  -webkit-animation: spinnerFadeDelay 1.2s infinite ease-in-out both;
+          animation: spinnerFadeDelay 1.2s infinite ease-in-out both;
+}
+
+.spinner div.gray:nth-of-type(1n):before {
+  content: '';
+  display: block;
+  margin: 0 auto;
+  width: 9%;
+  height: 17%;
+  background-color: #666;
   border-radius: 100%;
   -webkit-animation: spinnerFadeDelay 1.2s infinite ease-in-out both;
           animation: spinnerFadeDelay 1.2s infinite ease-in-out both;
@@ -646,57 +660,68 @@ table#on-site-badges {
           transform: rotate(330deg); 
 }
 
-.spinner div:nth-of-type(2):before {
+.spinner div.white:nth-of-type(2):before,
+.spinner div.gray:nth-of-type(2):before {
   -webkit-animation-delay: -1.1s;
           animation-delay: -1.1s; 
 }
 
-.spinner div:nth-of-type(3):before {
+.spinner div.white:nth-of-type(3):before,
+.spinner div.gray:nth-of-type(3):before {
   -webkit-animation-delay: -1s;
           animation-delay: -1s; 
 }
 
-.spinner div:nth-of-type(4):before {
+.spinner div.white:nth-of-type(4):before,
+.spinner div.gray:nth-of-type(4):before {
   -webkit-animation-delay: -0.9s;
           animation-delay: -0.9s; 
 }
 
-.spinner div:nth-of-type(5):before {
+.spinner div.white:nth-of-type(5):before,
+.spinner div.gray:nth-of-type(5):before {
   -webkit-animation-delay: -0.8s;
           animation-delay: -0.8s; 
 }
 
-.spinner div:nth-of-type(6):before {
+.spinner div.white:nth-of-type(6):before,
+.spinner div.gray:nth-of-type(6):before {
   -webkit-animation-delay: -0.7s;
           animation-delay: -0.7s; 
 }
 
-.spinner div:nth-of-type(7):before {
+.spinner div.white:nth-of-type(7):before,
+.spinner div.gray:nth-of-type(7):before {
   -webkit-animation-delay: -0.6s;
           animation-delay: -0.6s; 
 }
 
-.spinner div:nth-of-type(8):before {
+.spinner div.white:nth-of-type(8):before,
+.spinner div.gray:nth-of-type(8):before {
   -webkit-animation-delay: -0.5s;
           animation-delay: -0.5s; 
 }
 
-.spinner div:nth-of-type(9):before {
+.spinner div.white:nth-of-type(9):before,
+.spinner div.gray:nth-of-type(9):before {
   -webkit-animation-delay: -0.4s;
           animation-delay: -0.4s;
 }
 
-.spinner div:nth-of-type(10):before {
+.spinner div.white:nth-of-type(10):before,
+.spinner div.gray:nth-of-type(10):before {
   -webkit-animation-delay: -0.3s;
           animation-delay: -0.3s;
 }
 
-.spinner div:nth-of-type(11):before {
+.spinner div.white:nth-of-type(11):before,
+.spinner div.gray:nth-of-type(11):before {
   -webkit-animation-delay: -0.2s;
           animation-delay: -0.2s;
 }
 
-.spinner div:nth-of-type(12):before {
+.spinner div.white:nth-of-type(12):before,
+.spinner div.gray:nth-of-type(12):before {
   -webkit-animation-delay: -0.1s;
           animation-delay: -0.1s;
 }

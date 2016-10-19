@@ -94,6 +94,18 @@ $('#check-in-cancel-btn').click(function() {
 
 $(results).insertAfter('#check-in-form');
 
-$('#check-in-results table tbody tr.not-attended').click(function() {
-  $(this).find('td a').contents().unwrap().wrap('<div/>');
+$('#check-in-results table tbody tr').click(function() {
+  var rowId = $(this).attr('id');
+  var spinnerRow = "<tr id=\"" + rowId + "\">";
+  spinnerRow += "<td colspan=\"4\" style=\"background-color: #eee;\">";
+  spinnerRow += "<div class=\"spinner spinner-20 spinner-row\">";
+  spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+  spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+  spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+  spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+  spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+  spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+  spinnerRow += "</div></td></tr>";
+
+  $(this).replaceWith(spinnerRow);
 });

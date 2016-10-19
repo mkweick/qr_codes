@@ -8,10 +8,38 @@
 
   $('tr#<%= @activity_id %>').replaceWith(results);
 
-  $('#<%= @activity_id %>').click(function() {
-    $(this).find('td a').contents().unwrap().wrap('<div/>');
+  $('tr#<%= @activity_id %>').click(function() {
+    var rowId = $(this).attr('id');
+    var spinnerRow = "<tr id=\"" + rowId + "\">";
+    spinnerRow += "<td colspan=\"4\" style=\"background-color: #eee;\">";
+    spinnerRow += "<div class=\"spinner spinner-20 spinner-row\">";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "</div></td></tr>";
+
+    $(this).replaceWith(spinnerRow);
   });
   
 <% else %>
+  $('tr#<%= @activity_id %>').click(function() {
+    var rowId = $(this).attr('id');
+    var spinnerRow = "<tr id=\"" + rowId + "\">";
+    spinnerRow += "<td colspan=\"4\" style=\"background-color: #eee;\">";
+    spinnerRow += "<div class=\"spinner spinner-20 spinner-row\">";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "<div class=\"gray\"></div><div class=\"gray\"></div>";
+    spinnerRow += "</div></td></tr>";
+
+    $(this).replaceWith(spinnerRow);
+  });
+
   alert("There was an issue trying to set <%= @first_name %> <%= @last_name %> back to Not Attended. Please try again. Contact IT if issue persists.");
 <% end %>

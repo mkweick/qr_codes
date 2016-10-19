@@ -3,10 +3,17 @@
 
 <script>
   $(document).on('click', '.generate-batch', function() {
-    $(this).attr('disabled', 'true');
-    $(this).addClass('width-205');
-    $(this).find('span.submit-text').remove();
-    $(this).find('div.spinner').removeClass('hide-me');
+    spinnerButton = "<button class=\"btn btn-primary width-80\" disabled=\"disabled\">";
+    spinnerButton += "<div class=\"spinner spinner-20\">";
+    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+    spinnerButton += "</div></button>";
+
+    $(this).replaceWith(spinnerButton);
   });
 </script>
 
@@ -109,11 +116,7 @@
               <% else %>
                 <%= link_to generate_event_batch_path(@event, batch),
                   method: 'post', class: 'btn btn-primary generate-batch' do %>
-                  <span class="submit-text">Generate QR Codes & Export</span>
-                  <div class="spinner spinner-20 hide-me">
-                    <div></div><div></div><div></div><div></div><div></div><div></div>
-                    <div></div><div></div><div></div><div></div><div></div><div></div>
-                  </div>
+                  Generate QR Codes & Export
                 <% end %>
               <% end %>
             <% end %>

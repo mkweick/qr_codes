@@ -220,6 +220,7 @@ class BatchesController < ApplicationController
 
   def attendee_upload_has_errors?(event_id, batch_num, filename)
     duplicates = []
+    blank_names = []
     column_count = 0
     workbook = Rails.root.join('events', event_id, batch_num, filename)
 
@@ -228,7 +229,12 @@ class BatchesController < ApplicationController
       column_count = sheet.column_count
 
       attendees_with_row = sheet.map.with_index do |row, idx|
+        if row[2].blank? && row.any? { |cell| cell.present? }
+          blank_names << (idx + 1).to_s
+        end
+
         next if row[2].blank?
+
         row = row.to_a
         [row[2], row[3], idx + 1]
       end.compact
@@ -253,6 +259,25 @@ class BatchesController < ApplicationController
 
           while increment <= last_index
             lines += " / #{dup[increment]}"
+            increment += 1
+          end
+          lines += "</li>"
+          error_msg += lines
+        end
+        error_msg += "</ul>"
+
+        flash.alert = error_msg
+        return true
+      elsif blank_names.any?
+        error_msg = "Upload failed. Contact Name is blank at rows:<br /><ul>"
+        
+        blank_names.each do |row|
+          last_index = row.size - 1
+          increment = 1
+          lines = "<li>#{row[0]}"
+
+          while increment <= last_index
+            lines += " / #{row[increment]}"
             increment += 1
           end
           lines += "</li>"

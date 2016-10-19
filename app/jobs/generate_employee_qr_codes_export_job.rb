@@ -28,7 +28,13 @@ class GenerateEmployeeQrCodesExportJob < ActiveJob::Base
       book.worksheet(0).map { |row| row.to_a }.drop(1).each do |row|
         next if row[0].blank? && row[1].blank?
 
-        qr_code_filename = "#{sanitize(row[0])} #{sanitize(row[1])}.png"
+        row[0] = row[0].strip if row[0]
+        row[1] = row[1].strip if row[1]
+
+        qr_code_filename = "#{sanitize(row[0]) if row[0]}" +
+          "#{" " if row[0] && row[1]}" +
+          "#{sanitize(row[1]) if row[1]}" +
+          ".png"
 
         dups = sheet.column(3).drop(1).select do |filename|
           qr_code_filename == filename.gsub(/-{1}\d+/, '')
@@ -47,8 +53,9 @@ class GenerateEmployeeQrCodesExportJob < ActiveJob::Base
         RQRCode::QRCode.new(
           "MATMSG:TO:;SUB:DIVAL SALES REP REQUEST;BODY:" +
           "\n\n\n______________________" +
-          "\n" + row[0] + " " + row[1] +
-          "\n" + row[2] +
+          "#{"\n" + row[0] + " " if row[0]}" +
+          "#{row[1] if row[1]}" +
+          "#{"\n" + row[2] if row[2]}" +
           "#{"\n" + row[8] if row[8]}" +
           "#{"\n" + row[9] if row[9]}" +
           "\n\n" + "DiVal Safety Equipment" +

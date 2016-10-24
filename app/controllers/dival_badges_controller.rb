@@ -15,8 +15,8 @@ class DivalBadgesController < ApplicationController
     email = params[:email].strip if params[:email].present?
     phone = params[:phone].strip if params[:phone].present?
 
-    if @first_name && @last_name && title && street1 &&
-       city && state && zip_code && email && phone
+    if @first_name && @last_name && street1 && city &&
+      state && zip_code && email && phone
 
       # Labels are 2-3/7" wide and 2-7/8" cut length
       # 180 x 180 = 1.25"  /  220 x 220 = 1.50"
@@ -24,7 +24,7 @@ class DivalBadgesController < ApplicationController
         "MATMSG:TO:;SUB:DIVAL SALES REP REQUEST;BODY:" +
         "\n\n\n______________________" +
         "\n" + @first_name + " " + @last_name +
-        "\n" + title +
+        "#{"\n" + title if title}" +
         "#{"\n" + email if email}" +
         "#{"\n" + phone if phone}" +
         "\n\n" + "DiVal Safety Equipment" +

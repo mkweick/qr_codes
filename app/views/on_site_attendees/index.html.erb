@@ -4,6 +4,7 @@
   <div id="event-title-on-site" class="col-xs-12 col-sm-12 col-md-12">
     <h2 id="event-name-on-site" class="pull-left">
       <%= "#{@event.name} - All Badges" %>
+      <%= "(#{@attendees.count})" if @attendees.any? %>
     </h2>
     <div id="event-controls" class="pull-right">
       <% if @event_has_campaigns %>

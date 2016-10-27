@@ -8,6 +8,8 @@ class CheckInsController < ApplicationController
 
   def attended
     @activity_id = params[:activity_id].strip unless params[:activity_id].blank?
+    #@sr_email = params[:sr_email].strip unless params[:sr_email].blank?
+    @sr_email = 'mkweick@gmail.com'
     @first_name = params[:fn].strip unless params[:fn].blank?
     @last_name = params[:ln].strip unless params[:ln].blank?
     @account_name = params[:an].strip unless params[:an].blank?
@@ -27,11 +29,18 @@ class CheckInsController < ApplicationController
       db.close unless db.closed?
 
       @attended = affected_rows == 1 ? true : false
+
+      if @attended && @sr_email
+        NotificationMailer.customer_checked_in_email_salesrep(
+          @event, @sr_email, @first_name, @last_name, @account_name
+        ).deliver_later
+      end
     end
   end
 
   def not_attended
     @activity_id = params[:activity_id].strip unless params[:activity_id].blank?
+    @sr_email = params[:sr_email].strip unless params[:sr_email].blank?
     @first_name = params[:fn].strip unless params[:fn].blank?
     @last_name = params[:ln].strip unless params[:ln].blank?
     @account_name = params[:an].strip unless params[:an].blank?
@@ -74,6 +83,7 @@ class CheckInsController < ApplicationController
       first_name = db.escape(first_name)
 
       sql = "SELECT a.ActivityId AS \"activity_id\", " +
+        "e.InternalEMailAddress AS \"salesrep_email\", " +
         "a.ResponseCode AS \"response_code\", " + 
         "d.FirstName AS \"contact_first_name\", " +
         "d.LastName AS \"contact_last_name\", " +
@@ -84,6 +94,7 @@ class CheckInsController < ApplicationController
         "JOIN CampaignBase AS b ON b.CampaignId = a.RegardingObjectId " +
         "JOIN CampaignResponseBase AS c ON c.ActivityId = a.ActivityId " +
         "LEFT JOIN ContactBase AS d ON d.ContactId = c.new_Contact " +
+        "LEFT JOIN SystemUserBase AS e ON e.SystemUserId = a.OwnerId " +
         "WHERE a.ActivityTypeCode = '4401' " +
           "AND a.StateCode = '0' " +
           "AND a.StatusCode = '1' " +
@@ -105,6 +116,7 @@ class CheckInsController < ApplicationController
       last_name = db.escape(last_name)
 
       sql = "SELECT a.ActivityId AS \"activity_id\", " +
+        "e.InternalEMailAddress AS \"salesrep_email\", " +
         "a.ResponseCode AS \"response_code\", " + 
         "d.FirstName AS \"contact_first_name\", " +
         "d.LastName AS \"contact_last_name\", " +
@@ -115,6 +127,7 @@ class CheckInsController < ApplicationController
         "JOIN CampaignBase AS b ON b.CampaignId = a.RegardingObjectId " +
         "JOIN CampaignResponseBase AS c ON c.ActivityId = a.ActivityId " +
         "LEFT JOIN ContactBase AS d ON d.ContactId = c.new_Contact " +
+        "LEFT JOIN SystemUserBase AS e ON e.SystemUserId = a.OwnerId " +
         "WHERE a.ActivityTypeCode = '4401' " +
           "AND a.StateCode = '0' " +
           "AND a.StatusCode = '1' " +
@@ -137,6 +150,7 @@ class CheckInsController < ApplicationController
         account_name = db.escape(account_name)
 
         sql = "SELECT a.ActivityId AS \"activity_id\", " +
+          "e.InternalEMailAddress AS \"salesrep_email\", " +
           "a.ResponseCode AS \"response_code\", " + 
           "d.FirstName AS \"contact_first_name\", " +
           "d.LastName AS \"contact_last_name\", " +
@@ -147,6 +161,7 @@ class CheckInsController < ApplicationController
           "JOIN CampaignBase AS b ON b.CampaignId = a.RegardingObjectId " +
           "JOIN CampaignResponseBase AS c ON c.ActivityId = a.ActivityId " +
           "LEFT JOIN ContactBase AS d ON d.ContactId = c.new_Contact " +
+          "LEFT JOIN SystemUserBase AS e ON e.SystemUserId = a.OwnerId " +
           "WHERE a.ActivityTypeCode = '4401' " +
             "AND a.StateCode = '0' " +
             "AND a.StatusCode = '1' " +

@@ -31,4 +31,17 @@ class NotificationMailer < ApplicationMailer
       end
     end
 	end
+
+  def customer_checked_in_email_salesrep(event, email, fn, ln, an)
+    @event = event
+    @first_name = fn
+    @last_name = ln
+    @account_name = an
+
+    mail(
+      from: 'Customer Arrived <noreply@divalsafety.com>', to: email,
+      subject: "#{@first_name if @first_name} " +
+      "#{@last_name if @last_name} from #{@account_name} arrived!"
+    )
+  end
 end

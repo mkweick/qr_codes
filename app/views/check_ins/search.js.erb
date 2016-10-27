@@ -16,45 +16,46 @@ var results = "";
 
   <% @results.each do |row| %>
     <% activity_id = row[0] || nil %>
-    <% response_code = row[1].to_s || nil %>
-    <% contact_first_name = row[2] || nil %>
-    <% contact_last_name = row[3] || nil %>
-    <% contact_account_name = row[4] || nil %>
-    <% first_name = row[5] || nil %>
-    <% last_name = row[6] || nil %>
-    <% account_name = row[7] || nil %>
+    <% salesrep_email = row[1] || nil %>
+    <% response_code = row[2].to_s || nil %>
+    <% contact_first_name = row[3] || nil %>
+    <% contact_last_name = row[4] || nil %>
+    <% contact_account_name = row[5] || nil %>
+    <% first_name = row[6] || nil %>
+    <% last_name = row[7] || nil %>
+    <% account_name = row[8] || nil %>
 
     <% if contact_first_name && !first_name %>
       <% if response_code == '100000004' %>
         results += "<tr id=\"<%= activity_id %>\" class=\"not-attended\">";
-        results += "<td><%= j link_to contact_first_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %></td>";
-        results += "<td><%= j link_to contact_last_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %></td>";
-        results += "<td><%= j link_to contact_account_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %></td>";
-        results += "<td class=\"text-center\"><%= j link_to 'No', attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %></td>";
+        results += "<td><%= j link_to contact_first_name, attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %></td>";
+        results += "<td><%= j link_to contact_last_name, attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %></td>";
+        results += "<td><%= j link_to contact_account_name, attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %></td>";
+        results += "<td class=\"text-center\"><%= j link_to 'No', attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true' %></td>";
         results += "</tr>";
       <% elsif response_code == '100000003' %>
         results += "<tr id=\"<%= activity_id %>\" class=\"attended\">";
-        results += "<td><%= j link_to contact_first_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{contact_first_name} #{contact_last_name} as Not Attended?" } %></td>";
-        results += "<td><%= j link_to contact_last_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{contact_first_name} #{contact_last_name} as Not Attended?" } %></td>";
-        results += "<td><%= j link_to contact_account_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{contact_first_name} #{contact_last_name} as Not Attended?" } %></td>";
-        results += "<td class=\"text-center\"><%= j link_to 'Yes', not_attended_event_check_ins_path(@event, activity_id: activity_id, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{contact_first_name} #{contact_last_name} as Not Attended?" } %></td>";
+        results += "<td><%= j link_to contact_first_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{contact_first_name} #{contact_last_name} as Not Attended?" } %></td>";
+        results += "<td><%= j link_to contact_last_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{contact_first_name} #{contact_last_name} as Not Attended?" } %></td>";
+        results += "<td><%= j link_to contact_account_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{contact_first_name} #{contact_last_name} as Not Attended?" } %></td>";
+        results += "<td class=\"text-center\"><%= j link_to 'Yes', not_attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: contact_first_name, ln: contact_last_name, an: contact_account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{contact_first_name} #{contact_last_name} as Not Attended?" } %></td>";
         results += "</tr>";
       <% end %>
 
     <% elsif first_name && !contact_first_name %>
       <% if response_code == '100000004' %>
         results += "<tr id=\"<%= activity_id %>\" class=\"not-attended\">";
-        results += "<td><%= j link_to first_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %></td>";
-        results += "<td><%= j link_to last_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %></td>";
-        results += "<td><%= j link_to account_name, attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %></td>";
-        results += "<td class=\"text-center\"><%= j link_to 'No', attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %></td>";
+        results += "<td><%= j link_to first_name, attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %></td>";
+        results += "<td><%= j link_to last_name, attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %></td>";
+        results += "<td><%= j link_to account_name, attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %></td>";
+        results += "<td class=\"text-center\"><%= j link_to 'No', attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true' %></td>";
         results += "</tr>";
       <% elsif response_code == '100000003' %>
         results += "<tr id=\"<%= activity_id %>\" class=\"attended\">";
-        results += "<td><%= j link_to first_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{first_name} #{last_name} as Not Attended?" } %></td>";
-        results += "<td><%= j link_to last_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{first_name} #{last_name} as Not Attended?" } %></td>";
-        results += "<td><%= j link_to account_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{first_name} #{last_name} as Not Attended?" } %></td>";
-        results += "<td class=\"text-center\"><%= j link_to 'Yes', not_attended_event_check_ins_path(@event, activity_id: activity_id, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{first_name} #{last_name} as Not Attended?" } %></td>";
+        results += "<td><%= j link_to first_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{first_name} #{last_name} as Not Attended?" } %></td>";
+        results += "<td><%= j link_to last_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{first_name} #{last_name} as Not Attended?" } %></td>";
+        results += "<td><%= j link_to account_name, not_attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{first_name} #{last_name} as Not Attended?" } %></td>";
+        results += "<td class=\"text-center\"><%= j link_to 'Yes', not_attended_event_check_ins_path(@event, activity_id: activity_id, sr_email: salesrep_email, fn: first_name, ln: last_name, an: account_name), method: 'patch', remote: 'true', data: { confirm: "Are you sure you want to mark #{first_name} #{last_name} as Not Attended?" } %></td>";
         results += "</tr>";
       <% end %>
     <% end %>

@@ -8,8 +8,7 @@ class CheckInsController < ApplicationController
 
   def attended
     @activity_id = params[:activity_id].strip unless params[:activity_id].blank?
-    #@sr_email = params[:sr_email].strip unless params[:sr_email].blank?
-    @sr_email = 'mkweick@gmail.com'
+    @sr_email = params[:sr_email].strip unless params[:sr_email].blank?
     @first_name = params[:fn].strip unless params[:fn].blank?
     @last_name = params[:ln].strip unless params[:ln].blank?
     @account_name = params[:an].strip unless params[:an].blank?

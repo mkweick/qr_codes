@@ -25,5 +25,8 @@ module QrCodes
 
     # Use Delayed Job to handle background jobs
     config.active_job.queue_adapter = :delayed_job
+
+    # Rotate log files after 10MB. Keep 10 Log files.
+    config.logger = Logger.new(Rails.root.join('log', "#{Rails.env}.log"), 10, 10 * 1024 * 1024)
   end
 end

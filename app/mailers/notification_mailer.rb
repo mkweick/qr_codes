@@ -40,8 +40,9 @@ class NotificationMailer < ApplicationMailer
 
     mail(
       from: 'Customer Arrived <noreply@divalsafety.com>', to: email,
-      subject: "#{@first_name if @first_name} " +
-      "#{@last_name if @last_name} from #{@account_name} arrived!"
+      subject: "#{@first_name if @first_name}" +
+        "#{' ' + @last_name if @last_name}" +
+        "#{' - ' + @account_name if @account_name}"
     )
   end
 end

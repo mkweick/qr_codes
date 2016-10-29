@@ -6,8 +6,8 @@
   </style>
 </head>
 <body>
-  <%= "#{@first_name if @first_name} #{@last_name if @last_name}" %>
-  from
-  <%= "#{@account_name if @account_name} has arrived at the #{@event.name}!" %>
+  <%= "#{@first_name if @first_name}#{' ' + @last_name if @last_name}" %>
+  <%= "#{' - ' + @account_name if @account_name}" %>
+  has arrived at the <%= "#{@event.name}!" %>
 </body>
 </html>

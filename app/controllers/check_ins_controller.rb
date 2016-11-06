@@ -29,11 +29,12 @@ class CheckInsController < ApplicationController
 
       @attended = affected_rows == 1 ? true : false
 
-      if @attended && @sr_email
-        NotificationMailer.customer_checked_in_email_salesrep(
-          @event, @sr_email, @first_name, @last_name, @account_name
-        ).deliver_later
-      end
+      # Uncomment to send salesrep email when customer checks in
+      #if @attended && @sr_email
+      #  NotificationMailer.customer_checked_in_email_salesrep(
+      #    @event, @sr_email, @first_name, @last_name, @account_name
+      #  ).deliver_later
+      #end
     end
   end
 

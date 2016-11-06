@@ -45,7 +45,7 @@ class OnSiteAttendeesController < ApplicationController
       "#{"\n" + @attendee.email if @attendee.email}" +
       "#{"\n" + @attendee.phone if @attendee.phone}" +
       "#{"\n" + @attendee.salesrep if @attendee.salesrep};;", level: :q
-    ).to_img.resize(180, 180)
+    ).to_img.resize(165, 165)
 
     render layout: false
   end

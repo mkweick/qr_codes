@@ -5,30 +5,40 @@
 <head>
   <title><%= format_page_title %></title>
   <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
   <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon">
   <style>
     @media print {
-      @page { margin: 0; }
+      @page { margin: 0 0 0 -10px; }
       .no-print, .no-print * { display: none !important; }
     }
   </style>
+  <script>
+    function adjustFontSizeAttendeeInfo() {
+      while ($('#first-name').width() > 250) {
+        $('#first-name').css('font-size', (parseInt($('#first-name').css('font-size')) - 1) + 'px');
+      }
+
+      while ($('#last-name').width() > 250) {
+        $('#last-name').css('font-size', (parseInt($('#last-name').css('font-size')) - 1) + 'px');
+      }
+
+      if ($('#account-name').height() < 30) {
+        $('#account-name').css('margin-top', '10px');
+        $('img').css('margin-top', '5px');
+      }
+    }
+
+    $(window).load(function() {
+      adjustFontSizeAttendeeInfo();
+    })
+  </script>
 </head>
-<body id="print-qr" class="text-center">
-  <% if @attendee.first_name.size < 9 %>
-    <div id="first-name-under-9"><%= @attendee.first_name %></div>
-  <% else %>
-    <div id="first-name-over-8"><%= @attendee.first_name %></div>
-  <% end %>
-  
+<body id="attendee" class="print-badge text-center">
+  <div id="first-name"><%= @attendee.first_name %></div>
   <div id="last-name"><%= @attendee.last_name %></div>
-  
-  <% if @attendee.account_name.size < 15 %>
-    <div id="account-name-under-15"><%= @attendee.account_name %></div>
-  <% else %>    
-    <div id="account-name-over-14"><%= @attendee.account_name %></div>
-  <% end %>
-  
+  <div id="account-name"><%= @attendee.account_name %></div>
   <img src="<%= @qr_code.to_data_url %>" />
 
   <div class="no-print">

@@ -177,6 +177,10 @@ function adjustFontSizeAttendeeInfo() {
     $('#last-name').css('font-size', (parseInt($('#last-name').css('font-size')) - 1) + 'px');
   }
 
+  while ($('#account-name').height() > 60) {
+    $('#account-name').css('font-size', (parseInt($('#account-name').css('font-size')) - 1) + 'px');
+  }
+
   if ($('#account-name').height() < 30) {
     $('#account-name').css('margin-top', '10px');
     $('img').css('margin-top', '5px');

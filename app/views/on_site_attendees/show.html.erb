@@ -15,21 +15,6 @@
     }
   </style>
   <script>
-    function adjustFontSizeAttendeeInfo() {
-      while ($('#first-name').width() > 250) {
-        $('#first-name').css('font-size', (parseInt($('#first-name').css('font-size')) - 1) + 'px');
-      }
-
-      while ($('#last-name').width() > 250) {
-        $('#last-name').css('font-size', (parseInt($('#last-name').css('font-size')) - 1) + 'px');
-      }
-
-      if ($('#account-name').height() < 30) {
-        $('#account-name').css('margin-top', '10px');
-        $('img').css('margin-top', '5px');
-      }
-    }
-
     $(window).load(function() {
       adjustFontSizeAttendeeInfo();
     })

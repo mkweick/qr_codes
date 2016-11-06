@@ -1,5 +1,6 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
+@import url('https://fonts.googleapis.com/css?family=Roboto:700');
 
 a { text-decoration: none !important; }
 ul { list-style: none; }
@@ -285,28 +286,50 @@ table#on-site-badges {
 	background-color: none;
 }
 
-#print-qr {
-	margin: 0 auto;
+.print-badge {
+	margin: 5px auto 0 auto;
 	width: 300px;
+  font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-#print-qr #first-name-under-9 {
-	margin: 25px 0 0 -5px;
+.print-badge img {
+  display: block;
+  margin: -5px auto 0 auto;
+  position: relative;
+  z-index: 0;
+}
+
+.print-badge .no-print {
+  margin-top: 30px;
+}
+
+.no-print div { display: block; }
+
+#attendee > div, #dival-employee > div, #vendor > div {
+  display: inline-block;
+}
+
+#attendee #first-name {
 	font-size: 60px;
 	font-weight: bold;
-	line-height: 35px;
-	transform: scale(1,1.3);
+  line-height: 65px;
 }
 
-#print-qr #first-name-over-8 {
-	margin: 25px 0 0 -10px;
-	font-size: 50px;
-	font-weight: bold;
-	line-height: 35px;
-	transform: scale(0.8,1.3);
+#attendee #last-name {
+  font-size: 35px;
+  font-weight: bold;
+  line-height: 45px;
 }
 
-#print-qr #first-name-dival-under-9 {
+#attendee #account-name {
+  font-size: 22px;
+  font-weight: bold;
+  line-height: 25px;
+  position: relative;
+  z-index: 1;
+}
+
+#dival-employee #first-name {
 	margin: 25px 0 0 -5px;
 	font-size: 50px;
 	font-weight: bold;
@@ -314,14 +337,14 @@ table#on-site-badges {
 	transform: scale(1,1.4);
 }
 
-#print-qr #first-name-dival-over-8 {
-	margin: 25px 0 0 -5px;
-	font-size: 38px;
-	font-weight: bold;
-	transform: scale(1,1.4);
+#dival-employee #last-name {
+  margin: 20px 0 10px -10px;
+  font-size: 30px;
+  font-weight: bold;
+  transform: scale(1,1.4);
 }
 
-#print-qr #first-name-vendor-under-9 {
+#vendor #first-name {
 	margin: 60px 0 0 -5px;
 	font-size: 60px;
 	font-weight: bold;
@@ -329,30 +352,7 @@ table#on-site-badges {
 	transform: scale(1,1.3);
 }
 
-#print-qr #first-name-vendor-over-8 {
-	margin: 60px 0 0 -10px;
-	font-size: 50px;
-	font-weight: bold;
-	line-height: 35px;
-	transform: scale(0.8,1.3);
-}
-
-#print-qr #last-name {
-	margin: 13px 0 0 -5px;
-	font-size: 35px;
-	font-weight: bold;
-	line-height: 60px;
-	transform: scale(1,1.2);
-}
-
-#print-qr #last-name-dival {
-	margin: 20px 0 10px -10px;
-	font-size: 30px;
-	font-weight: bold;
-	transform: scale(1,1.4);
-}
-
-#print-qr #last-name-vendor {
+#vendor #last-name {
 	margin: 50px 0 0 -5px;
 	font-size: 35px;
 	font-weight: bold;
@@ -360,35 +360,7 @@ table#on-site-badges {
 	transform: scale(1,1.2);
 }
 
-#print-qr #account-name-under-15 {
-	margin: -5px 0 -3px -5px;
-	font-size: 30px;
-	font-weight: bold;
-	transform: scale(1,1.1);
-	position: relative;
-	z-index: 1;
-}
-
-#print-qr #account-name-over-14 {
-	margin: -5px 0 -7px -5px;
-	font-size: 22px;
-	font-weight: bold;
-	line-height: 22px;
-	transform: scale(0.9,1);
-	position: relative;
-	z-index: 1;
-}
-
-#print-qr #account-name-vendor-under-15 {
-	margin: 50px 0 0 -4px;
-	font-size: 28px;
-	font-weight: bold;
-	transform: scale(1,1.1);
-	position: relative;
-	z-index: 1;
-}
-
-#print-qr #account-name-vendor-over-14 {
+#vendor #account-name {
 	margin: 50px 0 0 -4px;
 	font-size: 25px;
 	font-weight: bold;
@@ -396,17 +368,6 @@ table#on-site-badges {
 	transform: scale(0.9,1);
 	position: relative;
 	z-index: 1;
-}
-
-#print-qr img {
-	display: block;
-	margin: 0 auto;
-	position: relative;
-	z-index: 0;
-}
-
-#print-qr .no-print {
-	margin-top: 30px;
 }
 
 #badge-type-radio label + label { margin-left: 30px; }

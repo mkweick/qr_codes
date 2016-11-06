@@ -37,7 +37,9 @@
 </head>
 <body id="attendee" class="print-badge text-center">
   <div id="first-name"><%= @attendee.first_name %></div>
+  <br/>
   <div id="last-name"><%= @attendee.last_name %></div>
+  <br/>
   <div id="account-name"><%= @attendee.account_name %></div>
   <img src="<%= @qr_code.to_data_url %>" />
 

@@ -34,7 +34,7 @@ class DivalBadgesController < ApplicationController
         "#{"\n" if !city && (state || zip_code)}" +
         "#{', ' if city && state}" + "#{state if state} " +
         "#{zip_code if zip_code};;", level: :q
-      ).to_img.resize(180, 180)
+      ).to_img.resize(165, 165)
 
       render layout: false
     else

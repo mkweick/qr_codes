@@ -5,24 +5,25 @@
 <head>
   <title><%= format_page_title %></title>
   <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
   <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon">
   <style>
     @media print {
-      @page { margin: 0; }
+      @page { margin: 0 0 0 -10px; }
       .no-print, .no-print * { display: none !important; }
     }
   </style>
+  <script>
+    $(window).load(function() {
+      adjustFontSizeDivalEmployeeInfo();
+    })
+  </script>
 </head>
-<body id="print-qr" class="text-center">
-  <% if @first_name.size < 9 %>
-    <div id="first-name-dival-under-9"><%= @first_name %></div>
-  <% else %>
-    <div id="first-name-dival-over-8"><%= @first_name %></div>
-  <% end %>
-  
-  <div id="last-name-dival"><%= @last_name %></div>
-  
+<body id="dival-employee" class="print-badge text-center">
+  <div id="first-name"><%= @first_name %></div>
+  <br />
+  <div id="last-name"><%= @last_name %></div>
   <img src="<%= @qr_code.to_data_url %>" />
 
   <div class="no-print">

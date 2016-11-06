@@ -167,3 +167,46 @@ function showOrRemoveLocations() {
     $(batchLocationGroup).insertAfter('#batch-type-group');
   }
 };
+
+function adjustFontSizeAttendeeInfo() {
+  while ($('#first-name').width() > 250) {
+    $('#first-name').css('font-size', (parseInt($('#first-name').css('font-size')) - 1) + 'px');
+  }
+
+  while ($('#last-name').width() > 250) {
+    $('#last-name').css('font-size', (parseInt($('#last-name').css('font-size')) - 1) + 'px');
+  }
+
+  if ($('#account-name').height() < 30) {
+    $('#account-name').css('margin-top', '10px');
+    $('img').css('margin-top', '5px');
+  }
+}
+
+function adjustFontSizeDivalEmployeeInfo() {
+  while ($('#first-name').width() > 250) {
+    $('#first-name').css('font-size', (parseInt($('#first-name').css('font-size')) - 1) + 'px');
+  }
+
+  while ($('#last-name').width() > 250) {
+    $('#last-name').css('font-size', (parseInt($('#last-name').css('font-size')) - 1) + 'px');
+  }
+}
+
+function adjustFontSizeVendorInfo() {
+  while ($('#first-name').width() > 270) {
+    $('#first-name').css('font-size', (parseInt($('#first-name').css('font-size')) - 1) + 'px');
+  }
+
+  while ($('#last-name').width() > 270) {
+    $('#last-name').css('font-size', (parseInt($('#last-name').css('font-size')) - 1) + 'px');
+  }
+
+  while ($('#account-name').height() > 95) {
+    $('#account-name').css('font-size', (parseInt($('#account-name').css('font-size')) - 1) + 'px');
+  }
+
+  if ($('#account-name').height() < 50) {
+    $('#account-name').css('margin-top', '10px');
+  }
+}

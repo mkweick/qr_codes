@@ -96,9 +96,7 @@ class CheckInsController < ApplicationController
         "LEFT JOIN ContactBase AS d ON d.ContactId = c.new_Contact " +
         "LEFT JOIN SystemUserBase AS e ON e.SystemUserId = a.OwnerId " +
         "WHERE a.ActivityTypeCode = '4401' " +
-          "AND a.StateCode = '0' " +
-          "AND a.StatusCode = '1' " +
-          "AND b.CodeName IN ("
+        "AND b.CodeName IN ("
 
       @event.crm_campaigns.pluck(:code).each_with_index do |code, idx|
         idx == 0 ? (sql += "\'#{code}\'") : (sql += ", \'#{code}\'")
@@ -129,9 +127,7 @@ class CheckInsController < ApplicationController
         "LEFT JOIN ContactBase AS d ON d.ContactId = c.new_Contact " +
         "LEFT JOIN SystemUserBase AS e ON e.SystemUserId = a.OwnerId " +
         "WHERE a.ActivityTypeCode = '4401' " +
-          "AND a.StateCode = '0' " +
-          "AND a.StatusCode = '1' " +
-          "AND b.CodeName IN ("
+        "AND b.CodeName IN ("
           
       @event.crm_campaigns.pluck(:code).each_with_index do |code, idx|
         idx == 0 ? (sql += "\'#{code}\'") : (sql += ", \'#{code}\'")
@@ -163,9 +159,7 @@ class CheckInsController < ApplicationController
           "LEFT JOIN ContactBase AS d ON d.ContactId = c.new_Contact " +
           "LEFT JOIN SystemUserBase AS e ON e.SystemUserId = a.OwnerId " +
           "WHERE a.ActivityTypeCode = '4401' " +
-            "AND a.StateCode = '0' " +
-            "AND a.StatusCode = '1' " +
-            "AND b.CodeName IN ("
+          "AND b.CodeName IN ("
           
         @event.crm_campaigns.pluck(:code).each_with_index do |code, idx|
           idx == 0 ? (sql += "\'#{code}\'") : (sql += ", \'#{code}\'")

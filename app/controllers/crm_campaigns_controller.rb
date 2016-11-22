@@ -40,22 +40,20 @@ class CrmCampaignsController < ApplicationController
   end
 
   def search
-    name = params[:name].strip unless params[:name].blank?
+    campaign_name = params[:name].strip unless params[:name].blank?
     @results = []
 
-    if name
+    if campaign_name
       db = TinyTds::Client.new(
         host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
         username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
       )
 
-      name = db.escape(name)
-
-      query = db.execute(
-        "SELECT Name, CodeName FROM CampaignBase
-         WHERE Name LIKE '%#{name}%'"
-      )
-
+      campaign_name = db.escape(campaign_name)
+      sql = "SELECT Name, CodeName FROM CampaignBase " +
+        "WHERE Name LIKE '%#{campaign_name}%'"
+      
+      query = db.execute(sql)
       query.each(as: :array) { |row| @results << row }
       db.close unless db.closed?
     end

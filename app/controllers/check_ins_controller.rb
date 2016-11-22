@@ -7,60 +7,13 @@ class CheckInsController < ApplicationController
   def new; end
 
   def attended
-    @activity_id = params[:activity_id].strip unless params[:activity_id].blank?
-    @sr_email = params[:sr_email].strip unless params[:sr_email].blank?
-    @first_name = params[:fn].strip unless params[:fn].blank?
-    @last_name = params[:ln].strip unless params[:ln].blank?
-    @account_name = params[:an].strip unless params[:an].blank?
-
-    if @activity_id
-      db = TinyTds::Client.new(
-        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
-        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
-      )
-
-      sql = "UPDATE ActivityPointerBase " +
-        "SET ResponseCode = '100000003' " +
-        "WHERE ActivityId = '#{@activity_id}';"
-
-      query = db.execute(sql)
-      affected_rows = query.do
-      db.close unless db.closed?
-
-      @attended = affected_rows == 1 ? true : false
-
-      # Uncomment to send salesrep email when customer checks in
-      # if @attended && @sr_email
-      #   NotificationMailer.customer_checked_in_email_salesrep(
-      #     @event, @sr_email, @first_name, @last_name, @account_name
-      #   ).deliver_later
-      # end
-    end
+    update_crm_attendee_record('100000003')
+    # Uncomment to send salesrep email when customer checks in
+    # email_salresrep if @record_updated && @sr_email
   end
 
   def not_attended
-    @activity_id = params[:activity_id].strip unless params[:activity_id].blank?
-    @sr_email = params[:sr_email].strip unless params[:sr_email].blank?
-    @first_name = params[:fn].strip unless params[:fn].blank?
-    @last_name = params[:ln].strip unless params[:ln].blank?
-    @account_name = params[:an].strip unless params[:an].blank?
-
-    if @activity_id
-      db = TinyTds::Client.new(
-        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
-        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
-      )
-
-      sql = "UPDATE ActivityPointerBase " +
-        "SET ResponseCode = '100000004' " +
-        "WHERE ActivityId = '#{@activity_id}';"
-
-      query = db.execute(sql)
-      affected_rows = query.do
-      db.close unless db.closed?
-
-      @not_attended = affected_rows == 1 ? true : false
-    end
+    update_crm_attendee_record('100000004')
   end
 
 
@@ -115,6 +68,37 @@ class CheckInsController < ApplicationController
       flash.alert = "Check-In not available. Event has no assigned CRM Campaigns."
       redirect_to root_path
     end
+  end
+
+  def update_crm_attendee_record(response_code)
+    @activity_id = params[:activity_id].strip unless params[:activity_id].blank?
+    @sr_email = params[:sr_email].strip unless params[:sr_email].blank?
+    @first_name = params[:fn].strip unless params[:fn].blank?
+    @last_name = params[:ln].strip unless params[:ln].blank?
+    @account_name = params[:an].strip unless params[:an].blank?
+
+    if @activity_id
+      db = TinyTds::Client.new(
+        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
+        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
+      )
+
+      sql = "UPDATE ActivityPointerBase " +
+        "SET ResponseCode = '#{response_code}' " +
+        "WHERE ActivityId = '#{@activity_id}';"
+
+      query = db.execute(sql)
+      affected_row = query.do
+      db.close unless db.closed?
+
+      @record_updated = affected_row == 1 ? true : false
+    end
+  end
+
+  def email_salresrep
+    NotificationMailer.customer_checked_in_email_salesrep(
+      @event, @sr_email, @first_name, @last_name, @account_name
+    ).deliver_later
   end
 
   def registered_attendees_base_sql_script

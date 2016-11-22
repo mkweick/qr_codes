@@ -53,47 +53,39 @@ class DivalBadgesController < ApplicationController
         host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
         username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
       )
+
+      sql = crm_dival_employees_base_sql_script
     end
 
     if first_name
-      params.delete(:last_name)
-
       first_name = db.escape(first_name)
-      query = db.execute(
-        "SELECT a.FirstName, a.LastName, c.Line1, c.Line2, c.City,
-          c.StateOrProvince, c.PostalCode, a.EMailAddress1, a.Telephone1
-         FROM ContactBase AS a
-         JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId
-         JOIN CustomerAddressBase AS c ON a.ContactId = c.ParentId
-         WHERE a.FirstName LIKE '#{first_name}%'
-           AND a.StateCode = '0'
-           AND b.icbcore_ExtAccountID = '01-101673'
-           AND c.AddressNumber = '1'
-         ORDER BY a.FirstName, a.LastName"
-      )
-
-      query.each(as: :array) { |row| @results << row }
-      db.close unless db.closed?
-
+      sql += "AND a.FirstName LIKE '#{first_name}%' "
     elsif last_name
-      params.delete(:first_name)
-
       last_name = db.escape(last_name)
-      query = db.execute(
-        "SELECT a.FirstName, a.LastName, c.Line1, c.Line2, c.City,
-          c.StateOrProvince, c.PostalCode, a.EMailAddress1, a.Telephone1
-         FROM ContactBase AS a
-         JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId
-         JOIN CustomerAddressBase AS c ON a.ContactId = c.ParentId
-         WHERE a.LastName LIKE '#{last_name}%'
-           AND a.StateCode = '0'
-           AND b.icbcore_ExtAccountID = '01-101673'
-           AND c.AddressNumber = '1'
-         ORDER BY a.FirstName, a.LastName"
-      )
+      sql += "AND a.LastName LIKE '#{last_name}%' "
+    end
 
+    if db
+      sql += "ORDER BY a.FirstName, a.LastName"
+      query = db.execute(sql)
       query.each(as: :array) { |row| @results << row }
       db.close unless db.closed?
     end
+  end
+
+  private
+
+  def crm_dival_employees_base_sql_script
+    base_sql_statement = "SELECT a.FirstName, a.LastName, c.Line1, " +
+    "c.Line2, c.City, c.StateOrProvince, c.PostalCode, " +
+    "a.EMailAddress1, a.Telephone1 " +
+    "FROM ContactBase AS a " +
+    "JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId " +
+    "JOIN CustomerAddressBase AS c ON a.ContactId = c.ParentId " +
+    "WHERE a.StateCode = '0' " +
+    "AND b.icbcore_ExtAccountID = '01-101673' " +
+    "AND c.AddressNumber = '1' "
+
+    base_sql_statement
   end
 end

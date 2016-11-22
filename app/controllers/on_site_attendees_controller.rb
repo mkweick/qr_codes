@@ -84,52 +84,28 @@ class OnSiteAttendeesController < ApplicationController
         host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
         username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
       )
+
+      sql = crm_contacts_base_sql_query
     end
 
     if last_name
-      params.delete(:account_name)
-
       last_name = db.escape(last_name)
-      query = db.execute(
-        "SELECT a.FirstName, a.LastName, b.Name, b.icbcore_ExtAccountID,
-          d.Line1, d.Line2, d.City, d.StateOrProvince, d.PostalCode,
-          a.EMailAddress1, a.Telephone1, c.FullName
-         FROM ContactBase AS a
-         JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId
-         JOIN SystemUserBase AS c ON a.OwnerId = c.SystemUserId
-         JOIN CustomerAddressBase AS d ON a.ContactId = d.ParentId
-         WHERE a.LastName = '#{last_name}'
-           AND a.StateCode = '0'
-           AND d.AddressNumber = '1'
-         ORDER BY a.FirstName, a.LastName"
-      )
-
-      query.each(as: :array) { |row| @results << row }
-      db.close unless db.closed?
+      sql += "AND a.LastName = '#{last_name}' "
+      sql += "ORDER BY a.FirstName, a.LastName"
     elsif account_name 
       if account_name.size > 2
-        params.delete(:last_name)
-
         account_name = db.escape(account_name)
-        query = db.execute(
-          "SELECT a.FirstName, a.LastName, b.Name, b.icbcore_ExtAccountID,
-            d.Line1, d.Line2, d.City, d.StateOrProvince, d.PostalCode,
-            a.EMailAddress1, a.Telephone1, c.FullName
-           FROM ContactBase AS a
-           JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId
-           JOIN SystemUserBase AS c ON a.OwnerId = c.SystemUserId
-           JOIN CustomerAddressBase AS d ON a.ContactId = d.ParentId
-           WHERE a.ParentCustomerIdName LIKE '%#{account_name}%'
-             AND a.StateCode = '0'
-             AND d.AddressNumber = '1'
-           ORDER BY a.ParentCustomerIdName, a.FirstName, a.LastName"
-        )
-
-        query.each(as: :array) { |row| @results << row }
-        db.close unless db.closed?
+        sql += "AND a.ParentCustomerIdName LIKE '%#{account_name}%' "
+        sql += "ORDER BY a.ParentCustomerIdName, a.FirstName, a.LastName"
       else
         @account_length_error = true
       end
+    end
+
+    if db
+      query = db.execute(sql)
+      query.each(as: :array) { |row| @results << row }
+      db.close unless db.closed?
     end
   end
 
@@ -148,11 +124,11 @@ class OnSiteAttendeesController < ApplicationController
 
         account_name = escape_single_quotes(account_name)
 
-        sql = "SELECT cmcsnm, cmcsno FROM cusms
-               WHERE UPPER(cmcsnm) LIKE '\%#{account_name.upcase}\%'
-                 AND cmsusp != 'S'
-                 AND cmusr1 != 'HSS'
-               ORDER BY cmcsnm"
+        sql = "SELECT cmcsnm, cmcsno FROM cusms " +
+          "WHERE UPPER(cmcsnm) LIKE '\%#{account_name.upcase}\%' " +
+          "AND cmsusp != 'S' " +
+          "AND cmusr1 != 'HSS' " +
+          "ORDER BY cmcsnm"
 
         results = as400.run(sql).fetch_all
 
@@ -178,13 +154,13 @@ class OnSiteAttendeesController < ApplicationController
     if account_number
       as400 = ODBC.connect('as400_fds')
 
-      sql = "SELECT a.cmcsnm, '01-' || a.cmcsno, b.sashp#, b.sashnm,
-              b.sasad1, b.sasad2, b.sascty, b.sashst, b.saszip
-             FROM cusms AS a
-             JOIN addr AS b ON b.sacsno = a.cmcsno
-             WHERE a.cmcsno = '#{account_number}'
-               AND b.sasusp != 'S'
-             ORDER BY CAST(b.sashp# AS INTEGER)"
+      sql = "SELECT a.cmcsnm, '01-' || a.cmcsno, b.sashp#, b.sashnm, " +
+        "b.sasad1, b.sasad2, b.sascty, b.sashst, b.saszip " +
+        "FROM cusms AS a " +
+        "JOIN addr AS b ON b.sacsno = a.cmcsno " +
+        "WHERE a.cmcsno = '#{account_number}' " +
+        "AND b.sasusp != 'S' " +
+        "ORDER BY CAST(b.sashp# AS INTEGER)"
 
       results = as400.run(sql).fetch_all
 
@@ -285,6 +261,19 @@ class OnSiteAttendeesController < ApplicationController
 
   def set_attendee
     @attendee = OnSiteAttendee.find(params[:id]) if params[:id]
+  end
+
+  def crm_contacts_base_sql_query
+    statement = "SELECT a.FirstName, a.LastName, b.Name, " +
+      "b.icbcore_ExtAccountID, d.Line1, d.Line2, d.City, d.StateOrProvince, " +
+      "d.PostalCode, a.EMailAddress1, a.Telephone1, c.FullName " +
+      "FROM ContactBase AS a " +
+      "JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId " +
+      "JOIN SystemUserBase AS c ON a.OwnerId = c.SystemUserId " +
+      "JOIN CustomerAddressBase AS d ON a.ContactId = d.ParentId " +
+      "WHERE a.StateCode = '0' " +
+      "AND d.AddressNumber = '1' "
+    statement
   end
 
   def escape_single_quotes(string)

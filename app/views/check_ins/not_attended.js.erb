@@ -1,4 +1,4 @@
-<% if @not_attended %>
+<% if @record_updated %>
   results = "<tr id=\"<%= @activity_id %>\" class=\"not-attended\">";
   results += "<td><%= j link_to @first_name, attended_event_check_ins_path(@event, activity_id: @activity_id, sr_email: @sr_email, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %></td>";
   results += "<td><%= j link_to @last_name, attended_event_check_ins_path(@event, activity_id: @activity_id, sr_email: @sr_email, fn: @first_name, ln: @last_name, an: @account_name), method: 'patch', remote: 'true' %></td>";

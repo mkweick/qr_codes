@@ -121,26 +121,15 @@ class BatchesController < ApplicationController
       zip_file = Rails.root.join(batch_path, 'qr_codes.zip')
 
       if File.exist?(zip_file)
-        if @batch.location
-          if @batch.batch_type == '1'
-            send_file(zip_file, type: 'application/zip',
-              filename: "QR_CODES_#{@event.name}_#{@batch.location}_" +
-                "BATCH_#{@batch.number}_Attendees.zip")
-          elsif @batch.batch_type == '2'
-            send_file(zip_file, type: 'application/zip',
-              filename: "QR_CODES_#{@event.name}_BATCH_#{@batch.number}_" +
-                "Employees.zip")
-          end
-        else
-          if @batch.batch_type == '1'
-            send_file(zip_file, type: 'application/zip',
-              filename: "QR_CODES_#{@event.name}_BATCH_#{@batch.number}_" +
-                "Attendees.zip")
-          elsif @batch.batch_type == '2'
-            send_file(zip_file, type: 'application/zip',
-              filename: "QR_CODES_#{@event.name}_BATCH_#{@batch.number}_" +
-                "Employees.zip")
-          end
+        if @batch.batch_type == '1'
+          send_file(zip_file, type: 'application/zip',
+            filename: "QR_CODES_#{@event.name}" + 
+              "#{'_' + @batch.location if @batch.location}_" +
+              "BATCH_#{@batch.number}_Attendees.zip")
+        elsif @batch.batch_type == '2'
+          send_file(zip_file, type: 'application/zip',
+            filename: "QR_CODES_#{@event.name}_BATCH_#{@batch.number}_" +
+              "Employees.zip")
         end
       else
         flash.alert = "QR Codes zip file can't be found."
@@ -150,26 +139,15 @@ class BatchesController < ApplicationController
       export_file = Rails.root.join(batch_path, 'export', 'export.xls')
 
       if File.exist?(export_file)
-        if @batch.location
-          if @batch.batch_type == '1'
-            send_file(export_file, type: 'application/vnd.ms-excel',
-              filename: "FINAL_#{@event.name}_#{@batch.location}_" +
-                "BATCH_#{@batch.number}_Attendees.xls")
-          elsif @batch.batch_type == '2'
-            send_file(export_file, type: 'application/vnd.ms-excel',
-              filename: "FINAL_#{@event.name}_BATCH_#{@batch.number}_" +
-                "Employees.xls")
-          end
-        else
-          if @batch.batch_type == '1'
-            send_file(export_file, type: 'application/vnd.ms-excel',
-              filename: "FINAL_#{@event.name}_BATCH_#{@batch.number}_" +
-                "Attendees.xls")
-          elsif @batch.batch_type == '2'
-            send_file(export_file, type: 'application/vnd.ms-excel',
-              filename: "FINAL_#{@event.name}_BATCH_#{@batch.number}_" +
-                "Employees.xls")
-          end
+        if @batch.batch_type == '1'
+          send_file(export_file, type: 'application/vnd.ms-excel',
+            filename: "FINAL_#{@event.name}" +
+              "#{'_' + @batch.location if @batch.location}_" +
+              "BATCH_#{@batch.number}_Attendees.xls")
+        elsif @batch.batch_type == '2'
+          send_file(export_file, type: 'application/vnd.ms-excel',
+            filename: "FINAL_#{@event.name}_BATCH_#{@batch.number}_" +
+              "Employees.xls")
         end
       else
         flash.alert = "Export file can't be found."

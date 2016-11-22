@@ -9,18 +9,11 @@
   <strong>QR Codes and Excel Export:</strong>
   <p>
     <a href="<%= event_url(@event) %>">
-      <% if @batch.location %>
-        <% if @batch.batch_type == '1' %>
-          <%= "#{@event.name} - #{@batch.location} - Batch #{@batch.number} - Attendees" %>
-        <% elsif @batch.batch_type == '2' %>
-          <%= "#{@event.name} - Batch #{@batch.number} - Employees" %>
-        <% end %>
-      <% else %>
-        <% if @batch.batch_type == '1' %>
-          <%= "#{@event.name} - Batch #{@batch.number} - Attendees" %>
-        <% elsif @batch.batch_type == '2' %>
-          <%= "#{@event.name} - Batch #{@batch.number} - Employees" %>
-        <% end %>
+      <% if @batch.batch_type == '1' %>
+        <%= "#{@event.name}#{' - ' + @batch.location if @batch.location} - " %>
+        <%= "Batch #{@batch.number} - Attendees" %>
+      <% elsif @batch.batch_type == '2' %>
+        <%= "#{@event.name} - Batch #{@batch.number} - Employees" %>
       <% end %>
     </a>
   </p>

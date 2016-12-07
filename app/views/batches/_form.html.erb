@@ -2,7 +2,7 @@
 <% show_cancel_btn ||= false %>
 
 <%= form_for [@event, @batch], multipart: true,
-  html: { id: 'batch-form', class: "batch-form" } do |f| %>
+  html: { id: 'batch-form', class: "batch-form", autocomplete: "off" } do |f| %>
   
   <div class="text-left">
     

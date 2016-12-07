@@ -1,5 +1,5 @@
-<%= form_tag search_event_check_ins_path(@event),
-  method: 'get', remote: true, id: "search-event-registrations-form" do %>
+<%= form_tag search_event_check_ins_path(@event), method: 'get', remote: true,
+  id: "search-event-registrations-form", autocomplete: "off" do %>
 
   <div class="form-group">
     <%= text_field_tag 'first_name', params[:first_name],

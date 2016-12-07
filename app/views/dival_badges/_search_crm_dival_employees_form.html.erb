@@ -1,6 +1,6 @@
 <%= form_tag crm_dival_employee_dival_badges_path, method: 'get',
   remote: true, id: "crm-dival-employee-search-form",
-  class: "crm-dival-employee-form" do %>
+  class: "crm-dival-employee-form", autocomplete: "off" do %>
 
   <div class="form-group">
     <%= text_field_tag 'first_name', params[:first_name],

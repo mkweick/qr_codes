@@ -1,5 +1,5 @@
 <%= form_for @location,
-  html: { id: "location-form", class: "text-center" } do |f| %>
+  html: { id: "location-form", class: "text-center", autocomplete: "off" } do |f| %>
   
   <div class="form-group">
     <%= f.text_field 'name', value: @location.name, placeholder: "Location Name...",

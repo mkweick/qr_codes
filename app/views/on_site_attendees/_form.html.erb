@@ -2,8 +2,8 @@
 <% show_return_btn ||= false %>
 
 <%= form_for [@event, @attendee],
-  html: { id: "on-site-attendee-form",
-    class: "form-horizontal attendee-form" } do |f| %>
+  html: { id: "on-site-attendee-form", class: "form-horizontal attendee-form",
+    autocomplete: "off" } do |f| %>
   
   <% if @contact_in_crm %>
     <%= f.hidden_field :contact_in_crm, value: true %>

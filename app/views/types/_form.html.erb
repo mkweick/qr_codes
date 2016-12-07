@@ -1,4 +1,6 @@
-<%= form_for @type, html: { id: "type-form", class: "text-center" } do |f| %>
+<%= form_for @type,
+  html: { id: "type-form", class: "text-center", autocomplete: "off" } do |f| %>
+  
   <div class="form-group">
     <%= f.text_field 'name', value: @type.name, placeholder: "Event Type Name...",
       autofocus: 'autofocus', required: true, class: "form-control" %>

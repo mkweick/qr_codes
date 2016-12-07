@@ -1,4 +1,5 @@
-<%= form_tag @event, method: method, id: "event-form" do %>
+<%= form_tag @event, method: method, id: "event-form", autocomplete: "off" do %>
+  
   <div class="form-group">
     <%= select_tag 'type', options_for_select(@types, @type), required: true,
       prompt: '-- Select Event Type --', class: "form-control" %>

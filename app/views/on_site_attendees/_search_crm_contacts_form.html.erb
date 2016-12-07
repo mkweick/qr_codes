@@ -1,6 +1,6 @@
 <%= form_tag crm_contact_event_on_site_attendees_path(@event),
   method: 'get', remote: true, id: "search-crm-contacts-form",
-  class: "crm-contact-form" do %>
+  class: "crm-contact-form", autocomplete: "off" do %>
 
   <div class="form-group">
     <%= text_field_tag 'last_name', params[:last_name],

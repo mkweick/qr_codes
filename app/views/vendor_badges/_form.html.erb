@@ -1,5 +1,5 @@
 <%= form_tag print_vendor_badges_path, method: 'get', id: "vendor-form",
-  class: "form-horizontal vendor-form" do %>
+  class: "form-horizontal vendor-form", autocomplete: "off" do %>
 
   <div class="form-group">
     <%= label_tag :first_name, class: "col-sm-5 label-control" do %>

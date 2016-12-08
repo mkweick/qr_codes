@@ -32,11 +32,11 @@ class OnSiteAttendeesController < ApplicationController
     @qr_code = RQRCode::QRCode.new(
       "MATMSG:TO:leads@divalsafety.com;SUB:#{@event.qr_code_email_subject};BODY:" +
       "\n\n\n______________________" +
-      "\n" + @attendee.first_name + " " + @attendee.last_name +
-      "\n" + @attendee.account_name +
-      "#{' / ' + @attendee.account_number if @attendee.account_number}" +
-      "#{"\n" + @attendee.street1 if @attendee.street1}" +
-      "#{"\n" + @attendee.street2 if @attendee.street2}" +
+      "\n" + "Name: " + @attendee.first_name + " " + @attendee.last_name +
+      "\n" + "Company: " + @attendee.account_name +
+      "#{' / ' + @attendee.account_number if @attendee.account_number}" + 
+      "\nAD1: " + "#{@attendee.street1 if @attendee.street1}" +
+      "\nAD2: " + "#{@attendee.street2 if @attendee.street2}" +
       "#{"\n" + @attendee.city if @attendee.city}" +
       "#{"\n" if !@attendee.city && (@attendee.state || @attendee.zip)}" +
       "#{', ' if @attendee.city && @attendee.state}" +

@@ -64,7 +64,7 @@ class GenerateEmployeeQrCodesExportJob < ActiveJob::Base
           "#{"\n" + row[5] if row[5]}" +
           "#{"\n" if !row[5] && (row[6] || row[7])}" +
           "#{', ' if row[5] && row[6]}" + "#{row[6] if row[6]} " +
-          "#{row[7] if row[7]};;", level: :q
+          "#{row[7] if row[7]};;", level: :l
         ).to_img.resize(375, 375).save("#{qr_codes_path}/#{qr_code_filename}")
 
         attendee_row = [row[0], row[1], "DiVal Safety Equipment",

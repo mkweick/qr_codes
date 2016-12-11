@@ -62,7 +62,7 @@ class GenerateAttendeeQrCodesExportJob < ActiveJob::Base
 					"#{row[11] if row[11]} #{row[12]  if row[12]}" +
 					"#{"\n" + 'E: ' + row[6] if row[6]}" +
 					"#{"\n" + 'P: ' + row[7] if row[7]}" +
-					"#{"\n" + row[5] if row[5]};;", level: :q
+					"#{"\n" + row[5] if row[5]};;", level: :l
 				).to_img.resize(375, 375).save("#{qr_codes_path}/#{qr_code_filename}")
 
 		  	full_name = row[2].split(' ', 2)

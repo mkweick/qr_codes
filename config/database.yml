@@ -17,9 +17,9 @@ test:
 production:
   adapter: postgresql
   encoding: unicode
-  database: ENV["QR_DB_NAME"]
+  database: <%= ENV["QR_DB_NAME"] %>
   pool: 5
-  username: ENV["QR_DB_UN"]
-  password: ENV["QR_DB_PW"]
-  host: ENV["QR_DB_HOSTNAME"]
-  port: ENV["QR_DB_PORT"]
+  username: <%= ENV["QR_DB_UN"] %>
+  password: <%= ENV["QR_DB_PW"] %>
+  host: <%= ENV["QR_DB_HOSTNAME"] %>
+  port: <%= ENV["QR_DB_PORT"] %>

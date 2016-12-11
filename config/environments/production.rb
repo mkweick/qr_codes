@@ -68,12 +68,12 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default_url_options = { host: 'qr.divalsafety.com' }
   config.action_mailer.smtp_settings = {
-    address: 'mail-rails.divalsafety.com',
-    port: 25,
+    address: ENV["MSX_HOSTNAME"],
+    port: ENV["MSX_PORT"],
     authentication: :login,
-    domain: 'mainoffice.dival.com',
-    user_name: 'rails-mailer',
-    password: 'Tdot1721#',
+    domain: ENV["MSX_DOMAIN"],
+    user_name: ENV["MSX_UN"],
+    password: ENV["MSX_PW"],
     enable_starttls_auto: true,
     openssl_verify_mode: 'none'
   }

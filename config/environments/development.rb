@@ -23,26 +23,26 @@ Rails.application.configure do
     port: 3000
   }
   config.action_mailer.smtp_settings = {
-    address: 'mail-rails.divalsafety.com',
-    port: 25,
+    address: ENV["MSX_HOSTNAME"],
+    port: ENV["MSX_PORT"],
     authentication: :login,
-    user_name: 'rails-mailer',
-    password: 'Tdot1721#',
-    domain: 'mainoffice.dival.com',
+    user_name: ENV["MSX_UN"],
+    password: ENV["MSX_PW"],
+    domain: ENV["MSX_DOMAIN"],
     enable_starttls_auto: true,
     openssl_verify_mode: 'none'
   }
 
   # Gmail Settings
   # config.action_mailer.default_url_options = {
-  #   host: 'webdev.com',
+  #   host: 'webdev.divalsafety.com',
   #   port: 3000
   # }
   # config.action_mailer.smtp_settings = {
   #   address: 'smtp.gmail.com',
   #   port: 587,
   #   authentication: 'plain',
-  #   user_name: 'mkweick@gmail.com',
+  #   user_name: '',
   #   password: '',
   #   enable_starttls_auto: true
   # }

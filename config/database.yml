@@ -17,9 +17,9 @@ test:
 production:
   adapter: postgresql
   encoding: unicode
-  database: event_qr_codes
+  database: ENV["QR_DB_NAME"]
   pool: 5
-  username: dival
-  password: Tdot1721#
-  host: localhost
-  port: 5432
+  username: ENV["QR_DB_UN"]
+  password: ENV["QR_DB_PW"]
+  host: ENV["QR_DB_HOSTNAME"]
+  port: ENV["QR_DB_PORT"]

@@ -17,6 +17,7 @@ gem 'whenever',         :require => false
 gem 'rb-readline'
 gem 'tiny_tds',         '1.0.4'
 gem 'ruby-odbc',        '0.99997'
+gem 'dynamics_crm',     '0.7.1'
 
 gem 'jquery-rails'
 gem 'turbolinks'

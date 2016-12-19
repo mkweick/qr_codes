@@ -23,17 +23,18 @@ class DivalBadgesController < ApplicationController
       @qr_code = RQRCode::QRCode.new(
         "MATMSG:TO:;SUB:DIVAL SALES REP REQUEST;BODY:" +
         "\n\n\n______________________" +
-        "\n" + @first_name + " " + @last_name +
-        "#{"\n" + title if title}" +
-        "#{"\n" + email if email}" +
-        "#{"\n" + phone if phone}" +
+        "\n" + "N: " + @first_name + " " + @last_name +
+        "\n" + "T: " + "#{title if title}" +
+        "\n" + "E: " + "#{email if email}" +
+        "\n" + "P: " + "#{phone if phone}" +
         "\n\n" + "DiVal Safety Equipment" +
-        "#{"\n" + street1 if street1}" +
-        "#{"\n" + street2 if street2}" +
-        "#{"\n" + city if city}" +
-        "#{"\n" if !city && (state || zip_code)}" +
-        "#{', ' if city && state}" + "#{state if state} " +
-        "#{zip_code if zip_code};;", level: :l
+        "\n" + "AD1: " + "#{street1 if street1}" +
+        "\n" + "AD2: " + "#{street2 if street2}" +
+        "\n" + "CSZ: " + "#{city if city}" +
+          "#{', ' if city && state}" +
+          "#{state if state} " +
+          "#{zip_code if zip_code};;",
+        level: :l
       ).to_img.resize(165, 165)
 
       render layout: false

@@ -5,7 +5,7 @@
   html: { id: "on-site-attendee-form", class: "form-horizontal attendee-form",
     autocomplete: "off" } do |f| %>
   
-  <% if @contact_in_crm %>
+  <% if @attendee.contact_in_crm %>
     <%= f.hidden_field :contact_in_crm, value: true %>
   <% else %>
     <%= f.hidden_field :contact_in_crm, value: false %>

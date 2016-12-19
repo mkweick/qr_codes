@@ -53,18 +53,18 @@ class GenerateEmployeeQrCodesExportJob < ActiveJob::Base
         RQRCode::QRCode.new(
           "MATMSG:TO:;SUB:DIVAL SALES REP REQUEST;BODY:" +
           "\n\n\n______________________" +
-          "#{"\n" + row[0] + " " if row[0]}" +
-          "#{row[1] if row[1]}" +
-          "#{"\n" + row[2] if row[2]}" +
-          "#{"\n" + row[8] if row[8]}" +
-          "#{"\n" + row[9] if row[9]}" +
+          "\n" + "N: " + "#{row[0] + " " if row[0]}" + "#{row[1] if row[1]}" +
+          "\n" + "T: " + "#{row[2] if row[2]}" +
+          "\n" + "E: " + "#{row[8] if row[8]}" +
+          "\n" + "P: " + "#{row[9] if row[9]}" +
           "\n\n" + "DiVal Safety Equipment" +
-          "#{"\n" + row[3] if row[3]}" +
-          "#{"\n" + row[4] if row[4]}" +
-          "#{"\n" + row[5] if row[5]}" +
-          "#{"\n" if !row[5] && (row[6] || row[7])}" +
-          "#{', ' if row[5] && row[6]}" + "#{row[6] if row[6]} " +
-          "#{row[7] if row[7]};;", level: :l
+          "\n" + "AD1: " + "#{row[3] if row[3]}" +
+          "\n" + "AD2: " + "#{row[4] if row[4]}" +
+          "\n" + "CSZ: " + "#{row[5] if row[5]}" +
+            "#{', ' if row[5] && row[6]}" +
+            "#{row[6] if row[6]} " +
+            "#{row[7] if row[7]};;",
+          level: :l
         ).to_img.resize(375, 375).save("#{qr_codes_path}/#{qr_code_filename}")
 
         attendee_row = [row[0], row[1], "DiVal Safety Equipment",

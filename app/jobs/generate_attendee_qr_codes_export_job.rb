@@ -48,21 +48,21 @@ class GenerateAttendeeQrCodesExportJob < ActiveJob::Base
 		  		end
 		  	end
 
-
 		  	RQRCode::QRCode.new(
 		  		"MATMSG:TO:leads@divalsafety.com;SUB:#{event.qr_code_email_subject};BODY:" +
 					"\n\n\n______________________" +
-					"\n" + row[2] +
-					"\n" + row[3] + "#{' / ' + row[4] if row[4]}" +
-					"#{"\n" + row[8] if row[8]}" +
-					"#{"\n" + row[9] if row[9]}" +
-					"#{"\n" + row[10] if row[10]}" +
-					"#{"\n" if !row[10] && (row[11] || row[12])}" +
-					"#{', ' if row[10] && row[11]}" +
-					"#{row[11] if row[11]} #{row[12]  if row[12]}" +
-					"#{"\n" + 'E: ' + row[6] if row[6]}" +
-					"#{"\n" + 'P: ' + row[7] if row[7]}" +
-					"#{"\n" + row[5] if row[5]};;", level: :l
+					"\n" + "N: " + row[2] +
+					"\n" + "C: " + row[3] + "#{' / ' + row[4] if row[4]}" +
+					"\n" + "AD1: " + "#{row[8] if row[8]}" +
+					"\n" + "AD2: " + "#{row[9] if row[9]}" +
+					"\n" + "CSZ: " + "#{row[10] if row[10]}" +
+						"#{', ' if row[10] && row[11]}" +
+						"#{row[11] if row[11]} " +
+						"#{row[12] if row[12]}" +
+					"\n" + "E: " + "#{row[6] if row[6]}" +
+					"\n" + "P: " + "#{row[7] if row[7]}" +
+					"\n" + "SR: " + "#{row[5] if row[5]};;",
+					level: :l
 				).to_img.resize(375, 375).save("#{qr_codes_path}/#{qr_code_filename}")
 
 		  	full_name = row[2].split(' ', 2)

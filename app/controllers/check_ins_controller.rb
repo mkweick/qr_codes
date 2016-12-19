@@ -23,7 +23,7 @@ class CheckInsController < ApplicationController
     account_name = params[:account_name].strip unless params[:account_name].blank?
     @results = []
 
-    if first_name || last_name || account_name
+    if first_name || last_name || (account_name && account_name.size > 2)
       db = TinyTds::Client.new(
         host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
         username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
@@ -32,11 +32,7 @@ class CheckInsController < ApplicationController
       sql = registered_attendees_base_sql_script
     end
 
-    if first_name
-      first_name = db.escape(first_name)
-      sql += "AND (d.FirstName LIKE '#{first_name}%' OR a.FirstName LIKE '#{first_name}%')"
-      sql += "ORDER BY d.FirstName, d.LastName;"
-    elsif last_name
+    if last_name
       last_name = db.escape(last_name)
       sql += "AND (d.LastName LIKE '#{last_name}%' OR a.LastName LIKE '#{last_name}%')"
       sql += "ORDER BY d.LastName, d.FirstName;"

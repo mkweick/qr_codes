@@ -1,15 +1,17 @@
-var cancelBtn = "<a id=\"check-in-cancel-btn\"";
-cancelBtn += "class=\"btn btn-sm btn-danger top-10 left-10\">Cancel</a>";
-
+var cancelBtn = "<a class=\"check-in-cancel-btn btn btn-sm btn-danger top-10 left-10\">Clear</a>";
 var results = "";
 
 <% if @results.any? %>
-  results += "<div id=\"check-in-results\" class=\"row\">";
-  results += "<div class=\"col-xs-12 col-sm-12 col-md-10 col-md-offset-1\">";
+  results += "<div id=\"check-in-results\" class=\"bottom-120\">";
   results += "<table width=\"100%\" class=\"table table-hover text-left\">";
-  results += "<thead><tr class=\"th-row\">";
-  results += "<th width=\"17%\">First <span class=\"hide-name\">Name</span></th>";
-  results += "<th width=\"21%\">Last <span class=\"hide-name\">Name</span></th>";
+  results += "<thead>";
+  results += "<tr class=\"th-row-light\">";
+  results += "<th colspan=\"4\" class=\"text-center thin-bottom-border pad-5\">";
+  results += "<a class=\"check-in-cancel-btn btn btn-xs btn-danger clear-btn\">Clear Results</a>";
+  results += "</th></tr>";
+  results += "<tr class=\"th-row-light\">";
+  results += "<th width=\"17%\">First</th>";
+  results += "<th width=\"21%\">Last</th>";
   results += "<th width=\"47%\">Account</th>";
   results += "<th width=\"15%\" class=\"text-center\">Attended</th>";
   results += "</tr></thead><tbody>";
@@ -60,40 +62,38 @@ var results = "";
       <% end %>
     <% end %>
   <% end %>
-  results += "</tbody></table></div></div>";
+  results += "</tbody></table></div>";
 <% else %>
-  results += "<div id=\"check-in-no-results\" class=\"row\">";
-  results += "<div class=\"col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3\">";
+  results += "<div id=\"check-in-no-results\" class=\"bottom-120\">";
   results += "<div class=\"well text-center pad-top-20\">";
   results += "<h4>";
   <% if params[:first_name].present? || params[:last_name].present? || params[:account_name].present? %>
     <% if @account_length_error %>
-      results += "3 characters required for account search.";
+      results += "3 characters required for account search";
     <% else %>
-      results += "No results found.";
+      results += "No results found";
     <% end %>
   <% else %>
-    results += "You didn't search anything.";
+    results += "You didn't search anything";
   <% end %>
   results += "</h4>";
-  results += "</div></div></div>"
+  results += "</div></div>"
 <% end %>
 
 clearCheckInSearch();
+clearCrmContactAndAccountSearch();
 
 $('#check-in-submit-btn').removeAttr('disabled');
-$('#check-in-submit-btn').removeAttr('width-80');
 $('#check-in-submit-btn').find('span.submit-text').removeClass('hide-me');
 $('#check-in-submit-btn').find('div.spinner').addClass('hide-me');
 
 $(cancelBtn).insertAfter('#check-in-submit-btn');
+$(results).insertBefore('#new-on-site-badge-form');
 
-$('#check-in-cancel-btn').click(function() {
+$('.check-in-cancel-btn').click(function() {
   clearCheckInSearch();
   $('#check-in-ln').focus();
 });
-
-$(results).insertAfter('#check-in-form');
 
 $('#check-in-results table tbody tr').click(function() {
   var rowId = $(this).attr('id');

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161018153807) do
+ActiveRecord::Schema.define(version: 20161218001542) do
 
   create_table "batches", force: :cascade do |t|
     t.string   "event_id",                        null: false
@@ -24,11 +24,14 @@ ActiveRecord::Schema.define(version: 20161018153807) do
   end
 
   create_table "crm_campaigns", force: :cascade do |t|
-    t.string   "event_id",   null: false
-    t.string   "code",       null: false
-    t.string   "name",       null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "event_id",         null: false
+    t.string   "code",             null: false
+    t.string   "name",             null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.date     "event_start_date"
+    t.date     "event_end_date"
+    t.string   "campaign_id"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|

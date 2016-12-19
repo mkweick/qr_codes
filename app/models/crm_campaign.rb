@@ -9,4 +9,10 @@ class CrmCampaign < ActiveRecord::Base
     }
   validates :name,
     presence: { message: "Campaign name is required. Contact IT." }
+  validates :event_start_date,
+    presence: { message: "Event start date not set on CRM Campaign." }
+  validates :event_end_date,
+    presence: { message: "Event end date not set on CRM Campaign." }
+  validates :campaign_id,
+    presence: { message: "Issue with this Campaign's CRM CampaignId." }
 end

@@ -7,10 +7,6 @@
       <%= "(#{@attendees.count})" if @attendees.any? %>
     </h2>
     <div id="event-controls" class="pull-right">
-      <% if @event_has_campaigns %>
-        <%= link_to 'Check In', new_event_check_in_path(@event),
-          class: "btn btn-sm btn-success right-5" %>
-      <% end %>
       <%= link_to 'New Badge', new_event_on_site_attendee_path(@event),
         class: "btn btn-sm btn-primary" %>
     </div>

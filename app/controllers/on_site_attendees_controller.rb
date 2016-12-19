@@ -16,35 +16,67 @@ class OnSiteAttendeesController < ApplicationController
 
   def create
     @attendee = @event.on_site_attendees.new(on_site_attendee_params)
+    @contact_id = params[:contact_id].strip unless params[:contact_id].blank?
 
     if @attendee.save
+      if @attendee.badge_type == 'NEW'
+        if @attendee.contact_in_crm
+          if @contact_id
+            begin
+              create_crm_campaign_response_existing_customer
+            rescue
+              logger.error(
+                "CRM Event Registration not created for existing CRM " +
+                "Contact #{@attendee.first_name} #{@attendee.last_name} " +
+                "from #{@attendee.account_name} / #{@attendee.account_number}."
+              )
+            end
+          else
+            logger.error(
+              "Missing ContactId. CRM Event Registration not created for " +
+              "existing CRM Contact #{@attendee.first_name} #{@attendee.last_name} " +
+              "from #{@attendee.account_name} / #{@attendee.account_number}."
+            )
+          end
+        else
+          begin
+            create_crm_campaign_response_new_customer
+          rescue
+            logger.error(
+              "ERROR: Issue creating CRM Campaign Response for new customer " +
+              "#{@attendee.first_name} #{@attendee.last_name} from " +
+              "#{@attendee.account_name}."
+            )
+          end
+        end
+      end
+
       redirect_to event_on_site_attendee_path(@event, @attendee)
     else
-      @contact_in_crm = true if on_site_attendee_params[:contact_in_crm]
+      @event_has_campaigns = @event.crm_campaigns.any?
       render 'new'
     end
   end
 
   def show
     # Labels are 2-3/7" wide and 2-7/8" cut length
-    # 180 x 180 = 1.25" - supports printing on Chrome and Mozilla.
-    # 220 x 220 = 1.50" - supports printing on Chrome and Mozilla.
+    # 180 x 180 = 1.25" /  220 x 220 = 1.50"
     @qr_code = RQRCode::QRCode.new(
       "MATMSG:TO:leads@divalsafety.com;SUB:#{@event.qr_code_email_subject};BODY:" +
       "\n\n\n______________________" +
-      "\n" + @attendee.first_name + " " + @attendee.last_name +
-      "\n" + @attendee.account_name +
-      "#{' / ' + @attendee.account_number if @attendee.account_number}" + 
-      "#{"\n" + @attendee.street1 if @attendee.street1}" +
-      "#{"\n" + @attendee.street2 if @attendee.street2}" +
-      "#{"\n" + @attendee.city if @attendee.city}" +
-      "#{"\n" if !@attendee.city && (@attendee.state || @attendee.zip)}" +
-      "#{', ' if @attendee.city && @attendee.state}" +
-      "#{@attendee.state if @attendee.state} " +
-      "#{@attendee.zip_code if @attendee.zip_code}" +
-      "#{"\n" + @attendee.email if @attendee.email}" +
-      "#{"\n" + @attendee.phone if @attendee.phone}" +
-      "#{"\n" + @attendee.salesrep if @attendee.salesrep};;", level: :l
+      "\n" + "N: " + @attendee.first_name + " " + @attendee.last_name +
+      "\n" + "C: " + @attendee.account_name +
+        "#{' / ' + @attendee.account_number if @attendee.account_number}" + 
+      "\n" + "AD1: " + "#{@attendee.street1 if @attendee.street1}" +
+      "\n" + "AD2: " + "#{@attendee.street2 if @attendee.street2}" +
+      "\n" + "CSZ: " + "#{@attendee.city if @attendee.city}" +
+        "#{', ' if @attendee.city && @attendee.state}" +
+        "#{@attendee.state if @attendee.state} " +
+        "#{@attendee.zip_code if @attendee.zip_code}" +
+      "\n" + "E: " + "#{@attendee.email if @attendee.email}" +
+      "\n" + "P: " + "#{@attendee.phone if @attendee.phone}" +
+      "\n" + "SR: " + "#{@attendee.salesrep if @attendee.salesrep};;",
+      level: :l
     ).to_img.resize(165, 165)
 
     render layout: false
@@ -79,7 +111,7 @@ class OnSiteAttendeesController < ApplicationController
     account_name = params[:account_name].strip unless params[:account_name].blank?
     @results = []
 
-    if last_name || account_name
+    if last_name || (account_name && account_name.size > 2)
       db = TinyTds::Client.new(
         host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
         username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
@@ -92,7 +124,7 @@ class OnSiteAttendeesController < ApplicationController
       last_name = db.escape(last_name)
       sql += "AND a.LastName = '#{last_name}' "
       sql += "ORDER BY a.FirstName, a.LastName"
-    elsif account_name 
+    elsif account_name
       if account_name.size > 2
         account_name = db.escape(account_name)
         sql += "AND a.ParentCustomerIdName LIKE '%#{account_name}%' "
@@ -112,10 +144,7 @@ class OnSiteAttendeesController < ApplicationController
   def as400_account
     require 'odbc'
 
-    unless params[:account_name].blank?
-      account_name = params[:account_name].strip
-    end
-
+    account_name = params[:account_name].strip unless params[:account_name].blank?
     @results = []
     
     if account_name
@@ -266,7 +295,7 @@ class OnSiteAttendeesController < ApplicationController
   def crm_contacts_base_sql_query
     statement = "SELECT a.FirstName, a.LastName, b.Name, " +
       "b.icbcore_ExtAccountID, d.Line1, d.Line2, d.City, d.StateOrProvince, " +
-      "d.PostalCode, a.EMailAddress1, a.Telephone1, c.FullName " +
+      "d.PostalCode, a.EMailAddress1, a.Telephone1, c.FullName, a.ContactId " +
       "FROM ContactBase AS a " +
       "JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId " +
       "JOIN SystemUserBase AS c ON a.OwnerId = c.SystemUserId " +
@@ -274,6 +303,132 @@ class OnSiteAttendeesController < ApplicationController
       "WHERE a.StateCode = '0' " +
       "AND d.AddressNumber = '1' "
     statement
+  end
+
+  def create_crm_campaign_response_existing_customer
+    event_today = @event.crm_campaigns.where(
+      "? BETWEEN event_start_date AND event_end_date", Date.today
+    ).first
+
+    if event_today
+      campaign_id = event_today.campaign_id
+    else
+      return false
+    end
+
+    db = TinyTds::Client.new(
+      host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
+      username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
+    )
+
+    sql = "SELECT OwnerId, ParentCustomerId FROM ContactBase " +
+      "WHERE ContactId = '#{@contact_id}'"
+
+    query = db.execute(sql)
+    contact_info = query.each(:symbolize_keys => true).first
+    db.close unless db.closed?
+
+    client = DynamicsCRM::Client.new({
+      hostname: ENV["CRM_APP_HOST"],
+      login_url: ENV["CRM_APP_LOGIN_URL"]
+    })
+    client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
+
+    regardingobject = DynamicsCRM::XML::EntityReference.new('campaign', campaign_id)
+    owner = DynamicsCRM::XML::EntityReference.new('systemuser', contact_info[:OwnerId])
+    account = DynamicsCRM::XML::EntityReference.new('account', contact_info[:ParentCustomerId])
+    contact = DynamicsCRM::XML::EntityReference.new('contact', @contact_id)
+
+    entity = DynamicsCRM::XML::Entity.new('campaignresponse')
+    entity.attributes = DynamicsCRM::XML::Attributes.new(
+      regardingobjectid: regardingobject,
+      ownerid: owner,
+      subject: '.',
+      new_account: account,
+      new_contact: contact
+    )
+
+    xml = entity.to_xml
+    responsecode = DynamicsCRM::XML::Attributes.new(responsecode: 10000003).build_xml(
+      'responsecode', 100000003, 'OptionSetValue'
+    )
+    xml = xml.insert(xml.index("\n</a:Attributes>"), responsecode)
+    client.create(xml)
+  end
+
+  def create_crm_campaign_response_new_customer
+    event_today = @event.crm_campaigns.where(
+      "? BETWEEN event_start_date AND event_end_date", Date.today
+    ).first
+
+    if event_today
+      campaign_id = event_today.campaign_id
+    else
+      return false
+    end
+
+    owner_id = false
+    if @attendee.salesrep
+      salesrep = @attendee.salesrep.split(' ', 2)
+
+      db = TinyTds::Client.new(
+        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
+        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
+      )
+
+      if salesrep.count == 2
+        sql = "SELECT SystemUserId FROM SystemUserBase " +
+          "WHERE FirstName LIKE '%#{salesrep[0]}%' " +
+          "AND LastName LIKE '%#{salesrep[1]}%'"
+      else
+        sql = "SELECT SystemUserId FROM SystemUserBase " +
+          "WHERE FirstName LIKE '%#{salesrep[0]}%' " +
+          "OR LastName LIKE '%#{salesrep[0]}%'"
+      end
+
+      query = db.execute(sql)
+      salesrep_matches = query.each(:symbolize_keys => true)
+      db.close unless db.closed?
+
+      owner_id = salesrep_matches.first[:SystemUserId] if salesrep_matches.any?
+    end
+    
+    # Assign to Jess Spencer if salesrep not found/not provided
+    owner_id = '3A543400-4C6A-E211-A54A-00265585B80D' unless owner_id
+
+
+    client = DynamicsCRM::Client.new({
+      hostname: ENV["CRM_APP_HOST"],
+      login_url: ENV["CRM_APP_LOGIN_URL"]
+    })
+    client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
+
+    regardingobject = DynamicsCRM::XML::EntityReference.new('campaign', campaign_id)
+    owner = DynamicsCRM::XML::EntityReference.new('systemuser', owner_id)
+
+    entity = DynamicsCRM::XML::Entity.new('campaignresponse')
+    entity.attributes = DynamicsCRM::XML::Attributes.new(
+      regardingobjectid: regardingobject,
+      ownerid: owner,
+      subject: '.',
+      companyname: @attendee.account_name,
+      firstname: @attendee.first_name,
+      lastname: @attendee.last_name,
+      new_street_1: @attendee.street1,
+      new_street2: @attendee.street2,
+      new_city: @attendee.city,
+      new_stateprovince: @attendee.state,
+      new_zippostalcode: @attendee.zip_code,
+      emailaddress: @attendee.email,
+      telephone: @attendee.phone
+    )
+
+    xml = entity.to_xml
+    responsecode = DynamicsCRM::XML::Attributes.new(responsecode: 10000003).build_xml(
+      'responsecode', 100000003, 'OptionSetValue'
+    )
+    xml = xml.insert(xml.index("\n</a:Attributes>"), responsecode)
+    client.create(xml)
   end
 
   def escape_single_quotes(string)

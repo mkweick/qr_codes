@@ -1,10 +1,11 @@
-var cancelBtn = "<a id=\"crm-account-cancel-btn\"";
-cancelBtn += "class=\"btn btn-sm btn-danger top-10 left-10\">Cancel</a>";
-
+var cancelBtn = "<a class=\"crm-account-cancel-btn btn btn-sm btn-danger top-10 left-10\">Clear</a>";
 var results = "";
 
 <% if @results.any? %>
-  results += "<hr id=\"crm-account-line\" class=\"top-10 bottom-10\" />";
+  results += "<div id=\"crm-account-search-results\" class=\"well well-dark bottom-60\">";
+  results += "<div class=\"text-center pad-5\">";
+  results += "<a class=\"crm-account-cancel-btn btn btn-xs btn-danger clear-btn\">Clear Results</a>";
+  results += "</div>";
   results += "<div id=\"crm-account-results\" class=\"list-group\">";
   <% @results.each do |row| %>
     <% account_name = row[0].strip if row[0].present? %>
@@ -12,30 +13,31 @@ var results = "";
 
     results += "<%= j render 'ship_to_link', account_number: account_number, account_name: account_name %>";
   <% end %>
-  results += "</div>";
+  results += "</div></div>";
 <% else %>
-  results += "<hr id=\"crm-account-line\" class=\"top-10 bottom-10\" />";
-  results += "<h4 id=\"crm-account-no-results\" class=\"text-center top-20\">";
+  results += "<div id=\"crm-account-no-results\" class=\"bottom-60\">";
+  results += "<div class=\"well well-dark text-center pad-top-20\">";
+  results += "<h4>";
   <% if params[:account_name].present? %>
     <% if @account_length_error %>
-      results += "3 characters required for account search."
+      results += "3 characters required for account search"
     <% else %>
-      results += "No results found.";
+      results += "No results found";
     <% end %>
   <% else %>
-    results += "You didn't search anything.";
+    results += "You didn't search anything";
   <% end %>
-  results += "</h4>";
+  results += "</h4></div></div>";
 <% end %>
 
+clearCheckInSearch();
 clearCrmContactAndAccountSearch();
 
 $('#crm-account-submit-btn').removeAttr('disabled');
-$('#crm-account-submit-btn').removeAttr('width-80');
 $('#crm-account-submit-btn').find('span.submit-text').removeClass('hide-me');
 $('#crm-account-submit-btn').find('div.spinner').addClass('hide-me');
 
 $(cancelBtn).insertAfter('#crm-account-submit-btn');
-$(results).insertAfter('.crm-account-form');
+$(results).insertBefore('#new-on-site-badge-form');
 
-$('#crm-account-cancel-btn').click(clearCrmContactAndAccountSearch);
+$('.crm-account-cancel-btn').click(clearCrmContactAndAccountSearch);

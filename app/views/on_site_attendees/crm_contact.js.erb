@@ -1,10 +1,11 @@
-var cancelBtn = "<a id=\"crm-contact-cancel-btn\"";
-cancelBtn += "class=\"btn btn-sm btn-danger top-10 left-10\">Cancel</a>";
-
+var cancelBtn = "<a class=\"crm-contact-cancel-btn btn btn-sm btn-danger top-10 left-10\">Clear</a>";
 var results = "";
 
 <% if @results.any? %>
-  results += "<hr id=\"crm-contact-line\" class=\"top-10 bottom-10\" />";
+  results += "<div id=\"crm-contact-search-results\" class=\"well well-dark bottom-60\">";
+  results += "<div class=\"text-center pad-5\">";
+  results += "<a class=\"crm-contact-cancel-btn btn btn-xs btn-danger clear-btn\">Clear Results</a>";
+  results += "</div>";
   results += "<div id=\"crm-contact-results\" class=\"list-group\">";
   <% @results.each do |row| %>
     <% first_name = row[0].strip if row[0] %>
@@ -19,6 +20,7 @@ var results = "";
     <% email = row[9].strip if row[9] %>
     <% phone = row[10].strip if row[10] %>
     <% salesrep = row[11].strip if row[11] %>
+    <% contact_id = row[12].strip if row[12] %>
 
     results += "<a class=\"list-group-item text-left\">";
     results += "<%= first_name %> <%= last_name %>";
@@ -35,35 +37,37 @@ var results = "";
     results += "<div id=\"email\"><%= email %></div>";
     results += "<div id=\"phone\"><%= phone %></div>";
     results += "<div id=\"salesrep\"><%= salesrep %></div>";
+    results += "<div id=\"contact-id\"><%= contact_id %></div>";
     results += "</a>";
   <% end %>
-  results += "</div>";
+  results += "</div></div>";
 <% else %>
-  results += "<hr id=\"crm-contact-line\" class=\"top-10 bottom-10\" />";
-  results += "<h4 id=\"crm-contact-no-results\" class=\"text-center top-20\">";
+  results += "<div id=\"crm-contact-no-results\" class=\"bottom-60\">";
+  results += "<div class=\"well well-dark text-center pad-top-20\">";
+  results += "<h4>";
   <% if params[:last_name].present? || params[:account_name].present? %>
     <% if @account_length_error %>
-      results += "3 characters required for account search.";
+      results += "3 characters required for account search";
     <% else %>
-      results += "No results found.";
+      results += "No results found";
     <% end %>
   <% else %>
-    results += "You didn't search anything.";
+    results += "You didn't search anything";
   <% end %>
-  results += "</h4>";
+  results += "</h4></div></div>";
 <% end %>
 
+clearCheckInSearch();
 clearCrmContactAndAccountSearch();
 
 $('#crm-contact-submit-btn').removeAttr('disabled');
-$('#crm-contact-submit-btn').removeAttr('width-80');
 $('#crm-contact-submit-btn').find('span.submit-text').removeClass('hide-me');
 $('#crm-contact-submit-btn').find('div.spinner').addClass('hide-me');
 
 $(cancelBtn).insertAfter('#crm-contact-submit-btn');
-$(results).insertAfter('.crm-contact-form');
+$(results).insertBefore('#new-on-site-badge-form');
 
-$('#crm-contact-cancel-btn').click(clearCrmContactAndAccountSearch);
+$('.crm-contact-cancel-btn').click(clearCrmContactAndAccountSearch);
 
 $('#crm-contact-results a').click(function() {
   $('#on_site_attendee_first_name').val($(this).find('#first-name').text());
@@ -79,5 +83,12 @@ $('#crm-contact-results a').click(function() {
   $('#on_site_attendee_phone').val($(this).find('#phone').text()).change();
   $('#on_site_attendee_salesrep').val($(this).find('#salesrep').text());
   $('#on_site_attendee_contact_in_crm').val("true");
+
+  resetOnSiteAttendeeFormUrl();
+
+  $('#on-site-attendee-form').attr('action',
+    $('#on-site-attendee-form').attr('action') + '?contact_id=' +
+    $(this).find('#contact-id').text());
+
   clearCrmContactAndAccountSearch();
 });

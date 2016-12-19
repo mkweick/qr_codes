@@ -1,7 +1,7 @@
 var results = "";
 
-results += "<h4 class=\"bottom-0\">Select Ship-To Address</h4>";
-results += "<div class=\"bottom-10\"><%= @account_name %></div>";
+results += "<h4 class=\"bottom-0 text-center\">Select Ship-To Address</h4>";
+results += "<div class=\"bottom-10 text-center\"><%= @account_name %></div>";
 
 <% if @results.any? %>
   <% @results.each do |row| %>
@@ -32,8 +32,8 @@ results += "<div class=\"bottom-10\"><%= @account_name %></div>";
     results += "</a>";
   <% end %>
 <% else %>
-  results += "<h4 id=\"crm-account-no-results\" class=\"text-center top-20\">";
-  results += "No ship-to addresses found.";
+  results += "<h4 id=\"crm-account-no-results\" class=\"text-center top-20 bottom-20\">";
+  results += "No ship-to addresses found";
   results += "</h4>";
 <% end %>
 
@@ -47,6 +47,8 @@ $('#crm-account-results a').click(function() {
   $('#on_site_attendee_city').val($(this).find('#ship-to-city').text());
   $('#on_site_attendee_state').val($(this).find('#ship-to-state').text());
   $('#on_site_attendee_zip_code').val($(this).find('#ship-to-zip-code').text());
+
   clearCrmContactAndAccountSearch();
+
   $('#on_site_attendee_first_name').focus();
 });

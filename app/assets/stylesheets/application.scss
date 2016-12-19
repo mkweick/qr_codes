@@ -10,6 +10,7 @@ hr { border-top: 1px solid #cccccc; }
 .hide-me { display: none; }
 
 .well { padding-top: 0; }
+.well-dark { background-color: #ECECEC; }
 
 .alert ul { 
 	padding: 0;
@@ -43,6 +44,8 @@ li.list-group-item:after, a.list-group-item:after {
 .bottom-10 {margin-bottom: 10px; }
 .bottom-20 {margin-bottom: 20px; }
 .bottom-30 {margin-bottom: 30px; }
+.bottom-60 {margin-bottom: 60px; }
+.bottom-120 {margin-bottom: 120px; }
 .right-5 { margin-right: 5px; }
 .right-10 { margin-right: 10px; }
 .left-10 { margin-left: 10px; }
@@ -51,6 +54,7 @@ li.list-group-item:after, a.list-group-item:after {
 .left-40 { margin-left: 40px; }
 
 .pad-0 { padding: 0; }
+.pad-5 { padding: 5px; }
 .pad-top-10 { padding-top: 10px; }
 .pad-top-15 { padding-top: 15px; }
 .pad-top-20 { padding-top: 20px; }
@@ -165,12 +169,18 @@ li.list-group-item:after, a.list-group-item:after {
 	margin-bottom: 5px;
 }
 
+#reset-form-btn {
+  padding: 2px 7px;
+  font-size: 11px;
+}
+
 .attendee-form input[type="text"].form-control,
 .crm-contact-form input[type="text"].form-control,
 .crm-account-form input[type="text"].form-control,
 .dival-employee-form input[type="text"].form-control,
 .crm-dival-employee-form input[type="text"].form-control,
-.vendor-form input[type="text"].form-control {
+.vendor-form input[type="text"].form-control,
+#search-event-registrations-form input[type="text"].form-control {
 	height: 30px;
 	padding: 8px 10px;
 	font-size: 12px;
@@ -204,7 +214,8 @@ li.list-group-item:after, a.list-group-item:after {
 .crm-contact-form .form-group,
 .crm-account-form .form-group,
 #check-in-form .form-group,
-.crm-dival-employee-form .form-group {
+.crm-dival-employee-form .form-group,
+#search-event-registrations-form .form-group {
 	margin-bottom: 0;
 }
 
@@ -216,6 +227,10 @@ li.list-group-item:after, a.list-group-item:after {
 	margin-top: 20px;
 	margin-bottom: 0;
 }
+
+#crm-contact-search-results, #crm-account-search-results { padding: 0 10px; }
+
+#crm-contact-results, #crm-account-results { margin-bottom: 10px; }
 
 #crm-campaign-results .list-group-item,
 #crm-contact-results .list-group-item,
@@ -247,6 +262,7 @@ li.list-group-item:after, a.list-group-item:after {
 .whs-btn-lg { width: 100px; }
 
 .table thead tr.th-row { background-color: #e7e7e7; }
+.table thead tr.th-row-light { background-color: #f5f5f5; }
 
 .table tbody tr td { padding: 0; }
 
@@ -269,6 +285,17 @@ table#on-site-badges {
 	border-collapse: separate;
 	border: 1px solid #dddddd;
 	border-radius: 5px;
+}
+
+#check-in-results thead th.thin-bottom-border { border-bottom: 1px solid #ddd; }
+
+#check-in-results thead tr th.pad-5 { padding: 5px; }
+
+#check-in-results thead th a.clear-btn,
+#crm-contact-search-results a.clear-btn,
+#crm-account-search-results a.clear-btn {
+  padding: 3px 10px;
+  font-size: 11px;
 }
 
 #check-in-results tbody td a { color: #000000; }

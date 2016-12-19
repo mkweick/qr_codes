@@ -17,38 +17,50 @@ function clearCheckInSearch() {
   $('#check-in-fn').val("");
   $('#check-in-ln').val("");
   $('#check-in-an').val("");
+  $('#check-in-submit-btn').removeClass('width-80');
   
   if ($('#check-in-results')) { $('#check-in-results').remove(); };
   if ($('#check-in-no-results')) { $('#check-in-no-results').remove(); };
-  if ($('#check-in-cancel-btn')) { $('#check-in-cancel-btn').remove(); };
+  if ($('.check-in-cancel-btn')) { $('.check-in-cancel-btn').remove(); };
 };
 
 function clearCrmContactAndAccountSearch() {
   $('#crm-contact-ln').val("");
   $('#crm-contact-an').val("");
+  $('#crm-contact-submit-btn').removeClass('width-80');
   
   if ($('#crm-contact-line')) { $('#crm-contact-line').remove(); };
-  if ($('#crm-contact-results')) { $('#crm-contact-results').remove(); };
+  if ($('#crm-contact-search-results')) { $('#crm-contact-search-results').remove(); };
   if ($('#crm-contact-no-results')) { $('#crm-contact-no-results').remove(); };
-  if ($('#crm-contact-cancel-btn')) { $('#crm-contact-cancel-btn').remove(); };
+  if ($('.crm-contact-cancel-btn')) { $('.crm-contact-cancel-btn').remove(); };
 
   $('#crm-account-an').val("");
+  $('#crm-account-submit-btn').removeClass('width-80');
   
   if ($('#crm-account-line')) { $('#crm-account-line').remove(); };
-  if ($('#crm-account-results')) { $('#crm-account-results').remove(); };
+  if ($('#crm-account-search-results')) { $('#crm-account-search-results').remove(); };
   if ($('#crm-account-no-results')) { $('#crm-account-no-results').remove(); };
-  if ($('#crm-account-cancel-btn')) { $('#crm-account-cancel-btn').remove(); };
+  if ($('.crm-account-cancel-btn')) { $('.crm-account-cancel-btn').remove(); };
 };
 
 function clearCrmDivalEmployeeSearch() {
   $('#crm-dival-employee-fn').val("");
   $('#crm-dival-employee-ln').val("");
+  $('#crm-dival-employee-submit-btn').removeClass('width-80');
   
   if ($('#crm-dival-employee-line')) { $('#crm-dival-employee-line').remove(); };
   if ($('#crm-dival-employee-results')) { $('#crm-dival-employee-results').remove(); };
   if ($('#crm-dival-employee-no-results')) { $('#crm-dival-employee-no-results').remove(); };
   if ($('#crm-dival-employee-cancel-btn')) { $('#crm-dival-employee-cancel-btn').remove(); };
 };
+
+function resetOnSiteAttendeeFormUrl() {
+  var questionMarkIndex = $('#on-site-attendee-form').attr('action').indexOf('?');
+
+  if (questionMarkIndex >= 0) {
+    $('#on-site-attendee-form').attr('action', $('#on-site-attendee-form').attr('action').slice(0, questionMarkIndex));
+  }
+}
 
 function resetNewAttendeeForm() {
   if ($('div#flash-msg')) { $('div#flash-msg').remove(); };
@@ -69,7 +81,9 @@ function resetNewAttendeeForm() {
   $('input[type=radio]').prop('checked', function() {
     return this.getAttribute('checked') == 'checked';
   });
+  $('#badge-type').addClass('hide-me');
   $('div.form-group').removeClass("has-error");
+  resetOnSiteAttendeeFormUrl();
 };
 
 function resetCheckInForm() {

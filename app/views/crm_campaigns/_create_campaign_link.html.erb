@@ -1,5 +1,9 @@
-<%= link_to event_crm_campaigns_path(@event, name: name, code: code),
+<%= link_to event_crm_campaigns_path(
+  @event, campaign_name: campaign_name, code: code, start_date: start_date,
+  end_date: end_date, campaign_id: campaign_id),
   method: 'post', class: "list-group-item text-left" do %>
-  <%= name %>
+  
+  <%= campaign_name %>
   <span class="pull-right"><%= code %></span>
+
 <% end %>

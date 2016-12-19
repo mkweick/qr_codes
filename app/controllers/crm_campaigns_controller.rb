@@ -7,22 +7,23 @@ class CrmCampaignsController < ApplicationController
 
 
   def create
-    name = params[:name].strip unless params[:name].blank?
+    campaign_name = params[:campaign_name].strip unless params[:campaign_name].blank?
     code = params[:code].strip unless params[:code].blank?
+    start_date = params[:start_date].strip unless params[:start_date].blank?
+    end_date = params[:end_date].strip unless params[:end_date].blank?
+    campaign_id = params[:campaign_id].strip unless params[:campaign_id].blank?
     
-    if name && code 
-      @campaign = @event.crm_campaigns.new(name: name, code: code)
+    @campaign = @event.crm_campaigns.new(
+      name: campaign_name, code: code, event_start_date: start_date,
+      event_end_date: end_date, campaign_id: campaign_id
+    )
 
-      if @campaign.save
-        flash.notice = "CRM Campaign assigned."
-        redirect_to edit_event_path(@event)
-      else
-        set_event_form_info
-        render 'events/edit'
-      end
-    else
-      flash.alert = "Campaign Name or Code missing. Contact IT."
+    if @campaign.save
+      flash.notice = "CRM Campaign assigned."
       redirect_to edit_event_path(@event)
+    else
+      set_event_form_info
+      render 'events/edit'
     end
   end
 
@@ -50,7 +51,8 @@ class CrmCampaignsController < ApplicationController
       )
 
       campaign_name = db.escape(campaign_name)
-      sql = "SELECT Name, CodeName FROM CampaignBase " +
+      sql = "SELECT Name, CodeName, ActualStart, ActualEnd, CampaignId " +
+        "FROM CampaignBase " +
         "WHERE Name LIKE '%#{campaign_name}%'"
       
       query = db.execute(sql)
@@ -60,10 +62,6 @@ class CrmCampaignsController < ApplicationController
   end
 
   private
-
-  def crm_campaign_params
-    params.require(:crm_campaign).permit(:code)
-  end
 
   def set_event
     @event = Event.find(params[:event_id]) if params[:event_id]

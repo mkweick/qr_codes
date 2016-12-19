@@ -6,15 +6,18 @@ var results = "";
 <% if @results.any? %>
   results += "<div id=\"crm-campaign-results\" class=\"list-group\">";
   <% @results.each do |row| %>
-    <% name = row[0].strip if row[0] %>
+    <% campaign_name = row[0].strip if row[0] %>
     <% code = row[1].strip if row[1] %>
+    <% start_date = row[2].strftime("%Y-%m-%d") if row[2] %>
+    <% end_date = row[3].strftime("%Y-%m-%d") if row[3] %>
+    <% campaign_id = row[4].strip if row[4] %>
 
-    results += "<%= j render 'create_campaign_link', name: name, code: code %>";
+    results += "<%= j render 'create_campaign_link', campaign_name: campaign_name, code: code, start_date: start_date, end_date: end_date, campaign_id: campaign_id %>";
   <% end %>
   results += "</div>";
 <% else %>
   results += "<h4 id=\"crm-campaign-no-results\" class=\"text-center top-20\">";
-  <% if params[:name].present? %>
+  <% if params[:campaign_name].present? %>
     results += "No results found.";
   <% else %>
     results += "You didn't search anything.";

@@ -23,7 +23,7 @@ class OnSiteAttendeesController < ApplicationController
         if @attendee.contact_in_crm
           if @contact_id
             begin
-              create_crm_campaign_response_existing_customer
+              @activity_id = create_crm_campaign_response_existing_customer
             rescue
               logger.error(
                 "CRM Event Registration not created for existing CRM " +
@@ -40,15 +40,18 @@ class OnSiteAttendeesController < ApplicationController
           end
         else
           begin
-            create_crm_campaign_response_new_customer
+            @activity_id = create_crm_campaign_response_new_customer
           rescue
-            logger.error(
-              "ERROR: Issue creating CRM Campaign Response for new customer " +
-              "#{@attendee.first_name} #{@attendee.last_name} from " +
-              "#{@attendee.account_name}."
+            logger.error("Issue creating CRM Campaign Response for new " +
+              "customer #{@attendee.first_name} #{@attendee.last_name} " +
+              "from #{@attendee.account_name}."
             )
           end
         end
+      end
+      
+      if @activity_id && @activity_id.any?
+        @attendee.update(activity_id: @activity_id['id'])
       end
 
       redirect_to event_on_site_attendee_path(@event, @attendee)
@@ -88,6 +91,18 @@ class OnSiteAttendeesController < ApplicationController
 
   def update
     if @attendee.update(on_site_attendee_params)
+      @update_fields = @attendee.previous_changes.except('updated_at')
+
+      if @update_fields.any? && @attendee.activity_id && !@attendee.contact_in_crm
+        begin
+          @result = update_crm_campaign_response_new_customer
+        rescue
+          logger.error("Issue updating CRM Campaign Response " +
+            "with ActivityId #{@attendee.activity_id} "
+          )
+        end
+      end
+      
       redirect_to event_on_site_attendee_path(@event, @attendee)
     else
       @return = true if params[:on_site_attendee][:return] =='y'
@@ -97,8 +112,20 @@ class OnSiteAttendeesController < ApplicationController
 
   def destroy
     if @attendee.destroy
+      if @attendee.activity_id
+        begin
+          if delete_crm_campaign_response
+            logger.info("Campaign Response deleted with ActivityId " +
+               "'#{@attendee.activity_id}'")
+          end
+        rescue
+          logger.error("Issue deleteing Campaign Response from CRM with " +
+            "ActivityId '#{@attendee.activity_id}'")
+        end
+      end
+      binding.pry
       flash.notice = "Attendee #{@attendee.first_name} " +
-                     "#{@attendee.last_name} deleted."
+        "#{@attendee.last_name} deleted."
     else
       flash.alert = "Unable to delete attendee " +
                     "#{@attendee.first_name} #{@attendee.last_name}."
@@ -307,7 +334,7 @@ class OnSiteAttendeesController < ApplicationController
 
   def create_crm_campaign_response_existing_customer
     event_today = @event.crm_campaigns.where(
-      "? BETWEEN event_start_date AND event_end_date", Date.today
+      "? BETWEEN event_start_date AND event_end_date", Date.new(2016,12,15) #Date.today
     ).first
 
     if event_today
@@ -358,7 +385,7 @@ class OnSiteAttendeesController < ApplicationController
 
   def create_crm_campaign_response_new_customer
     event_today = @event.crm_campaigns.where(
-      "? BETWEEN event_start_date AND event_end_date", Date.today
+      "? BETWEEN event_start_date AND event_end_date", Date.new(2016,12,15) #Date.today
     ).first
 
     if event_today
@@ -429,6 +456,73 @@ class OnSiteAttendeesController < ApplicationController
     )
     xml = xml.insert(xml.index("\n</a:Attributes>"), responsecode)
     client.create(xml)
+  end
+
+  def update_crm_campaign_response_new_customer
+    client = DynamicsCRM::Client.new({
+      hostname: ENV["CRM_APP_HOST"],
+      login_url: ENV["CRM_APP_LOGIN_URL"]
+    })
+)
+    client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
+
+    if @update_fields['salesrep']
+      owner_id = false
+      salesrep = @attendee.salesrep.split(' ', 2)
+
+      db = TinyTds::Client.new(
+        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
+        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
+      )
+
+      if salesrep.count == 2
+        sql = "SELECT SystemUserId FROM SystemUserBase " +
+          "WHERE FirstName LIKE '%#{salesrep[0]}%' " +
+          "AND LastName LIKE '%#{salesrep[1]}%'"
+      else
+        sql = "SELECT SystemUserId FROM SystemUserBase " +
+          "WHERE FirstName LIKE '%#{salesrep[0]}%' " +
+          "OR LastName LIKE '%#{salesrep[0]}%'"
+      end
+
+      query = db.execute(sql)
+      salesrep_matches = query.each(:symbolize_keys => true)
+      db.close unless db.closed?
+
+      owner_id = salesrep_matches.first[:SystemUserId] if salesrep_matches.any?
+      # Assign to Jess Spencer if salesrep not found
+      owner_id = '3A543400-4C6A-E211-A54A-00265585B80D' unless owner_id
+      owner = DynamicsCRM::XML::EntityReference.new('systemuser', owner_id)
+
+      client.update('campaignresponse', @attendee.activity_id, changed_fields(owner))     
+    else
+      client.update('campaignresponse', @attendee.activity_id, changed_fields)
+    end
+  end
+
+  def delete_crm_campaign_response
+    client = DynamicsCRM::Client.new({
+      hostname: ENV["CRM_APP_HOST"],
+      login_url: ENV["CRM_APP_LOGIN_URL"]
+    })
+    client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
+    client.delete('campaignresponse', @attendee.activity_id)
+  end
+
+  def changed_fields(owner = nil)
+    fields = {}
+    fields[:ownerid] = owner if owner
+    fields[:companyname] = @attendee.account_name if @update_fields['account_name']
+    fields[:firstname] = @attendee.first_name if @update_fields['first_name']
+    fields[:lastname] = @attendee.last_name if @update_fields['last_name']
+    fields[:new_street_1] = @attendee.street1 if @update_fields['street1']
+    fields[:new_street2] = @attendee.street2 if @update_fields['street2']
+    fields[:new_city] = @attendee.city if @update_fields['city']
+    fields[:new_stateprovince] = @attendee.state if @update_fields['state']
+    fields[:new_zippostalcode] = @attendee.zip_code if @update_fields['zip_code']
+    fields[:emailaddress] = @attendee.email if @update_fields['email']
+    fields[:telephone] = @attendee.phone if @update_fields['phone']
+    fields
   end
 
   def escape_single_quotes(string)

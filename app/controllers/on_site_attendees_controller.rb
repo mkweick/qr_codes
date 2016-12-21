@@ -463,7 +463,6 @@ class OnSiteAttendeesController < ApplicationController
       hostname: ENV["CRM_APP_HOST"],
       login_url: ENV["CRM_APP_LOGIN_URL"]
     })
-)
     client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
 
     if @update_fields['salesrep']

@@ -123,7 +123,7 @@ class OnSiteAttendeesController < ApplicationController
             "ActivityId '#{@attendee.activity_id}'")
         end
       end
-      binding.pry
+
       flash.notice = "Attendee #{@attendee.first_name} " +
         "#{@attendee.last_name} deleted."
     else

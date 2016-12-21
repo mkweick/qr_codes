@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161218001542) do
+ActiveRecord::Schema.define(version: 20161220213712) do
 
   create_table "batches", force: :cascade do |t|
     t.string   "event_id",                        null: false
@@ -82,6 +82,7 @@ ActiveRecord::Schema.define(version: 20161218001542) do
     t.boolean  "contact_in_crm"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
+    t.string   "activity_id"
   end
 
   create_table "types", force: :cascade do |t|

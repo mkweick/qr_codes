@@ -16,14 +16,14 @@ class OnSiteAttendeesController < ApplicationController
 
   def create
     @attendee = @event.on_site_attendees.new(on_site_attendee_params)
-    @contact_id = params[:contact_id].strip unless params[:contact_id].blank?
+    contact_id = params[:contact_id]
 
     if @attendee.save
       if @attendee.badge_type == 'NEW'
         if @attendee.contact_in_crm
-          if @contact_id
+          if contact_id
             begin
-              @activity_id = create_crm_campaign_response_existing_customer
+              @activity = create_crm_campaign_response_existing_customer(contact_id)
             rescue
               logger.error(
                 "CRM Event Registration not created for existing CRM " +
@@ -40,7 +40,7 @@ class OnSiteAttendeesController < ApplicationController
           end
         else
           begin
-            @activity_id = create_crm_campaign_response_new_customer
+            @activity = create_crm_campaign_response_new_customer
           rescue
             logger.error("Issue creating CRM Campaign Response for new " +
               "customer #{@attendee.first_name} #{@attendee.last_name} " +
@@ -50,8 +50,8 @@ class OnSiteAttendeesController < ApplicationController
         end
       end
       
-      if @activity_id && @activity_id.any?
-        @attendee.update(activity_id: @activity_id['id'])
+      if @activity && @activity.any?
+        @attendee.update(activity_id: @activity['id'])
       end
 
       redirect_to event_on_site_attendee_path(@event, @attendee)
@@ -95,7 +95,7 @@ class OnSiteAttendeesController < ApplicationController
 
       if @update_fields.any? && @attendee.activity_id && !@attendee.contact_in_crm
         begin
-          @result = update_crm_campaign_response_new_customer
+          update_crm_campaign_response_new_customer
         rescue
           logger.error("Issue updating CRM Campaign Response " +
             "with ActivityId #{@attendee.activity_id} "
@@ -332,185 +332,97 @@ class OnSiteAttendeesController < ApplicationController
     statement
   end
 
-  def create_crm_campaign_response_existing_customer
-    event_today = @event.crm_campaigns.where(
-      "? BETWEEN event_start_date AND event_end_date", Date.new(2016,12,15) #Date.today
-    ).first
+  def create_crm_campaign_response_existing_customer(contact_id)
+    campaign_id = find_event_today
+    return false unless campaign_id
+    contact = query_contact_script(contact_id)
 
-    if event_today
-      campaign_id = event_today.campaign_id
-    else
-      return false
-    end
+    create_with_existing_in_crm(contact, campaign_id)
+  end
 
-    db = TinyTds::Client.new(
-      host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
-      username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
-    )
-
-    sql = "SELECT OwnerId, ParentCustomerId FROM ContactBase " +
-      "WHERE ContactId = '#{@contact_id}'"
-
+  def query_contact_script(id)
+    sql = "SELECT ContactId, OwnerId, ParentCustomerId FROM ContactBase " +
+      "WHERE ContactId = '#{id}'"
+    db = crm_connection_sql
     query = db.execute(sql)
-    contact_info = query.each(:symbolize_keys => true).first
+    contact = query.each(:symbolize_keys => true).first
     db.close unless db.closed?
+    contact
+  end
 
-    client = DynamicsCRM::Client.new({
-      hostname: ENV["CRM_APP_HOST"],
-      login_url: ENV["CRM_APP_LOGIN_URL"]
-    })
-    client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
-
+  def create_with_existing_in_crm(contact, campaign_id)
     regardingobject = DynamicsCRM::XML::EntityReference.new('campaign', campaign_id)
-    owner = DynamicsCRM::XML::EntityReference.new('systemuser', contact_info[:OwnerId])
-    account = DynamicsCRM::XML::EntityReference.new('account', contact_info[:ParentCustomerId])
-    contact = DynamicsCRM::XML::EntityReference.new('contact', @contact_id)
+    owner = DynamicsCRM::XML::EntityReference.new('systemuser', contact[:OwnerId])
+    account = DynamicsCRM::XML::EntityReference.new('account', contact[:ParentCustomerId])
+    crm_contact = DynamicsCRM::XML::EntityReference.new('contact', contact[:ContactId])
 
+    client = crm_connection_soap
     entity = DynamicsCRM::XML::Entity.new('campaignresponse')
     entity.attributes = DynamicsCRM::XML::Attributes.new(
-      regardingobjectid: regardingobject,
-      ownerid: owner,
-      subject: '.',
-      new_account: account,
-      new_contact: contact
+      regardingobjectid: regardingobject, ownerid: owner, subject: '.',
+      new_account: account, new_contact: crm_contact
     )
-
-    xml = entity.to_xml
-    responsecode = DynamicsCRM::XML::Attributes.new(responsecode: 10000003).build_xml(
-      'responsecode', 100000003, 'OptionSetValue'
-    )
-    xml = xml.insert(xml.index("\n</a:Attributes>"), responsecode)
+    xml = entity_to_xml_with_attended(entity)
     client.create(xml)
   end
 
   def create_crm_campaign_response_new_customer
-    event_today = @event.crm_campaigns.where(
-      "? BETWEEN event_start_date AND event_end_date", Date.new(2016,12,15) #Date.today
-    ).first
+    campaign_id = find_event_today
+    return false unless campaign_id
+    owner_id = assign_salesrep
 
-    if event_today
-      campaign_id = event_today.campaign_id
-    else
-      return false
-    end
-
-    owner_id = false
-    if @attendee.salesrep
-      salesrep = @attendee.salesrep.split(' ', 2)
-
-      db = TinyTds::Client.new(
-        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
-        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
-      )
-
-      if salesrep.count == 2
-        sql = "SELECT SystemUserId FROM SystemUserBase " +
-          "WHERE FirstName LIKE '%#{salesrep[0]}%' " +
-          "AND LastName LIKE '%#{salesrep[1]}%'"
-      else
-        sql = "SELECT SystemUserId FROM SystemUserBase " +
-          "WHERE FirstName LIKE '%#{salesrep[0]}%' " +
-          "OR LastName LIKE '%#{salesrep[0]}%'"
-      end
-
-      query = db.execute(sql)
-      salesrep_matches = query.each(:symbolize_keys => true)
-      db.close unless db.closed?
-
-      owner_id = salesrep_matches.first[:SystemUserId] if salesrep_matches.any?
-    end
-    
-    # Assign to Jess Spencer if salesrep not found/not provided
-    owner_id = '3A543400-4C6A-E211-A54A-00265585B80D' unless owner_id
-
-
-    client = DynamicsCRM::Client.new({
-      hostname: ENV["CRM_APP_HOST"],
-      login_url: ENV["CRM_APP_LOGIN_URL"]
-    })
-    client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
-
-    regardingobject = DynamicsCRM::XML::EntityReference.new('campaign', campaign_id)
-    owner = DynamicsCRM::XML::EntityReference.new('systemuser', owner_id)
-
-    entity = DynamicsCRM::XML::Entity.new('campaignresponse')
-    entity.attributes = DynamicsCRM::XML::Attributes.new(
-      regardingobjectid: regardingobject,
-      ownerid: owner,
-      subject: '.',
-      companyname: @attendee.account_name,
-      firstname: @attendee.first_name,
-      lastname: @attendee.last_name,
-      new_street_1: @attendee.street1,
-      new_street2: @attendee.street2,
-      new_city: @attendee.city,
-      new_stateprovince: @attendee.state,
-      new_zippostalcode: @attendee.zip_code,
-      emailaddress: @attendee.email,
-      telephone: @attendee.phone
-    )
-
-    xml = entity.to_xml
-    responsecode = DynamicsCRM::XML::Attributes.new(responsecode: 10000003).build_xml(
-      'responsecode', 100000003, 'OptionSetValue'
-    )
-    xml = xml.insert(xml.index("\n</a:Attributes>"), responsecode)
-    client.create(xml)
+    create_with_new_in_crm(owner_id, campaign_id)
   end
 
   def update_crm_campaign_response_new_customer
-    client = DynamicsCRM::Client.new({
-      hostname: ENV["CRM_APP_HOST"],
-      login_url: ENV["CRM_APP_LOGIN_URL"]
-    })
-    client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
-
     if @update_fields['salesrep']
-      owner_id = false
-      salesrep = @attendee.salesrep.split(' ', 2)
+      campaign_id = query_campaign_id_for_campaign_response
+      owner_id = assign_salesrep
 
-      db = TinyTds::Client.new(
-        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
-        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
-      )
-
-      if salesrep.count == 2
-        sql = "SELECT SystemUserId FROM SystemUserBase " +
-          "WHERE FirstName LIKE '%#{salesrep[0]}%' " +
-          "AND LastName LIKE '%#{salesrep[1]}%'"
-      else
-        sql = "SELECT SystemUserId FROM SystemUserBase " +
-          "WHERE FirstName LIKE '%#{salesrep[0]}%' " +
-          "OR LastName LIKE '%#{salesrep[0]}%'"
+      if delete_crm_campaign_response
+        activity_id = create_with_new_in_crm(owner_id, campaign_id)['id'] || nil
+        @attendee.update(activity_id: activity_id) if activity_id
       end
-
-      query = db.execute(sql)
-      salesrep_matches = query.each(:symbolize_keys => true)
-      db.close unless db.closed?
-
-      owner_id = salesrep_matches.first[:SystemUserId] if salesrep_matches.any?
-      # Assign to Jess Spencer if salesrep not found
-      owner_id = '3A543400-4C6A-E211-A54A-00265585B80D' unless owner_id
-      owner = DynamicsCRM::XML::EntityReference.new('systemuser', owner_id)
-
-      client.update('campaignresponse', @attendee.activity_id, changed_fields(owner))     
     else
+      client = crm_connection_soap
       client.update('campaignresponse', @attendee.activity_id, changed_fields)
     end
   end
 
+  def create_with_new_in_crm(owner_id, campaign_id)
+    regardingobject = DynamicsCRM::XML::EntityReference.new('campaign', campaign_id)
+    owner = DynamicsCRM::XML::EntityReference.new('systemuser', owner_id)
+
+    client = crm_connection_soap
+    entity = DynamicsCRM::XML::Entity.new('campaignresponse')
+    entity.attributes = DynamicsCRM::XML::Attributes.new(
+      regardingobjectid: regardingobject, ownerid: owner, subject: '.',
+      companyname: @attendee.account_name, firstname: @attendee.first_name,
+      lastname: @attendee.last_name, new_street_1: @attendee.street1,
+      new_street2: @attendee.street2, new_city: @attendee.city,
+      new_stateprovince: @attendee.state, new_zippostalcode: @attendee.zip_code,
+      emailaddress: @attendee.email, telephone: @attendee.phone
+    )
+    xml = entity_to_xml_with_attended(entity)
+    client.create(xml)
+  end
+
+  def query_campaign_id_for_campaign_response
+    sql = "SELECT b.CampaignId FROM ActivityPointerBase AS a " +
+      "JOIN CampaignBase AS b ON b.CampaignId = a.RegardingObjectId " +
+      "WHERE a.ActivityId = '#{@attendee.activity_id}'"
+    db = crm_connection_sql
+    query = db.execute(sql)
+    query.each(:symbolize_keys => true).first[:CampaignId]
+  end
+
   def delete_crm_campaign_response
-    client = DynamicsCRM::Client.new({
-      hostname: ENV["CRM_APP_HOST"],
-      login_url: ENV["CRM_APP_LOGIN_URL"]
-    })
-    client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
+    client = crm_connection_soap
     client.delete('campaignresponse', @attendee.activity_id)
   end
 
-  def changed_fields(owner = nil)
+  def changed_fields
     fields = {}
-    fields[:ownerid] = owner if owner
     fields[:companyname] = @attendee.account_name if @update_fields['account_name']
     fields[:firstname] = @attendee.first_name if @update_fields['first_name']
     fields[:lastname] = @attendee.last_name if @update_fields['last_name']
@@ -522,6 +434,60 @@ class OnSiteAttendeesController < ApplicationController
     fields[:emailaddress] = @attendee.email if @update_fields['email']
     fields[:telephone] = @attendee.phone if @update_fields['phone']
     fields
+  end
+
+  def find_event_today
+    event = @event.crm_campaigns.where(
+      "? BETWEEN event_start_date AND event_end_date", Date.today #Date.new(2016,12,15)
+    ).first
+
+    event ? event.campaign_id : false
+  end
+
+  def assign_salesrep
+    owner_id = nil
+    
+    if @attendee.salesrep
+      salesrep = @attendee.salesrep.split(' ', 2)
+      if salesrep.count == 2
+        conditions = "AND LastName LIKE '%#{salesrep[1]}%'"
+      else
+        conditions = "OR LastName LIKE '%#{salesrep[0]}%'"
+      end
+
+      sql = "SELECT SystemUserId FROM SystemUserBase " +
+        "WHERE FirstName LIKE '%#{salesrep[0]}%' " + conditions
+
+      db = crm_connection_sql
+      query = db.execute(sql)
+      salesrep_matches = query.each(:symbolize_keys => true)
+      db.close unless db.closed?
+      owner_id = salesrep_matches.first[:SystemUserId] if salesrep_matches.any?
+    end
+    
+    # Assign to Jess Spencer if salesrep not found/not provided
+    owner_id = '3A543400-4C6A-E211-A54A-00265585B80D' unless owner_id
+    owner_id
+  end
+
+  def entity_to_xml_with_attended(entity)
+    xml = entity.to_xml
+    xml = xml.insert(xml.index("\n</a:Attributes>"), attended_xml)
+  end
+
+  def attended_xml
+    DynamicsCRM::XML::Attributes.new(responsecode: 10000003).build_xml(
+      'responsecode', 100000003, 'OptionSetValue'
+    )
+  end
+
+  def crm_connection_soap
+    client = DynamicsCRM::Client.new({
+      hostname: ENV["CRM_APP_HOST"],
+      login_url: ENV["CRM_APP_LOGIN_URL"]
+    })
+    client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
+    client
   end
 
   def escape_single_quotes(string)

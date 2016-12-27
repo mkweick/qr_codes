@@ -60,4 +60,11 @@ class ApplicationController < ActionController::Base
   def sanitize(filename)
     filename.gsub(/[\\\/:*"'?<>|]/, '')
   end
+
+  def crm_connection_sql
+    TinyTds::Client.new(
+      host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
+      username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
+    )
+  end
 end

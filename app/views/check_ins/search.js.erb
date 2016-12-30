@@ -67,7 +67,7 @@ var results = "";
   results += "<div id=\"check-in-no-results\" class=\"bottom-120\">";
   results += "<div class=\"well text-center pad-top-20\">";
   results += "<h4>";
-  <% if params[:first_name].present? || params[:last_name].present? || params[:account_name].present? %>
+  <% if params[:ln].present? || params[:an].present? %>
     <% if @account_length_error %>
       results += "3 characters required for account search";
     <% else %>

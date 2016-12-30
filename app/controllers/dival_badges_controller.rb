@@ -4,36 +4,23 @@ class DivalBadgesController < ApplicationController
   def new; end
 
   def print
-    @first_name = params[:first_name].strip if params[:first_name].present?
-    @last_name = params[:last_name].strip if params[:last_name].present?
-    title = params[:title].strip if params[:title].present?
-    street1 = params[:street1].strip if params[:street1].present?
-    street2 = params[:street2].strip if params[:street2].present?
-    city = params[:city].strip if params[:city].present?
-    state = params[:state].strip if params[:state].present?
-    zip_code = params[:zip_code].strip if params[:zip_code].present?
-    email = params[:email].strip if params[:email].present?
-    phone = params[:phone].strip if params[:phone].present?
+    @employee = employee_params
 
-    if @first_name && @last_name && street1 && city &&
-      state && zip_code && email && phone
-
-      # Labels are 2-3/7" wide and 2-7/8" cut length
-      # 180 x 180 = 1.25"  /  220 x 220 = 1.50"
+    if required_fields_present?   
       @qr_code = RQRCode::QRCode.new(
         "MATMSG:TO:;SUB:DIVAL SALES REP REQUEST;BODY:" +
         "\n\n\n______________________" +
-        "\n" + "N: " + @first_name + " " + @last_name +
-        "\n" + "T: " + "#{title if title}" +
-        "\n" + "E: " + "#{email if email}" +
-        "\n" + "P: " + "#{phone if phone}" +
+        "\n" + "N: " + @employee[:first_name] + " " + @employee[:last_name] +
+        "\n" + "T: " + "#{@employee[:title] if @employee[:title]}" +
+        "\n" + "E: " + "#{@employee[:email] if @employee[:email]}" +
+        "\n" + "P: " + "#{@employee[:phone] if @employee[:phone]}" +
         "\n\n" + "DiVal Safety Equipment" +
-        "\n" + "AD1: " + "#{street1 if street1}" +
-        "\n" + "AD2: " + "#{street2 if street2}" +
-        "\n" + "CSZ: " + "#{city if city}" +
-          "#{', ' if city && state}" +
-          "#{state if state} " +
-          "#{zip_code if zip_code};;",
+        "\n" + "AD1: " + "#{@employee[:street1] if @employee[:street1]}" +
+        "\n" + "AD2: " + "#{@employee[:street2] if @employee[:street2]}" +
+        "\n" + "CSZ: " + "#{@employee[:city] if @employee[:city]}" +
+          "#{', ' if @employee[:city] && @employee[:state]}" +
+          "#{@employee[:state] if @employee[:state]} " +
+          "#{@employee[:zip_code] if @employee[:zip_code]};;",
         level: :l
       ).to_img.resize(165, 165)
 
@@ -45,29 +32,13 @@ class DivalBadgesController < ApplicationController
   end
 
   def crm_dival_employee
-    first_name = params[:first_name].strip unless params[:first_name].blank?
-    last_name = params[:last_name].strip unless params[:last_name].blank?
+    type, value = 'first', params[:fn].strip if params[:fn].present?
+    type, value = 'last', params[:ln].strip if params[:ln].present?
     @results = []
 
-    if first_name || last_name
-      db = TinyTds::Client.new(
-        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
-        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
-      )
-
-      sql = crm_dival_employees_base_sql_script
-    end
-
-    if first_name
-      first_name = db.escape(first_name)
-      sql += "AND a.FirstName LIKE '#{first_name}%' "
-    elsif last_name
-      last_name = db.escape(last_name)
-      sql += "AND a.LastName LIKE '#{last_name}%' "
-    end
-
-    if db
-      sql += "ORDER BY a.FirstName, a.LastName"
+    if type && value
+      db = crm_connection_sql
+      sql = crm_dival_employees_query(type, db.escape(value))
       query = db.execute(sql)
       query.each(as: :array) { |row| @results << row }
       db.close unless db.closed?
@@ -76,8 +47,29 @@ class DivalBadgesController < ApplicationController
 
   private
 
-  def crm_dival_employees_base_sql_script
-    base_sql_statement = "SELECT a.FirstName, a.LastName, c.Line1, " +
+  def employee_params
+    info = {}
+    info[:first_name] = params[:first_name].strip if params[:first_name].present?
+    info[:last_name] = params[:last_name].strip if params[:last_name].present?
+    info[:title] = params[:title].strip if params[:title].present?
+    info[:street1] = params[:street1].strip if params[:street1].present?
+    info[:street2] = params[:street2].strip if params[:street2].present?
+    info[:city] = params[:city].strip if params[:city].present?
+    info[:state] = params[:state].strip if params[:state].present?
+    info[:zip_code] = params[:zip_code].strip if params[:zip_code].present?
+    info[:email] = params[:email].strip if params[:email].present?
+    info[:phone] = params[:phone].strip if params[:phone].present?
+    info
+  end
+
+  def required_fields_present?
+    @employee[:first_name] && @employee[:last_name] && @employee[:street1] && 
+    @employee[:city] &&  @employee[:state] && @employee[:zip_code] && 
+    @employee[:email] && @employee[:phone]
+  end
+
+  def crm_dival_employees_query(type, value)
+    sql = "SELECT a.FirstName, a.LastName, c.Line1, " +
     "c.Line2, c.City, c.StateOrProvince, c.PostalCode, " +
     "a.EMailAddress1, a.Telephone1 " +
     "FROM ContactBase AS a " +
@@ -87,6 +79,8 @@ class DivalBadgesController < ApplicationController
     "AND b.icbcore_ExtAccountID = '01-101673' " +
     "AND c.AddressNumber = '1' "
 
-    base_sql_statement
+    sql += "AND #{type == 'first' ? 'a.FirstName' : 'a.LastName'} LIKE '#{value}%' "
+    sql += "ORDER BY a.FirstName, a.LastName"
+    sql
   end
 end

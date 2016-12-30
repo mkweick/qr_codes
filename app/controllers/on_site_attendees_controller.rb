@@ -17,43 +17,23 @@ class OnSiteAttendeesController < ApplicationController
   def create
     @attendee = @event.on_site_attendees.new(on_site_attendee_params)
     contact_id = params[:contact_id]
+    activity = {}
 
     if @attendee.save
       if @attendee.badge_type == 'NEW'
-        if @attendee.contact_in_crm
-          if contact_id
-            begin
-              @activity = create_crm_campaign_response_existing_customer(contact_id)
-            rescue
-              logger.error(
-                "CRM Event Registration not created for existing CRM " +
-                "Contact #{@attendee.first_name} #{@attendee.last_name} " +
-                "from #{@attendee.account_name} / #{@attendee.account_number}."
-              )
-            end
+        begin
+          if @attendee.contact_in_crm && contact_id.present?
+            activity = create_crm_cr_existing_customer(contact_id) || {}
           else
-            logger.error(
-              "Missing ContactId. CRM Event Registration not created for " +
-              "existing CRM Contact #{@attendee.first_name} #{@attendee.last_name} " +
-              "from #{@attendee.account_name} / #{@attendee.account_number}."
-            )
+            activity = create_crm_cr_new_customer || {}
           end
-        else
-          begin
-            @activity = create_crm_campaign_response_new_customer
-          rescue
-            logger.error("Issue creating CRM Campaign Response for new " +
-              "customer #{@attendee.first_name} #{@attendee.last_name} " +
-              "from #{@attendee.account_name}."
-            )
-          end
+        rescue
+          log_contact_error_msg(contact_id)
         end
+
+        @attendee.update(activity_id: activity['id']) if activity.any?
       end
       
-      if @activity && @activity.any?
-        @attendee.update(activity_id: @activity['id'])
-      end
-
       redirect_to event_on_site_attendee_path(@event, @attendee)
     else
       @event_has_campaigns = @event.crm_campaigns.any?
@@ -93,16 +73,14 @@ class OnSiteAttendeesController < ApplicationController
     if @attendee.update(on_site_attendee_params)
       @update_fields = @attendee.previous_changes.except('updated_at')
 
-      if @update_fields.any? && @attendee.activity_id && !@attendee.contact_in_crm
+      if activity_id_and_updates_and_new_contact?
         begin
-          update_crm_campaign_response_new_customer
+          update_crm_cr_new_customer
         rescue
-          logger.error("Issue updating CRM Campaign Response " +
-            "with ActivityId #{@attendee.activity_id} "
-          )
+          log_update_new_contact_error_msg
         end
       end
-      
+
       redirect_to event_on_site_attendee_path(@event, @attendee)
     else
       @return = true if params[:on_site_attendee][:return] =='y'
@@ -114,13 +92,9 @@ class OnSiteAttendeesController < ApplicationController
     if @attendee.destroy
       if @attendee.activity_id
         begin
-          if delete_crm_campaign_response
-            logger.info("Campaign Response deleted with ActivityId " +
-               "'#{@attendee.activity_id}'")
-          end
+          delete_crm_cr
         rescue
-          logger.error("Issue deleteing Campaign Response from CRM with " +
-            "ActivityId '#{@attendee.activity_id}'")
+          log_delete_crm_cr_error_msg
         end
       end
 
@@ -128,72 +102,37 @@ class OnSiteAttendeesController < ApplicationController
         "#{@attendee.last_name} deleted."
     else
       flash.alert = "Unable to delete attendee " +
-                    "#{@attendee.first_name} #{@attendee.last_name}."
+        "#{@attendee.first_name} #{@attendee.last_name}."
     end
+
     redirect_to event_on_site_attendees_path(@event)
   end
 
   def crm_contact
-    last_name = params[:last_name].strip unless params[:last_name].blank?
-    account_name = params[:account_name].strip unless params[:account_name].blank?
+    type, value = 'last_name', params[:ln].strip if params[:ln].present?
+    type, value = 'account_name', params[:an].strip if params[:an].present?
     @results = []
 
-    if last_name || (account_name && account_name.size > 2)
-      db = TinyTds::Client.new(
-        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
-        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
-      )
+    if type && value
+      db = crm_connection_sql
+      sql = crm_contacts_query(type, db.escape(value))
 
-      sql = crm_contacts_base_sql_query
-    end
-
-    if last_name
-      last_name = db.escape(last_name)
-      sql += "AND a.LastName = '#{last_name}' "
-      sql += "ORDER BY a.FirstName, a.LastName"
-    elsif account_name
-      if account_name.size > 2
-        account_name = db.escape(account_name)
-        sql += "AND a.ParentCustomerIdName LIKE '%#{account_name}%' "
-        sql += "ORDER BY a.ParentCustomerIdName, a.FirstName, a.LastName"
-      else
-        @account_length_error = true
+      if sql.present?
+        query = db.execute(sql)
+        query.each(as: :array) { |row| @results << row }
+        db.close unless db.closed?
       end
-    end
-
-    if db
-      query = db.execute(sql)
-      query.each(as: :array) { |row| @results << row }
-      db.close unless db.closed?
     end
   end
 
   def as400_account
-    require 'odbc'
-
-    account_name = params[:account_name].strip unless params[:account_name].blank?
+    account_name = params[:account_name].strip if params[:account_name].present?
     @results = []
     
     if account_name
       if account_name.size > 2
-        as400 = ODBC.connect('as400_fds')
-
-        account_name = escape_single_quotes(account_name)
-
-        sql = "SELECT cmcsnm, cmcsno FROM cusms " +
-          "WHERE UPPER(cmcsnm) LIKE '\%#{account_name.upcase}\%' " +
-          "AND cmsusp != 'S' " +
-          "AND cmusr1 != 'HSS' " +
-          "ORDER BY cmcsnm"
-
-        results = as400.run(sql).fetch_all
-
-        as400.commit
-        as400.disconnect
-
-        if results && results.any?
-          results.each { |row| @results << row }
-        end
+        results = execute_as400_query(account_script(account_name)) || []
+        results.each { |row| @results << row } if results.any?
       else
         @account_length_error = true
       end
@@ -201,98 +140,35 @@ class OnSiteAttendeesController < ApplicationController
   end
 
   def as400_ship_to
-    require 'odbc'
-    @account_name = params[:account_name] unless params[:account_name].blank?
-    account_number = params[:account_number] unless params[:account_number].blank?
-
+    @account_name = params[:account_name] || nil
+    account_number = params[:account_number] || nil
     @results = []
-    
+
     if account_number
-      as400 = ODBC.connect('as400_fds')
-
-      sql = "SELECT a.cmcsnm, '01-' || a.cmcsno, b.sashp#, b.sashnm, " +
-        "b.sasad1, b.sasad2, b.sascty, b.sashst, b.saszip " +
-        "FROM cusms AS a " +
-        "JOIN addr AS b ON b.sacsno = a.cmcsno " +
-        "WHERE a.cmcsno = '#{account_number}' " +
-        "AND b.sasusp != 'S' " +
-        "ORDER BY CAST(b.sashp# AS INTEGER)"
-
-      results = as400.run(sql).fetch_all
-
-      as400.commit
-      as400.disconnect
-
-      if results && results.any?
-        results.each { |row| @results << row }
-      end
+      results = execute_as400_query(ship_to_script(account_number)) || []
+      results.each { |row| @results << row } if results.any?
     end
   end
 
   def download
     export_folder = Rails.root.join('events', @event.id.to_s, 'attendees_export')
-    export_file = Rails.root.join(export_folder, 'export.xls')
-
     FileUtils.mkdir(export_folder) unless Dir.exist?(export_folder)
+    export_file = Rails.root.join(export_folder, 'export.xls')
     File.delete(export_file) if File.exist?(export_file)
-
-
     @attendees = @event.on_site_attendees.order(:created_at)
 
     if @attendees.any?
-      bold_format = Spreadsheet::Format.new :weight => :bold
-      header_row = [
-        'Event Name', 'Created Date', 'Created Time', 'Badge Type',
-        'Created from CRM Contact?', 'First Name', 'Last Name',
-        'Account Name', 'Account #', 'Street 1', 'Street 2',
-        'City', 'State', 'Zip Code', 'Email', 'Phone', 'Sales Rep'
-      ]
-
       export = Spreadsheet::Workbook.new
       sheet = export.create_worksheet name: "On-Site Attendees"
-
-      sheet.insert_row(0, header_row)
-      sheet.row(0).default_format = bold_format
-
-      sheet.column(0).width = 28
-      sheet.column(1).width = 15
-      sheet.column(2).width = 15
-      sheet.column(3).width = 14
-      sheet.column(4).width = 26
-      sheet.column(5).width = 19
-      sheet.column(6).width = 21
-      sheet.column(7).width = 32
-      sheet.column(8).width = 13
-      sheet.column(9).width = 25
-      sheet.column(10).width = 26
-      sheet.column(11).width = 19
-      sheet.column(12).width = 8
-      sheet.column(13).width = 13
-      sheet.column(14).width = 34
-      sheet.column(15).width = 20
-      sheet.column(16).width = 19
+      set_export_sheet_styling(sheet)
 
       @attendees.each do |attendee|
-        created_date = attendee[:created_at].strftime("%m/%d/%Y")
-        created_time = attendee[:created_at].strftime("%l:%M%p")
-        created_from_crm = attendee[:contact_in_crm] ? "TRUE" : "FALSE"
-
-        attendee_row = [
-          @event.name, created_date, created_time, attendee[:badge_type],
-          created_from_crm, attendee[:first_name], attendee[:last_name],
-          attendee[:account_name], attendee[:account_number],
-          attendee[:street1], attendee[:street2], attendee[:city],
-          attendee[:state], attendee[:zip_code], attendee[:email],
-          attendee[:phone], attendee[:salesrep]
-        ]
-        
+        attendee_row = export_data_row(attendee)
         new_row_index = sheet.last_row_index + 1
-          
         sheet.insert_row(new_row_index, attendee_row)
       end
 
       export.write(export_file)
-
       send_file(export_file, type: 'application/vnd.ms-excel',
         filename: "On_Site_Attendees_#{@event.name}.xls")
     else
@@ -319,20 +195,7 @@ class OnSiteAttendeesController < ApplicationController
     @attendee = OnSiteAttendee.find(params[:id]) if params[:id]
   end
 
-  def crm_contacts_base_sql_query
-    statement = "SELECT a.FirstName, a.LastName, b.Name, " +
-      "b.icbcore_ExtAccountID, d.Line1, d.Line2, d.City, d.StateOrProvince, " +
-      "d.PostalCode, a.EMailAddress1, a.Telephone1, c.FullName, a.ContactId " +
-      "FROM ContactBase AS a " +
-      "JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId " +
-      "JOIN SystemUserBase AS c ON a.OwnerId = c.SystemUserId " +
-      "JOIN CustomerAddressBase AS d ON a.ContactId = d.ParentId " +
-      "WHERE a.StateCode = '0' " +
-      "AND d.AddressNumber = '1' "
-    statement
-  end
-
-  def create_crm_campaign_response_existing_customer(contact_id)
+  def create_crm_cr_existing_customer(contact_id)
     campaign_id = find_event_today
     return false unless campaign_id
     contact = query_contact_script(contact_id)
@@ -366,7 +229,7 @@ class OnSiteAttendeesController < ApplicationController
     client.create(xml)
   end
 
-  def create_crm_campaign_response_new_customer
+  def create_crm_cr_new_customer
     campaign_id = find_event_today
     return false unless campaign_id
     owner_id = assign_salesrep
@@ -374,12 +237,26 @@ class OnSiteAttendeesController < ApplicationController
     create_with_new_in_crm(owner_id, campaign_id)
   end
 
-  def update_crm_campaign_response_new_customer
+  def log_contact_error_msg(contact_id)
+    logger.error(
+      "Issue creating CRM Campaign Response for customer " +
+      "#{'ContactId: ' + contact_id + ' - ' if contact_id}" +
+      "#{@attendee.first_name} #{@attendee.last_name} " +
+      "from #{@attendee.account_name}" +
+      "#{' / ' + @attendee.account_number if @attendee.account_number}."
+    )
+  end
+
+  def activity_id_and_updates_and_new_contact?
+    @update_fields.any? && @attendee.activity_id && !@attendee.contact_in_crm
+  end
+
+  def update_crm_cr_new_customer
     if @update_fields['salesrep']
       campaign_id = query_campaign_id_for_campaign_response
       owner_id = assign_salesrep
 
-      if delete_crm_campaign_response
+      if delete_crm_cr
         activity_id = create_with_new_in_crm(owner_id, campaign_id)['id'] || nil
         @attendee.update(activity_id: activity_id) if activity_id
       end
@@ -387,6 +264,12 @@ class OnSiteAttendeesController < ApplicationController
       client = crm_connection_soap
       client.update('campaignresponse', @attendee.activity_id, changed_fields)
     end
+  end
+
+  def log_update_new_contact_error_msg
+    logger.error(
+      "Issue updating CRM Campaign Response with ActivityId #{@attendee.activity_id}"
+    )
   end
 
   def create_with_new_in_crm(owner_id, campaign_id)
@@ -416,9 +299,15 @@ class OnSiteAttendeesController < ApplicationController
     query.each(:symbolize_keys => true).first[:CampaignId]
   end
 
-  def delete_crm_campaign_response
+  def delete_crm_cr
     client = crm_connection_soap
     client.delete('campaignresponse', @attendee.activity_id)
+  end
+
+  def log_delete_crm_cr_error_msg
+    logger.error(
+      "Issue deleteing Campaign Response from CRM with ActivityId '#{@attendee.activity_id}'"
+    )
   end
 
   def changed_fields
@@ -436,38 +325,62 @@ class OnSiteAttendeesController < ApplicationController
     fields
   end
 
+  def crm_contacts_query(type, value)
+    sql = "SELECT a.FirstName, a.LastName, b.Name, b.icbcore_ExtAccountID, " +
+      "d.Line1, d.Line2, d.City, d.StateOrProvince, d.PostalCode, " +
+      "a.EMailAddress1, a.Telephone1, c.FullName, a.ContactId " +
+      "FROM ContactBase AS a " +
+      "JOIN AccountBase AS b ON a.ParentCustomerId = b.AccountId " +
+      "JOIN SystemUserBase AS c ON a.OwnerId = c.SystemUserId " +
+      "JOIN CustomerAddressBase AS d ON a.ContactId = d.ParentId " +
+      "WHERE a.StateCode = '0' " +
+      "AND d.AddressNumber = '1' "
+
+    if type == 'last_name'
+      sql += "AND a.LastName = '#{value}' ORDER BY a.FirstName, a.LastName"
+    elsif type == 'account_name' && value.size > 2
+      sql += "AND a.ParentCustomerIdName LIKE '%#{value}%' " +
+        "ORDER BY a.ParentCustomerIdName, a.FirstName, a.LastName"
+    else
+      @account_length_error = true
+      return false
+    end
+
+    sql
+  end
+
   def find_event_today
     event = @event.crm_campaigns.where(
-      "? BETWEEN event_start_date AND event_end_date", Date.today #Date.new(2016,12,15)
+      # "? BETWEEN event_start_date AND event_end_date", Date.today
+      "? BETWEEN event_start_date AND event_end_date", Date.new(2016,12,15)
     ).first
 
     event ? event.campaign_id : false
   end
 
   def assign_salesrep
-    owner_id = nil
-    
+    salesrep = {}
+
     if @attendee.salesrep
-      salesrep = @attendee.salesrep.split(' ', 2)
-      if salesrep.count == 2
-        conditions = "AND LastName LIKE '%#{salesrep[1]}%'"
+      split_name = @attendee.salesrep.split(' ', 2)
+      if split_name.count == 2
+        conditions = "AND LastName LIKE '%#{split_name[1]}%'"
       else
-        conditions = "OR LastName LIKE '%#{salesrep[0]}%'"
+        conditions = "OR LastName LIKE '%#{split_name[0]}%'"
       end
 
       sql = "SELECT SystemUserId FROM SystemUserBase " +
-        "WHERE FirstName LIKE '%#{salesrep[0]}%' " + conditions
+        "WHERE FirstName LIKE '%#{split_name[0]}%' " + conditions
 
       db = crm_connection_sql
       query = db.execute(sql)
-      salesrep_matches = query.each(:symbolize_keys => true)
+      results = query.each(:symbolize_keys => true)
       db.close unless db.closed?
-      owner_id = salesrep_matches.first[:SystemUserId] if salesrep_matches.any?
+      salesrep = results.first if results.any?
     end
     
-    # Assign to Jess Spencer if salesrep not found/not provided
-    owner_id = '3A543400-4C6A-E211-A54A-00265585B80D' unless owner_id
-    owner_id
+    # Assign to Jess Spencer if salesrep not found/provided
+    salesrep[:SystemUserId] || '3A543400-4C6A-E211-A54A-00265585B80D'
   end
 
   def entity_to_xml_with_attended(entity)
@@ -479,6 +392,81 @@ class OnSiteAttendeesController < ApplicationController
     DynamicsCRM::XML::Attributes.new(responsecode: 10000003).build_xml(
       'responsecode', 100000003, 'OptionSetValue'
     )
+  end
+
+  def account_script(account_name)
+    account_name = escape_single_quotes(account_name)
+
+    "SELECT cmcsnm, cmcsno FROM cusms " +
+    "WHERE UPPER(cmcsnm) LIKE '\%#{account_name.upcase}\%' " +
+    "AND cmsusp != 'S' " +
+    "AND cmusr1 != 'HSS' " +
+    "ORDER BY cmcsnm"
+  end
+
+  def ship_to_script(account_number)
+    "SELECT a.cmcsnm, '01-' || a.cmcsno, b.sashp#, b.sashnm, " +
+    "b.sasad1, b.sasad2, b.sascty, b.sashst, b.saszip " +
+    "FROM cusms AS a " +
+    "JOIN addr AS b ON b.sacsno = a.cmcsno " +
+    "WHERE a.cmcsno = '#{account_number}' " +
+    "AND b.sasusp != 'S' " +
+    "ORDER BY CAST(b.sashp# AS INTEGER)"
+  end
+
+  def set_export_sheet_styling(sheet)
+    sheet.insert_row(0, export_header_row)
+    sheet.row(0).default_format = Spreadsheet::Format.new :weight => :bold
+    sheet.column(0).width = 28
+    sheet.column(1).width = 15
+    sheet.column(2).width = 15
+    sheet.column(3).width = 14
+    sheet.column(4).width = 26
+    sheet.column(5).width = 19
+    sheet.column(6).width = 21
+    sheet.column(7).width = 32
+    sheet.column(8).width = 13
+    sheet.column(9).width = 25
+    sheet.column(10).width = 26
+    sheet.column(11).width = 19
+    sheet.column(12).width = 8
+    sheet.column(13).width = 13
+    sheet.column(14).width = 34
+    sheet.column(15).width = 20
+    sheet.column(16).width = 19
+  end
+
+  def export_header_row
+    [
+      'Event Name', 'Created Date', 'Created Time', 'Badge Type',
+      'Created from CRM Contact?', 'First Name', 'Last Name',
+      'Account Name', 'Account #', 'Street 1', 'Street 2',
+      'City', 'State', 'Zip Code', 'Email', 'Phone', 'Sales Rep'
+    ]
+  end
+
+  def export_data_row(attendee)
+    created_date = attendee[:created_at].strftime("%m/%d/%Y")
+    created_time = attendee[:created_at].strftime("%l:%M%p")
+    created_from_crm = attendee[:contact_in_crm] ? "TRUE" : "FALSE"
+
+    [
+      @event.name, created_date, created_time, attendee[:badge_type],
+      created_from_crm, attendee[:first_name], attendee[:last_name],
+      attendee[:account_name], attendee[:account_number],
+      attendee[:street1], attendee[:street2], attendee[:city],
+      attendee[:state], attendee[:zip_code], attendee[:email],
+      attendee[:phone], attendee[:salesrep]
+    ]
+  end
+
+  def execute_as400_query(sql)
+    require 'odbc'
+    as400 = ODBC.connect('as400_fds')
+    results = as400.run(sql).fetch_all
+    as400.commit
+    as400.disconnect
+    results
   end
 
   def crm_connection_soap

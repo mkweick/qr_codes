@@ -45,14 +45,6 @@ class CrmCampaignsController < ApplicationController
 
   private
 
-  def set_event
-    @event = Event.find(params[:event_id]) if params[:event_id]
-  end
-
-  def set_crm_campaign
-    @campaign = CrmCampaign.find(params[:id]) if params[:id]
-  end
-
   def crm_campaign_params
     campaign_name = params[:campaign_name].strip unless params[:campaign_name].blank?
     code = params[:code].strip unless params[:code].blank?
@@ -62,6 +54,14 @@ class CrmCampaignsController < ApplicationController
     
     { name: campaign_name, code: code, event_start_date: start_date,
       event_end_date: end_date, campaign_id: campaign_id }
+  end
+
+  def set_event
+    @event = Event.find(params[:event_id]) if params[:event_id]
+  end
+
+  def set_crm_campaign
+    @campaign = CrmCampaign.find(params[:id]) if params[:id]
   end
 
   def set_event_form_info

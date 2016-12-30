@@ -35,7 +35,7 @@ var results = "";
 <% else %>
   results += "<hr id=\"crm-dival-employee-line\" class=\"top-10 bottom-10\" />";
   results += "<h4 id=\"crm-dival-employee-no-results\" class=\"text-center top-20\">";
-  <% if params[:first_name].present? || params[:last_name].present? %>
+  <% if params[:fn].present? || params[:ln].present? %>
     results += "No results found.";
   <% else %>
     results += "You didn't search anything.";

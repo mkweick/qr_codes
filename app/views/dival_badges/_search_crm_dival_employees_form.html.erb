@@ -3,7 +3,7 @@
   class: "crm-dival-employee-form", autocomplete: "off" do %>
 
   <div class="form-group">
-    <%= text_field_tag 'first_name', params[:first_name],
+    <%= text_field_tag 'fn', params[:fn],
       placeholder: "First name...", id: "crm-dival-employee-fn",
       class: "form-control" %>
   </div>
@@ -11,7 +11,7 @@
   <h5 class="top-5 bottom-5">OR</h5>
 
   <div class="form-group">
-    <%= text_field_tag 'last_name', params[:last_name],
+    <%= text_field_tag 'ln', params[:ln],
       placeholder: "Last name...", autofocus: true,
       id: "crm-dival-employee-ln", class: "form-control" %>
   </div>

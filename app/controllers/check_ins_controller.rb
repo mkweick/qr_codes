@@ -8,8 +8,6 @@ class CheckInsController < ApplicationController
 
   def attended
     update_crm_attendee_record('100000003')
-    # Uncomment to send salesrep email when customer checks in
-    # email_salresrep if @record_updated && @sr_email
   end
 
   def not_attended
@@ -18,38 +16,19 @@ class CheckInsController < ApplicationController
 
 
   def search
-    first_name = params[:first_name].strip unless params[:first_name].blank?
-    last_name = params[:last_name].strip unless params[:last_name].blank?
-    account_name = params[:account_name].strip unless params[:account_name].blank?
+    type, value = 'last_name', params[:ln].strip if params[:ln].present?
+    type, value = 'account_name', params[:an].strip if params[:an].present?
     @results = []
 
-    if first_name || last_name || (account_name && account_name.size > 2)
-      db = TinyTds::Client.new(
-        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
-        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
-      )
+    if type && value
+      db = crm_connection_sql
+      sql = registered_attendees_query(type, value)
 
-      sql = registered_attendees_base_sql_script
-    end
-
-    if last_name
-      last_name = db.escape(last_name)
-      sql += "AND (d.LastName LIKE '#{last_name}%' OR a.LastName LIKE '#{last_name}%')"
-      sql += "ORDER BY d.LastName, d.FirstName;"
-    elsif account_name
-      if account_name.size > 2
-        account_name = db.escape(account_name)
-        sql += "AND (d.ParentCustomerIdName LIKE '%#{account_name}%' OR a.CompanyName LIKE '%#{account_name}%')"
-        sql += "ORDER BY d.ParentCustomerIdName, d.FirstName;"
-      else
-        @account_length_error = true
+      if sql.present?
+        query = db.execute(sql)
+        query.each(as: :array) { |row| @results << row }
+        db.close unless db.closed?
       end
-    end
-
-    if db
-      query = db.execute(sql)
-      query.each(as: :array) { |row| @results << row }
-      db.close unless db.closed?
     end
   end
 
@@ -74,31 +53,26 @@ class CheckInsController < ApplicationController
     @account_name = params[:an].strip unless params[:an].blank?
 
     if @activity_id
-      db = TinyTds::Client.new(
-        host: ENV["CRM_DB_HOST"], database: ENV["CRM_DB_NAME"],
-        username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
-      )
-
-      sql = "UPDATE ActivityPointerBase " +
-        "SET ResponseCode = '#{response_code}' " +
-        "WHERE ActivityId = '#{@activity_id}';"
-
+      db = crm_connection_sql
+      sql = "UPDATE ActivityPointerBase SET ResponseCode = '#{response_code}' " +
+        "WHERE ActivityId = '#{@activity_id}'"
       query = db.execute(sql)
-      affected_row = query.do
+      rows_updated = query.do
       db.close unless db.closed?
 
-      @record_updated = affected_row == 1 ? true : false
+      @record_updated = rows_updated == 1 ? true : false
+      #email_salesrep if response_code == '100000003' && @record_updated && @sr_email
     end
   end
 
-  def email_salresrep
+  def email_salesrep
     NotificationMailer.customer_checked_in_email_salesrep(
       @event, @sr_email, @first_name, @last_name, @account_name
     ).deliver_later
   end
 
-  def registered_attendees_base_sql_script
-    base_sql_statement = "SELECT a.ActivityId AS \"activity_id\", " +
+  def registered_attendees_query(type, value)
+    sql = "SELECT a.ActivityId AS \"activity_id\", " +
       "e.InternalEMailAddress AS \"salesrep_email\", " +
       "a.ResponseCode AS \"response_code\", " + 
       "d.FirstName AS \"contact_first_name\", " +
@@ -115,10 +89,22 @@ class CheckInsController < ApplicationController
       "AND b.CodeName IN ("
 
     @event.crm_campaigns.pluck(:code).each_with_index do |code, idx|
-      base_sql_statement += idx == 0 ? "\'#{code}\'" : ", \'#{code}\'"
+      sql += idx == 0 ? "\'#{code}\'" : ", \'#{code}\'"
     end
+    sql += ') '
     
-    base_sql_statement += ') '
-    base_sql_statement
+    if type == 'last_name'
+      sql += "AND (d.LastName LIKE '#{value}%' OR a.LastName LIKE '#{value}%')" +
+        "ORDER BY d.LastName, d.FirstName;"
+    elsif type == 'account_name' && value.size > 2
+      sql += "AND (d.ParentCustomerIdName LIKE '%#{value}%' " +
+        "OR a.CompanyName LIKE '%#{value}%')" +
+        "ORDER BY d.ParentCustomerIdName, d.FirstName;"
+    else
+      @account_length_error = true
+      return false
+    end
+
+    sql
   end
 end

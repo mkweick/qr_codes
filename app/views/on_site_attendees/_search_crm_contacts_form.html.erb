@@ -3,7 +3,7 @@
   class: "crm-contact-form", autocomplete: "off" do %>
 
   <div class="form-group">
-    <%= text_field_tag 'last_name', params[:last_name],
+    <%= text_field_tag 'ln', params[:ln],
       placeholder: "Last Name...", autofocus: true,
       id: "crm-contact-ln", class: "form-control" %>
   </div>
@@ -11,7 +11,7 @@
   <h5 class="top-5 bottom-5">OR</h5>
 
   <div class="form-group">
-    <%= text_field_tag 'account_name', params[:account_name],
+    <%= text_field_tag 'an', params[:an],
       placeholder: "Account Name...", id: "crm-contact-an",
       class: "form-control" %>
   </div>

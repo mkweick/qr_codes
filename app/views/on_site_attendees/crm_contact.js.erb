@@ -45,7 +45,7 @@ var results = "";
   results += "<div id=\"crm-contact-no-results\" class=\"bottom-60\">";
   results += "<div class=\"well well-dark text-center pad-top-20\">";
   results += "<h4>";
-  <% if params[:last_name].present? || params[:account_name].present? %>
+  <% if params[:ln].present? || params[:an].present? %>
     <% if @account_length_error %>
       results += "3 characters required for account search";
     <% else %>

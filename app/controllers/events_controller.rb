@@ -15,13 +15,7 @@ class EventsController < ApplicationController
   end
 
   def create
-    event_name = params[:type] + ' ' + params[:year]
-    multi_type = Type.find_by(name: params[:type]).multiple_locations
-    subject = params[:subject] if params[:subject]
-
-    @event = Event.new(name: event_name, multiple_locations: multi_type,
-      qr_code_email_subject: subject)
-
+    @event = Event.new(event_params)
     if @event.save
       make_event_dir(@event.id)
       flash.notice = "Event created successfully."
@@ -44,13 +38,7 @@ class EventsController < ApplicationController
   end
 
   def update
-    event_name = params[:type] + ' ' + params[:year]
-    multi_type = Type.find_by(name: params[:type]).multiple_locations
-    subject = params[:subject] if params[:subject]
-
-    if @event.update(name: event_name, multiple_locations: multi_type,
-      qr_code_email_subject: subject)
-      
+    if @event.update(event_params)
       flash.notice = "Event updated."
       redirect_to event_path(@event)
     else
@@ -107,7 +95,7 @@ class EventsController < ApplicationController
       send_file(upload_template, type: 'application/vnd.ms-excel',
         filename: 'ATTENDEE_UPLOAD_TEMPLATE.xls')
     else
-      flash.alert = "Template file could not be found."
+      flash.alert = "Attendee Template file could not be found."
       redirect_to event_path(@event)
     end
   end
@@ -120,12 +108,21 @@ class EventsController < ApplicationController
       send_file(upload_template, type: 'application/vnd.ms-excel',
         filename: 'EMPLOYEE_UPLOAD_TEMPLATE.xls')
     else
-      flash.alert = "Template file could not be found."
+      flash.alert = "Employee Template file could not be found."
       redirect_to event_path(@event)
     end
   end
 
   private
+
+  def event_params
+    event_name = params[:type] + ' ' + params[:year]
+    multi_type = Type.find_by(name: params[:type]).multiple_locations
+    subject = params[:subject] if params[:subject]
+
+    { name: event_name, multiple_locations: multi_type,
+      qr_code_email_subject: subject }
+  end
 
   def set_event
     @event = Event.find(params[:id]) if params[:id]

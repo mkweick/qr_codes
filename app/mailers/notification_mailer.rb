@@ -1,6 +1,6 @@
 class NotificationMailer < ApplicationMailer
 
-	def batch_generation_complete_email(event, batch, email)
+	def batch_complete_email(event, batch, email)
 		@event = event
 		@batch = batch
 

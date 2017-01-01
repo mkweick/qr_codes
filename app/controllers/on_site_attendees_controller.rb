@@ -97,12 +97,9 @@ class OnSiteAttendeesController < ApplicationController
           log_delete_crm_cr_error_msg
         end
       end
-
-      flash.notice = "Attendee #{@attendee.first_name} " +
-        "#{@attendee.last_name} deleted."
+      attendee_delete_msg
     else
-      flash.alert = "Unable to delete attendee " +
-        "#{@attendee.first_name} #{@attendee.last_name}."
+      attendee_delete_error_msg
     end
 
     redirect_to event_on_site_attendees_path(@event)
@@ -151,26 +148,22 @@ class OnSiteAttendeesController < ApplicationController
   end
 
   def download
-    export_folder = Rails.root.join('events', @event.id.to_s, 'attendees_export')
-    FileUtils.mkdir(export_folder) unless Dir.exist?(export_folder)
-    export_file = Rails.root.join(export_folder, 'export.xls')
-    File.delete(export_file) if File.exist?(export_file)
-    @attendees = @event.on_site_attendees.order(:created_at)
+    attendees = @event.on_site_attendees.order(:created_at)
 
-    if @attendees.any?
+    if attendees.any?
+      prep_attendee_export_dir
       export = Spreadsheet::Workbook.new
       sheet = export.create_worksheet name: "On-Site Attendees"
-      set_export_sheet_styling(sheet)
+      set_attendee_export_sheet_styling(sheet)
 
-      @attendees.each do |attendee|
-        attendee_row = export_data_row(attendee)
+      attendees.each do |row|
+        attendee_row = format_attendee_data(row)
         new_row_index = sheet.last_row_index + 1
         sheet.insert_row(new_row_index, attendee_row)
       end
 
-      export.write(export_file)
-      send_file(export_file, type: 'application/vnd.ms-excel',
-        filename: "On_Site_Attendees_#{@event.name}.xls")
+      export.write(attendee_export_file)
+      send_attendee_export_file
     else
       flash.alert = "No on-site attendees to export for this event."
       redirect_to event_path(@event)
@@ -310,6 +303,16 @@ class OnSiteAttendeesController < ApplicationController
     )
   end
 
+  def attendee_delete_msg
+    flash.notice = "Attendee #{@attendee.first_name} " +
+      "#{@attendee.last_name} deleted."
+  end
+
+  def attendee_delete_error_msg
+    flash.alert = "Unable to delete attendee #{@attendee.first_name} " +
+      "#{@attendee.last_name}."
+  end
+
   def changed_fields
     fields = {}
     fields[:companyname] = @attendee.account_name if @update_fields['account_name']
@@ -351,8 +354,8 @@ class OnSiteAttendeesController < ApplicationController
 
   def find_event_today
     event = @event.crm_campaigns.where(
-      # "? BETWEEN event_start_date AND event_end_date", Date.today
-      "? BETWEEN event_start_date AND event_end_date", Date.new(2016,12,15)
+      "? BETWEEN event_start_date AND event_end_date", Date.today
+      #{}"? BETWEEN event_start_date AND event_end_date", Date.new(2016,12,15)
     ).first
 
     event ? event.campaign_id : false
@@ -414,7 +417,7 @@ class OnSiteAttendeesController < ApplicationController
     "ORDER BY CAST(b.sashp# AS INTEGER)"
   end
 
-  def set_export_sheet_styling(sheet)
+  def set_attendee_export_sheet_styling(sheet)
     sheet.insert_row(0, export_header_row)
     sheet.row(0).default_format = Spreadsheet::Format.new :weight => :bold
     sheet.column(0).width = 28
@@ -437,27 +440,49 @@ class OnSiteAttendeesController < ApplicationController
   end
 
   def export_header_row
-    [
-      'Event Name', 'Created Date', 'Created Time', 'Badge Type',
-      'Created from CRM Contact?', 'First Name', 'Last Name',
-      'Account Name', 'Account #', 'Street 1', 'Street 2',
-      'City', 'State', 'Zip Code', 'Email', 'Phone', 'Sales Rep'
-    ]
+    ['Event Name', 'Created Date', 'Created Time', 'Badge Type',
+     'Created from CRM Contact?', 'First Name', 'Last Name',
+     'Account Name', 'Account #', 'Street 1', 'Street 2',
+     'City', 'State', 'Zip Code', 'Email', 'Phone', 'Sales Rep']
   end
 
-  def export_data_row(attendee)
+  def format_attendee_data(attendee)
     created_date = attendee[:created_at].strftime("%m/%d/%Y")
     created_time = attendee[:created_at].strftime("%l:%M%p")
     created_from_crm = attendee[:contact_in_crm] ? "TRUE" : "FALSE"
 
-    [
-      @event.name, created_date, created_time, attendee[:badge_type],
-      created_from_crm, attendee[:first_name], attendee[:last_name],
-      attendee[:account_name], attendee[:account_number],
-      attendee[:street1], attendee[:street2], attendee[:city],
-      attendee[:state], attendee[:zip_code], attendee[:email],
-      attendee[:phone], attendee[:salesrep]
-    ]
+    [@event.name, created_date, created_time, attendee[:badge_type],
+     created_from_crm, attendee[:first_name], attendee[:last_name],
+     attendee[:account_name], attendee[:account_number],
+     attendee[:street1], attendee[:street2], attendee[:city],
+     attendee[:state], attendee[:zip_code], attendee[:email],
+     attendee[:phone], attendee[:salesrep]]
+  end
+
+  def prep_attendee_export_dir
+    make_attendee_export_dir unless Dir.exist?(attendee_export_dir)
+    delete_attendee_export_file if File.exist?(attendee_export_file)
+  end
+
+  def attendee_export_dir
+    Rails.root.join('events', @event.id.to_s, 'attendees_export')
+  end
+
+  def attendee_export_file
+    Rails.root.join(attendee_export_dir, 'export.xls')
+  end
+
+  def make_attendee_export_dir
+    FileUtils.mkdir(attendee_export_dir)
+  end
+
+  def delete_attendee_export_file
+    FileUtils.remove_file(attendee_export_file)
+  end
+
+  def send_attendee_export_file
+    send_file(attendee_export_file, type: 'application/vnd.ms-excel',
+      filename: "On_Site_Attendees_#{@event.name}.xls")
   end
 
   def execute_as400_query(sql)

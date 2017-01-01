@@ -95,7 +95,7 @@
           <hr class="top-10" />
           <div class="list-group">
             <%= link_to 'Original Upload',
-              download_event_batch_path(@event, batch, type: 'original'),
+              download_event_batch_path(@event, batch, type: 'upload'),
               data: { turbolinks: false }, class: "list-group-item" %>
 
             <% if batch.processing_status == '3' %>
@@ -116,7 +116,7 @@
               <% else %>
                 <%= link_to generate_event_batch_path(@event, batch),
                   method: 'post', class: 'btn btn-primary generate-batch' do %>
-                  Generate QR Codes & Export
+                  Generate QR Codes &amp; Export
                 <% end %>
               <% end %>
             <% end %>

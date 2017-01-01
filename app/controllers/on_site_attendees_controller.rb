@@ -154,7 +154,7 @@ class OnSiteAttendeesController < ApplicationController
       prep_attendee_export_dir
       export = Spreadsheet::Workbook.new
       sheet = export.create_worksheet name: "On-Site Attendees"
-      set_attendee_export_sheet_styling(sheet)
+      set_attendee_export_styling(sheet)
 
       attendees.each do |row|
         attendee_row = format_attendee_data(row)
@@ -417,7 +417,7 @@ class OnSiteAttendeesController < ApplicationController
     "ORDER BY CAST(b.sashp# AS INTEGER)"
   end
 
-  def set_attendee_export_sheet_styling(sheet)
+  def set_attendee_export_styling(sheet)
     sheet.insert_row(0, export_header_row)
     sheet.row(0).default_format = Spreadsheet::Format.new :weight => :bold
     sheet.column(0).width = 28

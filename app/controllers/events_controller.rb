@@ -17,7 +17,7 @@ class EventsController < ApplicationController
   def create
     @event = Event.new(event_params)
     if @event.save
-      make_event_dir(@event.id)
+      make_event_dir
       flash.notice = "Event created successfully."
       redirect_to root_path
     else
@@ -88,12 +88,8 @@ class EventsController < ApplicationController
   end
 
   def download_attendee_template
-    upload_template = Rails.root.join('events', 'upload_templates',
-      'ATTENDEE_UPLOAD_TEMPLATE.xls')
-
-    if File.exist?(upload_template)
-      send_file(upload_template, type: 'application/vnd.ms-excel',
-        filename: 'ATTENDEE_UPLOAD_TEMPLATE.xls')
+    if attendee_upload_template?
+      send_attendee_template
     else
       flash.alert = "Attendee Template file could not be found."
       redirect_to event_path(@event)
@@ -101,12 +97,8 @@ class EventsController < ApplicationController
   end
 
   def download_employee_template
-    upload_template = Rails.root.join('events', 'upload_templates',
-      'EMPLOYEE_UPLOAD_TEMPLATE.xls')
-
-    if File.exist?(upload_template)
-      send_file(upload_template, type: 'application/vnd.ms-excel',
-        filename: 'EMPLOYEE_UPLOAD_TEMPLATE.xls')
+    if employee_upload_template?
+      send_employee_template
     else
       flash.alert = "Employee Template file could not be found."
       redirect_to event_path(@event)
@@ -128,12 +120,27 @@ class EventsController < ApplicationController
     @event = Event.find(params[:id]) if params[:id]
   end
 
-  def make_event_dir(event)
-    event_path = Rails.root.join('events', event.to_s)
-    attendees_export_path = Rails.root.join(event_path, 'attendees_export')
-    FileUtils.remove_dir(event_path) if Dir.exist?(event_path)
-    FileUtils.mkdir(event_path)
-    FileUtils.mkdir(attendees_export_path)
+  def make_event_dir
+    delete_event_dir
+    delete_attendees_export_dir
+    FileUtils.mkdir(event_dir_path)
+    FileUtils.mkdir(attendees_export_dir)
+  end
+
+  def event_dir_path
+    Rails.root.join('events', @event.id.to_s)
+  end
+
+  def delete_event_dir
+    FileUtils.remove_dir(event_dir_path) if Dir.exist?(event_dir_path)
+  end
+
+  def attendees_export_dir
+    Rails.root.join(event_dir_path, 'attendees_export')
+  end
+
+  def delete_attendees_export_dir
+    FileUtils.remove_dir(attendees_export_dir) if Dir.exist?(attendees_export_dir)
   end
 
   def set_event_info
@@ -148,18 +155,25 @@ class EventsController < ApplicationController
       @batches.each do |batch|
         next unless batch.processing_status == '3'
 
-        qr_codes_path = Rails.root.join('events', batch.event_id.to_s,
-          batch.number.to_s, 'qr_codes.zip')
-    
-        export_path = Rails.root.join('events', batch.event_id.to_s,
-          batch.number.to_s, 'export', 'export.xls')
-
-        qr_codes = File.exist?(qr_codes_path)
-        export = File.exist?(export_path)
-
-        batch.update(processing_status: '1') unless qr_codes && export
+        unless qr_codes?(batch) && export_file?(batch)
+          batch.update(processing_status: '1')
+        end
       end
     end
+  end
+
+  def qr_codes?(batch)
+    qr_codes_path = Rails.root.join('events', batch.event_id.to_s,
+      batch.number.to_s, 'qr_codes.zip')
+
+    File.exist?(qr_codes_path)
+  end
+
+  def export_file?(batch)
+    export_file_path = Rails.root.join('events', batch.event_id.to_s,
+      batch.number.to_s, 'export', 'export.xls')
+
+    File.exist?(export_file_path)
   end
 
   def set_event_form_info
@@ -176,5 +190,29 @@ class EventsController < ApplicationController
   def set_archives_info
     @archives = Event.sorted_archives
     @deleted = Event.sorted_deleted
+  end
+
+  def attendee_upload_template
+    Rails.root.join('events', 'upload_templates', 'ATTENDEE_UPLOAD_TEMPLATE.xls')
+  end
+
+  def attendee_upload_template?
+    File.exist?(attendee_upload_template)
+  end
+
+  def send_attendee_template
+    send_file(attendee_upload_template, type: 'application/vnd.ms-excel')
+  end
+
+  def employee_upload_template
+    Rails.root.join('events', 'upload_templates', 'EMPLOYEE_UPLOAD_TEMPLATE.xls')
+  end
+
+  def employee_upload_template?
+    File.exist?(employee_upload_template)
+  end
+
+  def send_employee_template
+    send_file(employee_upload_template, type: 'application/vnd.ms-excel')
   end
 end

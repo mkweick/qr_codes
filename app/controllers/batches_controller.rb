@@ -57,9 +57,9 @@ class BatchesController < ApplicationController
 
     if upload_filename
       if @batch.batch_type == '1'
-        GenerateAttendeeQrCodesExportJob.perform_later(@event, @batch, email)
+        AttendeeQrCodesJob.perform_later(@event, @batch, email)
       elsif @batch.batch_type == '2'
-        GenerateEmployeeQrCodesExportJob.perform_later(@event, @batch, email)
+        EmployeeQrCodesJob.perform_later(@event, @batch, email)
       end
 
       @batch.update(processing_status: '2')
@@ -127,7 +127,7 @@ class BatchesController < ApplicationController
   end
 
   def make_batch_dir
-    FileUtils.remove_dir(batch_path) if Dir.exist?(batch_path)
+    delete_batch_dir
     FileUtils.mkdir_p(batch_path)
     FileUtils.mkdir(export_path)
   end

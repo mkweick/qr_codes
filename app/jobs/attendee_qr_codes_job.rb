@@ -152,7 +152,8 @@ class AttendeeQrCodesJob < ActiveJob::Base
 
   def generate_qr_code(row)
     RQRCode::QRCode.new(
-      "MATMSG:TO:leads@divalsafety.com;SUB:#{@event.qr_code_email_subject};BODY:" +
+      "MATMSG:TO:leads@divalsafety.com;" +
+      "SUB:#{@event.qr_code_email_subject};BODY:" +
       "\n\n\n______________________" +
       "\n" + "N: " + row[2] +
       "\n" + "C: " + row[3] + "#{' / ' + row[4] if row[4]}" +

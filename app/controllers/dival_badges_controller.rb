@@ -6,24 +6,9 @@ class DivalBadgesController < ApplicationController
   def print
     @employee = employee_params
 
-    if required_fields_present?   
-      @qr_code = RQRCode::QRCode.new(
-        "MATMSG:TO:;SUB:DIVAL SALES REP REQUEST;BODY:" +
-        "\n\n\n______________________" +
-        "\n" + "N: " + @employee[:first_name] + " " + @employee[:last_name] +
-        "\n" + "T: " + "#{@employee[:title] if @employee[:title]}" +
-        "\n" + "E: " + "#{@employee[:email] if @employee[:email]}" +
-        "\n" + "P: " + "#{@employee[:phone] if @employee[:phone]}" +
-        "\n\n" + "DiVal Safety Equipment" +
-        "\n" + "AD1: " + "#{@employee[:street1] if @employee[:street1]}" +
-        "\n" + "AD2: " + "#{@employee[:street2] if @employee[:street2]}" +
-        "\n" + "CSZ: " + "#{@employee[:city] if @employee[:city]}" +
-          "#{', ' if @employee[:city] && @employee[:state]}" +
-          "#{@employee[:state] if @employee[:state]} " +
-          "#{@employee[:zip_code] if @employee[:zip_code]};;",
-        level: :l
-      ).to_img.resize(165, 165)
-
+    if required_fields_present? 
+      qr_code = generate_qr_code  
+      @qr_code = qr_code.to_img.resize(165, 165)
       render layout: false
     else
       flash.now.alert = "Missing required information."
@@ -66,6 +51,25 @@ class DivalBadgesController < ApplicationController
     @employee[:first_name] && @employee[:last_name] && @employee[:street1] && 
     @employee[:city] &&  @employee[:state] && @employee[:zip_code] && 
     @employee[:email] && @employee[:phone]
+  end
+
+  def generate_qr_code
+    RQRCode::QRCode.new(
+      "MATMSG:TO:;SUB:DIVAL SALES REP REQUEST;BODY:" +
+      "\n\n\n______________________" +
+      "\n" + "N: " + @employee[:first_name] + " " + @employee[:last_name] +
+      "\n" + "T: " + "#{@employee[:title] if @employee[:title]}" +
+      "\n" + "E: " + "#{@employee[:email] if @employee[:email]}" +
+      "\n" + "P: " + "#{@employee[:phone] if @employee[:phone]}" +
+      "\n\n" + "DiVal Safety Equipment" +
+      "\n" + "AD1: " + "#{@employee[:street1] if @employee[:street1]}" +
+      "\n" + "AD2: " + "#{@employee[:street2] if @employee[:street2]}" +
+      "\n" + "CSZ: " + "#{@employee[:city] if @employee[:city]}" +
+        "#{', ' if @employee[:city] && @employee[:state]}" +
+        "#{@employee[:state] if @employee[:state]} " +
+        "#{@employee[:zip_code] if @employee[:zip_code]};;",
+      level: :l
+    )
   end
 
   def crm_dival_employees_query(type, value)

@@ -42,26 +42,8 @@ class OnSiteAttendeesController < ApplicationController
   end
 
   def show
-    # Labels are 2-3/7" wide and 2-7/8" cut length
-    # 180 x 180 = 1.25" /  220 x 220 = 1.50"
-    @qr_code = RQRCode::QRCode.new(
-      "MATMSG:TO:leads@divalsafety.com;SUB:#{@event.qr_code_email_subject};BODY:" +
-      "\n\n\n______________________" +
-      "\n" + "N: " + @attendee.first_name + " " + @attendee.last_name +
-      "\n" + "C: " + @attendee.account_name +
-        "#{' / ' + @attendee.account_number if @attendee.account_number}" + 
-      "\n" + "AD1: " + "#{@attendee.street1 if @attendee.street1}" +
-      "\n" + "AD2: " + "#{@attendee.street2 if @attendee.street2}" +
-      "\n" + "CSZ: " + "#{@attendee.city if @attendee.city}" +
-        "#{', ' if @attendee.city && @attendee.state}" +
-        "#{@attendee.state if @attendee.state} " +
-        "#{@attendee.zip_code if @attendee.zip_code}" +
-      "\n" + "E: " + "#{@attendee.email if @attendee.email}" +
-      "\n" + "P: " + "#{@attendee.phone if @attendee.phone}" +
-      "\n" + "SR: " + "#{@attendee.salesrep if @attendee.salesrep};;",
-      level: :l
-    ).to_img.resize(165, 165)
-
+    qr_code = generate_qr_code
+    @qr_code = qr_code.to_img.resize(165, 165)
     render layout: false
   end
 
@@ -186,6 +168,27 @@ class OnSiteAttendeesController < ApplicationController
 
   def set_attendee
     @attendee = OnSiteAttendee.find(params[:id]) if params[:id]
+  end
+
+  def generate_qr_code
+    RQRCode::QRCode.new(
+      "MATMSG:TO:leads@divalsafety.com;SUB:" +
+      "#{@event.qr_code_email_subject};BODY:" +
+      "\n\n\n______________________" +
+      "\n" + "N: " + @attendee.first_name + " " + @attendee.last_name +
+      "\n" + "C: " + @attendee.account_name +
+        "#{' / ' + @attendee.account_number if @attendee.account_number}" + 
+      "\n" + "AD1: " + "#{@attendee.street1 if @attendee.street1}" +
+      "\n" + "AD2: " + "#{@attendee.street2 if @attendee.street2}" +
+      "\n" + "CSZ: " + "#{@attendee.city if @attendee.city}" +
+        "#{', ' if @attendee.city && @attendee.state}" +
+        "#{@attendee.state if @attendee.state} " +
+        "#{@attendee.zip_code if @attendee.zip_code}" +
+      "\n" + "E: " + "#{@attendee.email if @attendee.email}" +
+      "\n" + "P: " + "#{@attendee.phone if @attendee.phone}" +
+      "\n" + "SR: " + "#{@attendee.salesrep if @attendee.salesrep};;",
+      level: :l
+    )
   end
 
   def create_crm_cr_existing_customer(contact_id)

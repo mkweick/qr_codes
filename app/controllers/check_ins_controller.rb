@@ -72,21 +72,7 @@ class CheckInsController < ApplicationController
   end
 
   def registered_attendees_query(type, value)
-    sql = "SELECT a.ActivityId AS \"activity_id\", " +
-      "e.InternalEMailAddress AS \"salesrep_email\", " +
-      "a.ResponseCode AS \"response_code\", " + 
-      "d.FirstName AS \"contact_first_name\", " +
-      "d.LastName AS \"contact_last_name\", " +
-      "d.ParentCustomerIdName AS \"contact_account_name\", " +
-      "a.FirstName AS \"first_name\", a.LastName AS \"last_name\", " +
-      "a.CompanyName AS \"account_name\" " +
-      "FROM ActivityPointerBase AS a " +
-      "JOIN CampaignBase AS b ON b.CampaignId = a.RegardingObjectId " +
-      "JOIN CampaignResponseBase AS c ON c.ActivityId = a.ActivityId " +
-      "LEFT JOIN ContactBase AS d ON d.ContactId = c.new_Contact " +
-      "LEFT JOIN SystemUserBase AS e ON e.SystemUserId = a.OwnerId " +
-      "WHERE a.ActivityTypeCode = '4401' " +
-      "AND b.CodeName IN ("
+    sql = registered_attendees_base_sql_script
 
     @event.crm_campaigns.pluck(:code).each_with_index do |code, idx|
       sql += idx == 0 ? "\'#{code}\'" : ", \'#{code}\'"
@@ -106,5 +92,23 @@ class CheckInsController < ApplicationController
     end
 
     sql
+  end
+
+  def registered_attendees_base_sql_script
+    "SELECT a.ActivityId AS \"activity_id\", " +
+    "e.InternalEMailAddress AS \"salesrep_email\", " +
+    "a.ResponseCode AS \"response_code\", " + 
+    "d.FirstName AS \"contact_first_name\", " +
+    "d.LastName AS \"contact_last_name\", " +
+    "d.ParentCustomerIdName AS \"contact_account_name\", " +
+    "a.FirstName AS \"first_name\", a.LastName AS \"last_name\", " +
+    "a.CompanyName AS \"account_name\" " +
+    "FROM ActivityPointerBase AS a " +
+    "JOIN CampaignBase AS b ON b.CampaignId = a.RegardingObjectId " +
+    "JOIN CampaignResponseBase AS c ON c.ActivityId = a.ActivityId " +
+    "LEFT JOIN ContactBase AS d ON d.ContactId = c.new_Contact " +
+    "LEFT JOIN SystemUserBase AS e ON e.SystemUserId = a.OwnerId " +
+    "WHERE a.ActivityTypeCode = '4401' " +
+    "AND b.CodeName IN ("
   end
 end

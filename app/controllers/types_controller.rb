@@ -22,12 +22,7 @@ class TypesController < ApplicationController
     end
   end
 
-  def edit
-    unless @type
-      flash.alert = "That event type doesn't exist."
-      redirect_to types_path
-    end
-  end
+  def edit; end
 
   def update
     if @type.update(type_params)
@@ -40,15 +35,12 @@ class TypesController < ApplicationController
   end
 
   def destroy
-    if @type
-      if @type.destroy
-        flash.notice = "Event type deleted."
-      else
-        flash.alert = "Event type can't be deleted. Contact IT."
-      end
+    if @type.destroy
+      flash.notice = "Event type deleted."
     else
-      flash.alert = "That event type doesn't exist."
+      flash.alert = "Event type can't be deleted. Contact IT."
     end
+
     redirect_to types_path
   end
 

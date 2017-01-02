@@ -22,12 +22,7 @@ class LocationsController < ApplicationController
     end
   end
 
-  def edit
-    unless @location
-      flash.alert = "That location doesn't exist."
-      redirect_to locations_path
-    end
-  end
+  def edit; end
 
   def update
     if @location.update(location_params)
@@ -40,15 +35,12 @@ class LocationsController < ApplicationController
   end
 
   def destroy
-    if @location
-      if @location.destroy
-        flash.notice = "Location deleted."
-      else
-        flash.alert = "Location can't be deleted. Contact IT."
-      end
+    if @location.destroy
+      flash.notice = "Location deleted."
     else
-      flash.alert = "That location doesn't exist."
+      flash.alert = "Location can't be deleted. Contact IT."
     end
+    
     redirect_to locations_path
   end
 

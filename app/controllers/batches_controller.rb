@@ -71,6 +71,10 @@ class BatchesController < ApplicationController
     redirect_to event_path(@event)
   end
 
+  def check_status
+    @batch_complete = @batch.processing_status == '3' ? true : false
+  end
+
   def download
     type = params[:type] if params[:type]
 

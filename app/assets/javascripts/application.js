@@ -114,6 +114,43 @@ function resetVendorForm() {
   $('#vendor_name').val("");
 };
 
+function generateBatchSpinner() {
+  var spinnerButton;
+  spinnerButton = "<button class=\"btn btn-primary width-80\" disabled=\"disabled\">";
+  spinnerButton += "<div class=\"spinner spinner-20\">";
+  spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+  spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+  spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+  spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+  spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+  spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
+  spinnerButton += "</div></button>";
+
+  $(this).replaceWith(spinnerButton);
+}
+
+function batchesStatusCheck() {
+  window.batchStatusCheck;
+  var processingBatches = $("div.active-batch[status='2']");
+
+  if (processingBatches.length > 0) {
+    batchStatusCheck = setInterval(function() {
+      processingBatches = $("div.active-batch[status='2']");
+
+      if (processingBatches.length > 0) {
+        processingBatches.each(function() {
+          var ids = $(this).find('.list-group a:first-child').attr('href').match(/\d+/g);
+          var eventId = ids[0];
+          var batchId = ids[1];
+          var url = "/events/" + eventId + "/batches/" + batchId + "/check-status";
+
+          $.ajax({ url: url, dataType: 'script' });
+        });
+      }
+    }, 15000);
+  }
+}
+
 function populateBuffaloWhsAddress() {
   $('#street1').val("1721 Niagara St");
   $('#street2').val("");

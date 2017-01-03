@@ -1,0 +1,13 @@
+<% if @batch_complete %>
+  results = "<%= j link_to 'QR Codes', download_event_batch_path(@event, @batch, type: 'qr_codes'), data: { turbolinks: false }, class: 'list-group-item' %>";
+  results += "<%= j link_to 'Excel Export', download_event_batch_path(@event, @batch, type: 'export'), data: { turbolinks: false }, class: 'list-group-item' %>";
+
+  $("div#<%= @batch.number %>").attr('status', '3');
+  $("div#<%= @batch.number %> button.processing-batch").remove();
+  $(results).insertAfter("div#<%= @batch.number %> a.list-group-item:first-child");
+  $("div#<%= @batch.number %> .list-group a:first-child")
+    .removeClass('list-group-item').addClass('list-group-item');
+
+  processingBatches = $("div.active-batch[status='2']");
+  if (processingBatches.length <= 0) clearInterval(batchStatusCheck);
+<% end %>

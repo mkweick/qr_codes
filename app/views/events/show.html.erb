@@ -2,19 +2,8 @@
 <% multi = @event.multiple_locations %>
 
 <script>
-  $(document).on('click', '.generate-batch', function() {
-    spinnerButton = "<button class=\"btn btn-primary width-80\" disabled=\"disabled\">";
-    spinnerButton += "<div class=\"spinner spinner-20\">";
-    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
-    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
-    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
-    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
-    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
-    spinnerButton += "<div class=\"white\"></div><div class=\"white\"></div>";
-    spinnerButton += "</div></button>";
-
-    $(this).replaceWith(spinnerButton);
-  });
+  $(document).on('click', '.generate-batch', generateBatchSpinner);
+  $(document).ready(batchesStatusCheck);
 </script>
 
 <%= render 'shared/ajax_loader_js', form_id: 'batch-form' %>
@@ -64,7 +53,7 @@
     </div>
 
     <% @batches.each do |batch| %>
-      <div class="col-xs-12 col-sm-6 col-md-6">
+      <div id="<%= batch.number %>" class="active-batch col-xs-12 col-sm-6 col-md-6" status="<%= batch.processing_status %>">
         <div class="well text-center <%= multi ? 'batch-multiple' : 'batch' %>">
           <div class="event-actions">
             <%= link_to [:edit, @event, batch], title: 'Edit Batch', 
@@ -110,7 +99,7 @@
             <% else %>
               </div>
               <% if batch.processing_status == '2' %>
-                <button class="btn btn-primary" disabled="disabled">
+                <button class="processing-batch btn btn-primary" disabled="disabled">
                   Currently Processing Batch
                 </button>
               <% else %>

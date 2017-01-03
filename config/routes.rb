@@ -52,6 +52,7 @@ Rails.application.routes.draw do
     resources :batches, except: [:index, :new, :show] do
       member do
         get 'download'
+        get 'check-status'
 
         post 'generate'
       end

@@ -67,4 +67,42 @@ class ApplicationController < ActionController::Base
       username: ENV["CRM_DB_UN"], password: ENV["CRM_DB_PW"]
     )
   end
+
+  def crm_connection_soap(user = true)
+    username, password = session[:user][0], session[:user][1]
+
+    client = DynamicsCRM::Client.new({
+      hostname: ENV["CRM_APP_HOST"],
+      login_url: ENV["CRM_APP_LOGIN_URL"]
+    })
+
+    begin
+      unless user && client.authenticate(decrypt(username), decrypt(password))
+        client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
+      end
+
+    rescue DynamicsCRM::XML::Fault
+      client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
+    end
+
+    client
+  end
+
+  def execute_as400_query(sql)
+    require 'odbc'
+    as400 = ODBC.connect('as400_fds')
+    results = as400.run(sql).fetch_all
+    as400.commit
+    as400.disconnect
+    results
+  end
+
+  private
+
+  def decrypt(string)
+    decrypted_string = ''
+    encrypted_chars = string.split(/[\@\#\$\%\&]+/)
+    encrypted_chars.each { |char| decrypted_string += (char.to_i / 5).chr }
+    decrypted_string
+  end
 end

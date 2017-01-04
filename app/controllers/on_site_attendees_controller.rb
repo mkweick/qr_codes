@@ -368,17 +368,16 @@ class OnSiteAttendeesController < ApplicationController
     salesrep = {}
 
     if @attendee.salesrep
+      db = crm_connection_sql
+
       split_name = @attendee.salesrep.split(' ', 2)
-      if split_name.count == 2
-        conditions = "AND LastName LIKE '%#{split_name[1]}%'"
-      else
-        conditions = "OR LastName LIKE '%#{split_name[0]}%'"
-      end
+      first_name = db.escape(split_name[0])
+      last_name = db.escape(split_name[1]) if split_name[1]
 
       sql = "SELECT SystemUserId FROM SystemUserBase " +
-        "WHERE FirstName LIKE '%#{split_name[0]}%' " + conditions
+        "WHERE FirstName LIKE '%#{first_name}%' " +
+        last_name_sql_condition(last_name, first_name)
 
-      db = crm_connection_sql
       query = db.execute(sql)
       results = query.each(:symbolize_keys => true)
       db.close unless db.closed?
@@ -387,6 +386,14 @@ class OnSiteAttendeesController < ApplicationController
     
     # Assign to Jess Spencer if salesrep not found/provided
     salesrep[:SystemUserId] || '3A543400-4C6A-E211-A54A-00265585B80D'
+  end
+
+  def last_name_sql_condition(last_name, first_name)
+    if last_name
+      "AND LastName LIKE '%#{last_name}%'"
+    else
+      "OR LastName LIKE '%#{first_name}%'"
+    end
   end
 
   def entity_to_xml_with_attended(entity)

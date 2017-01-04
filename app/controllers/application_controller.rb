@@ -76,14 +76,9 @@ class ApplicationController < ActionController::Base
       login_url: ENV["CRM_APP_LOGIN_URL"]
     })
 
-    begin
-      if user && decrypt(username) != 'checkin'
-        client.authenticate(decrypt(username), decrypt(password))
-      else
-        client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
-      end
-
-    rescue DynamicsCRM::XML::Fault
+    if user
+      client.authenticate(decrypt(username), decrypt(password))
+    else
       client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
     end
 

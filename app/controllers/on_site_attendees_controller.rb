@@ -296,7 +296,7 @@ class OnSiteAttendeesController < ApplicationController
   end
 
   def delete_crm_cr
-    client = crm_connection_soap
+    client = crm_connection_soap(false)
     client.delete('campaignresponse', @attendee.activity_id)
   end
 
@@ -493,24 +493,6 @@ class OnSiteAttendeesController < ApplicationController
   def send_attendee_export_file
     send_file(attendee_export_file, type: 'application/vnd.ms-excel',
       filename: "On_Site_Attendees_#{@event.name}.xls")
-  end
-
-  def execute_as400_query(sql)
-    require 'odbc'
-    as400 = ODBC.connect('as400_fds')
-    results = as400.run(sql).fetch_all
-    as400.commit
-    as400.disconnect
-    results
-  end
-
-  def crm_connection_soap
-    client = DynamicsCRM::Client.new({
-      hostname: ENV["CRM_APP_HOST"],
-      login_url: ENV["CRM_APP_LOGIN_URL"]
-    })
-    client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
-    client
   end
 
   def escape_single_quotes(string)

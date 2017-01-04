@@ -77,7 +77,9 @@ class ApplicationController < ActionController::Base
     })
 
     begin
-      unless user && client.authenticate(decrypt(username), decrypt(password))
+      if user && decrypt(username) != 'checkin'
+        client.authenticate(decrypt(username), decrypt(password))
+      else
         client.authenticate(ENV["CRM_APP_UN"], ENV["CRM_APP_PW"])
       end
 

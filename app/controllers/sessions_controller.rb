@@ -11,7 +11,7 @@ class SessionsController < ApplicationController
     user = Adauth.authenticate(username, password)
 
     if user
-      set_session_params(user)
+      set_session_params(user, username, password)
       redirect_to(session[:return_to] || root_path)
       session.delete(:return_to)
     else 
@@ -34,7 +34,7 @@ class SessionsController < ApplicationController
 
   private
 
-  def set_session_params(user)
+  def set_session_params(user, username, password)
     user_params = user.ldap_object
     email = user_params[:mail].first
     member_of = user.cn_groups_nested
@@ -42,24 +42,20 @@ class SessionsController < ApplicationController
 
     session[:name] = user_params[:givenname].first || 'User'
     session[:email] = email
-    session[:guid] = crm_user_id(email)
+    session[:user] = [encrypt(username), encrypt(password)]
     session[:access] = access_level
   end
 
-  def crm_user_id(email)
-    if email
-      db = crm_connection_sql
-      email = db.escape(email)
-      sql = "SELECT SystemUserId FROM SystemUserBase " +
-        "WHERE InternalEmailAddress = '#{email}'"
-      
-      query = db.execute(sql)
-      user = query.each(:symbolize_keys => true)
-      db.close unless db.closed?
+  def encrypt(string)
+    encrypted_string = ''
 
-      user.any? ? user.first[:SystemUserId] : nil
-    else
-      nil
+    string.strip.each_char.with_index do |char, idx|
+      seperators = ['@', '#', '$', '%', '&']
+      encrypted_char = seperators.sample + (char.ord * 5).to_s
+      encrypted_char = encrypted_char.slice(1..-1) if idx == 0
+      encrypted_string += encrypted_char
     end
+
+    encrypted_string
   end
 end

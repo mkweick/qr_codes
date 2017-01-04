@@ -16,6 +16,7 @@ class BatchesController < ApplicationController
       make_batch_dir
       save_upload_file(file, filename)
       upload_file_error_check(filename)
+      
       redirect_to event_path(@event)
     else
       set_event_info

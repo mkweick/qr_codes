@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   end
 
   def admin?
-    current_user != 'check-in@divalsafety.com'
+    session[:access] == '1'
   end
 
   def require_user

@@ -22,7 +22,7 @@ class CheckInsController < ApplicationController
 
     if type && value
       db = crm_connection_sql
-      sql = registered_attendees_query(type, value)
+      sql = registered_attendees_query(type, db.escape(value))
 
       if sql.present?
         query = db.execute(sql)

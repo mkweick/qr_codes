@@ -358,7 +358,7 @@ class OnSiteAttendeesController < ApplicationController
   def find_event_today
     event = @event.crm_campaigns.where(
       "? BETWEEN event_start_date AND event_end_date", Date.today
-      #{}"? BETWEEN event_start_date AND event_end_date", Date.new(2016,12,15)
+      #"? BETWEEN event_start_date AND event_end_date", Date.new(2016,12,15)
     ).first
 
     event ? event.campaign_id : false

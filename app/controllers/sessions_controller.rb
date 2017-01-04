@@ -11,9 +11,14 @@ class SessionsController < ApplicationController
     user = Adauth.authenticate(username, password)
 
     if user
-      set_session_params(user, username, password)
-      redirect_to(session[:return_to] || root_path)
-      session.delete(:return_to)
+      if enabled_crm_user?(username)
+        set_session_params(user, username, password)
+        redirect_to(session[:return_to] || root_path)
+        session.delete(:return_to)
+      else
+        flash.now.alert = "Must be a valid CRM User"
+        render 'new'
+      end
     else 
       flash.now.alert = 'Authentication failed'
       render 'new'
@@ -33,6 +38,17 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def enabled_crm_user?(username)
+    db = crm_connection_sql
+    username = db.escape("DIVAL\\#{username}")
+    sql = "SELECT IsDisabled FROM SystemUserBase " +
+      "WHERE DomainName = '#{username}' AND IsDisabled = '0'"
+    query = db.execute(sql)
+    result = query.each(:symbolize_keys => true).first
+    db.close unless db.closed?
+    result
+  end
 
   def set_session_params(user, username, password)
     user_params = user.ldap_object
